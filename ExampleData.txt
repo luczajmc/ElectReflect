@@ -1,0 +1,72 @@
+Adams,BrattonW2,58,1,340
+Adams,Locust Grove,78,0,275
+Adams,Green,58,0,89
+Adams,Liberty,75,0,268
+Allen,Bratton,58,1,340
+Allen,Locust Grove,78,0,275
+Allen,Green,58,0,89
+Allen,Liberty,75,0,268
+Butler,BrattonW92,58,1,340
+Butler,Locust Grove,78,0,275
+Butler,Green,58,0,89
+Butler,Liberty,75,0,268
+Carroll,BrattonW2,58,1,340
+Carroll,Locust Grove,78,0,275
+Carroll,Green,58,0,89
+Carroll,Liberty,75,0,268
+Clark,BrattonW92,58,1,340
+Clark,Locust Grove,78,0,275
+Clark,Green,58,0,89
+Clark,Liberty,75,0,268
+Delaware,Bratton,58,1,340
+Delaware,Locust Grove,78,0,275
+Delaware,Green,58,0,89
+Delaware,Liberty,75,0,268
+Logan,Perry,98,0,75
+Logan,DogW8,106,0,90
+Logan,Cat,90,0,106
+Erie,Bratton,58,1,340
+Erie,Locust Grove,78,0,275
+Erie,Green,58,0,89
+Erie,Liberty,75,0,268
+Fairfield,Erich,100,22,379
+Fairfield,Monroe,25,1,78
+Fairfield,Scott,39,0,134
+Fairfield,Johnson,76,2,34
+Greene,Henry,54,3,98
+Greene,Lol,23,9,109
+Greene,Taylor,46,0,97
+Hamilton,Staehling,90,0,178
+Hamilton,West Union,37,0,98
+Hamilton,Tiffin,198,0,4
+Jefferson,Ben,78,0,67
+Jefferson,Bob,38,1,98
+Jefferson,Kartan,56,1,32
+Logan,Perry,98,0,75
+Logan,Dog,106,0,90
+Logan,Cat,90,0,106
+Madison,Lockeed,67,0,97
+Madison,Percy,46,0,98
+Madison,Keyleth,87,0,98
+Ottawa,Vax,90,0,90
+Ottawa,Vex,80,1,20
+Ottawa,Grog,98,12,90
+Perry,Scanlan,46,0,98
+Perry,Shorthalt,84,0,29
+Perry,Gilmore,20,0,97
+Ross,Pond,56,0,73
+Ross,Lake,98,2,10
+Ross,Ocean,11,0,38
+Sandusky,Kol,92,7,107
+Sandusky,Kaw,164,0,287
+Sandusky,Kel,193,0,937
+Sandusky,Kwl,193,0,193
+Stark,Mel.W32,203,4,301
+Stark,GibsonW4,294,0,192
+Stark,Ken,194,0,391
+Warren,Pen,103,0,183
+Warren,Ink,93,0,103
+Warren,Clock,29,0,57
+Stark,Mel.W32,203,4,301
+Stark,GibsonW4,294,0,192
+Stark,Ken,194,0,391
