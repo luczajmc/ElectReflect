@@ -3,6 +3,10 @@ https://git-scm.com/downloads
 
 Launch git
 
+Set default git user and email:
+$git config --global user.email "something@miamioh.edu"
+$git config --global user.name "miami username here"
+
 Navigate to the folder you want to clone the project into:
 $cd Desktop
 
@@ -17,5 +21,5 @@ $git pull
 
 Add what you want to the folder, then upload:
 $git add new_file.ext
-$git commit -m "add something"
+$git commit
 $git push
