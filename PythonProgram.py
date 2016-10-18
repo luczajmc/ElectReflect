@@ -5,6 +5,8 @@ Copyright 2016
 
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
+import numpy as np
+import matplotlib.pyplot as plt
 
 class State:
 
@@ -208,3 +210,62 @@ class District:
                 the percentage of independent voters in a district
         """
         return self.ind/self.totalVotes
+
+class Grapher:
+
+    def barGraphCounty(county):
+        N = len(county.districts)
+        
+        districtDemVotes = []
+        districtRepubVotes = []
+        districtIndVotes = []
+        
+        for i in range(0, len(county.districts)):
+            districtDemVotes.append(county.districts[i].getDemVotes())
+            
+        for i in range(0, len(county.districts)):
+            districtRepubVotes.append(county.districts[i].getRepubVotes())
+            
+        for i in range(0, len(county.districts)):
+            districtIndVotes.append(county.districts[i].getIndVotes())
+
+        ind = np.arange(N)  # the x locations for the groups
+        width = 0.35       # the width of the bars
+
+        fig, ax = plt.subplots()
+        rects1 = ax.bar(ind, districtDemVotes, width, color='b', yerr = 0)
+        rects2 = ax.bar(ind + width, districtRepubVotes, width, color='r', yerr = 0)
+        rects3 = ax.bar(ind + width*2, districtIndVotes, width, color='g', yerr = 0)
+
+        # add some text for labels, title and axes ticks
+        ax.set_ylabel('Number of Votes')
+        ax.set_title('Votes Divided by District')
+        ax.set_xticks(ind + width)
+
+        districtNames = []
+        for i in range(0, len(county.districts)):
+            districtNames.append(county.districts[i].getName())
+        
+        ax.set_xticklabels(districtNames)
+
+        ax.legend((rects1[0], rects2[0], rects3[0]), ('Democratic', 'Republican', 'Independent'))
+
+
+        def autolabel(rects):
+            # attach some text labels
+            for rect in rects:
+                height = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width()/2., 1.05*height,
+                        '%d' % int(height),
+                        ha='center', va='bottom')
+
+        autolabel(rects1)
+        autolabel(rects2)
+        autolabel(rects3)
+
+        plt.show()
+        
+
+Ohio = State()
+Ohio.getCountiesAndDistricts()
+County1 = Ohio.selectCounty("Adams")
