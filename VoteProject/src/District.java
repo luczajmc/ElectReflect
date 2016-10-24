@@ -43,7 +43,7 @@ public class District {
 	 * @return the number of independent votes
 	 */
 	public int getIndVotes() {
-		return this.getIndVotes();
+		return this.indVotes;
 	}
 	
 	/**
