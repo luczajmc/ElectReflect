@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class County {
 	private String name;
-	private ArrayList<District> districts = new ArrayList<District>();;
+	private ArrayList<District> districts = new ArrayList<District>(); //holds all the districts
 	private int demVotes;
 	private int repVotes;
 	private int indVotes;
@@ -18,6 +18,19 @@ public class County {
 		indVotes = 0;
 		totalVotes = 0;
 		getData();
+	}
+	
+	public District selectDistrict(String districtName) {
+		for (int i = 0; i < this.districts.size(); i++) {
+			if (districtName.equals(this.districts.get(i).getName())) {
+				return this.districts.get(i);
+			}
+		}
+		return null;
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 	
 	/**
@@ -105,6 +118,10 @@ public class County {
 	 */
 	public int getIndVotes() {
 		return this.indVotes;
+	}
+	
+	public int getTotalVotes() {
+		return this.totalVotes;
 	}
 	
 	/**
