@@ -65,7 +65,7 @@ public class County {
 	}
 	
 	/**
-	 * @param newDistrict, a District you want added to the County
+	 * @param a District you want added to the County
 	 */
 	public void addDistrict(District newDistrict) {
 		this.districts.add(newDistrict);
@@ -73,56 +73,56 @@ public class County {
 	}
 	
 	/**
-	 * @return ArrayList, the districts in a county
+	 * @return the districts in a county
 	 */
 	public ArrayList getDistricts() {
 		return this.districts;
 	}
 
 	/**
-	 * @return String, the name of the county
+	 * @return the name of the county
 	 */
 	public String getName() {
 		return this.name;
 	}
 	
 	/**
-	 * @return int, the number of democratic votes
+	 * @return the number of democratic votes
 	 */
 	public int getDemVotes() {
 		return this.demVotes;
 	}
 	
 	/**
-	 * @return int, the number of republican votes
+	 * @return the number of republican votes
 	 */
 	public int getRepVotes() {
 		return this.repVotes;
 	}
 	
 	/**
-	 * @return int, the number of independent votes
+	 * @return the number of independent votes
 	 */
 	public int getIndVotes() {
 		return this.indVotes;
 	}
 	
 	/**
-	 * @return double, the percent of votes that were democratic
+	 * @return the percent of votes that were democratic
 	 */
 	public double getDemPercent() {
 		return this.demVotes/this.totalVotes;
 	}
 	
 	/**
-	 * @return double, the percent of votes that were republican
+	 * @return the percent of votes that were republican
 	 */
 	public double getRepPercent() {
 		return this.repVotes/this.totalVotes;
 	}
 	
 	/**
-	 * @return double, the percent of votes that were independent
+	 * @return the percent of votes that were independent
 	 */
 	public double getIndPercent() {
 		return this.indVotes/this.totalVotes;
