@@ -71,4 +71,16 @@ public class County {
 		return this.indVotes;
 	}
 	
+	public double getDemPercent() {
+		return this.demVotes/this.totalVotes;
+	}
+	
+	public double getRepPercent() {
+		return this.repVotes/this.totalVotes;
+	}
+	
+	public double getIndPercent() {
+		return this.indVotes/this.totalVotes;
+	}
+	
 }
