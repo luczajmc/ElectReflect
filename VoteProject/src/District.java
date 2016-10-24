@@ -11,4 +11,20 @@ public class District {
 		this.demVotes = data2;
 		this.indVotes = data3;
 	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public int getDemVotes() {
+		return this.demVotes;
+	}
+	
+	public int getRepVotes() {
+		return this.repVotes;
+	}
+	
+	public int getIndVotes() {
+		return this.getIndVotes();
+	}
 }
