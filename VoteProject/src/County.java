@@ -29,10 +29,6 @@ public class County {
 		return null;
 	}
 	
-	public String getName() {
-		return this.name;
-	}
-	
 	/**
 	 * calculates the voting data for a county
 	 */
