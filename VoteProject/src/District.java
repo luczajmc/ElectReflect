@@ -4,6 +4,7 @@ public class District {
 	private int repVotes;
 	private int demVotes;
 	private int indVotes;
+	private int totalVotes;
 
 	/**
 	 * @param name
@@ -16,6 +17,7 @@ public class District {
 		this.repVotes = republican;
 		this.demVotes = democrat;
 		this.indVotes = independent;
+		this.totalVotes = getTotalVotes();
 	}
 	
 	/**
@@ -57,20 +59,20 @@ public class District {
 	 * @return the percentage of democratic votes
 	 */
 	public double getDemPercent() {
-		return this.demVotes / this.getTotalVotes();
+		return (double)this.demVotes / this.totalVotes;
 	}
 	
 	/**
 	 * @return the percentage of republican votes
 	 */
 	public double getRepPercent() {
-		return this.repVotes / this.getTotalVotes();
+		return (double)this.repVotes / this.totalVotes;
 	}
 	
 	/**
 	 * @return the percentage of independent votes
 	 */
 	public double getIndPercent() {
-		return this.indVotes / this.getTotalVotes();
+		return (double)this.indVotes / this.totalVotes;
 	}
 }

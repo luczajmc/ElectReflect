@@ -17,7 +17,7 @@ public class State {
 	private File verifyData;
 	private String currentCounty;
 	private County newCounty;
-	private ArrayList<County> counties;
+	private ArrayList<County> counties; //holds all the counties
 	
 	private int repVotes;
 	private int demVotes;
@@ -31,12 +31,11 @@ public class State {
 	public State() {
 		this.voterData = getFile();
 		this.verifyData = getFile();
-		getCountiesAndDistricts();
-		
 		this.repVotes = 0;
 		this.demVotes = 0;
 		this.indVotes = 0;
 		this.totalVotes = 0;
+		getCountiesAndDistricts(); //get all the data
 	}
 	
 	private void getCountiesAndDistricts() {
@@ -65,11 +64,11 @@ public class State {
 						Integer.parseInt(data[DEM_VOTES]), Integer.parseInt(data[IND_VOTES]));
 				this.newCounty.addDistrict(newDistrict);//finally we add the new district to the county we are working in
 			}
-			getData();
 		}
 		catch (FileNotFoundException e) {
 			System.out.println("FileNotFound");
 		}
+		getData();
 	}
 	
 	private boolean verifyRecords(){
@@ -191,20 +190,20 @@ public class State {
 	 * @return the percent of republican votes
 	 */
 	public double getRepPercent() {
-		return this.repVotes / this.totalVotes;
+		return (double)this.repVotes / this.totalVotes;
 	}
 	
 	/**
 	 * @return the percent of democratic votes
 	 */
 	public double getDemPercent() {
-		return this.demVotes / this.totalVotes;
+		return (double)this.demVotes / this.totalVotes;
 	}
 	
 	/**
 	 * @return the percent of independent votes
 	 */
 	public double getIndPercent() {
-		return this.indVotes / this.totalVotes;
+		return (double)this.indVotes / this.totalVotes;
 	}
 }

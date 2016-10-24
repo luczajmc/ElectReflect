@@ -124,21 +124,21 @@ public class County {
 	 * @return the percent of votes that were democratic
 	 */
 	public double getDemPercent() {
-		return this.demVotes/this.totalVotes;
+		return (double)this.demVotes/this.totalVotes;
 	}
 	
 	/**
 	 * @return the percent of votes that were republican
 	 */
 	public double getRepPercent() {
-		return this.repVotes/this.totalVotes;
+		return (double)this.repVotes/this.totalVotes;
 	}
 	
 	/**
 	 * @return the percent of votes that were independent
 	 */
 	public double getIndPercent() {
-		return this.indVotes/this.totalVotes;
+		return (double)this.indVotes/this.totalVotes;
 	}
 	
 }
