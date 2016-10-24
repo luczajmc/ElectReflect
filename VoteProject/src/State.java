@@ -19,6 +19,11 @@ public class State {
 	private County newCounty;
 	private ArrayList<County> counties;
 	
+	private int repVotes;
+	private int demVotes;
+	private int indVotes;
+	private int totalVotes;
+	
 	/**
 	 * Creates a state, opens a file browser to get the voter data file and the voter verify file
 	 * Verifies the data being given by voter data file, and creates counties and districts from the data
@@ -27,6 +32,11 @@ public class State {
 		this.voterData = getFile();
 		this.verifyData = getFile();
 		getCountiesAndDistricts();
+		
+		this.repVotes = 0;
+		this.demVotes = 0;
+		this.indVotes = 0;
+		this.totalVotes = 0;
 	}
 	
 	private void getCountiesAndDistricts() {
@@ -55,6 +65,7 @@ public class State {
 						Integer.parseInt(data[DEM_VOTES]), Integer.parseInt(data[IND_VOTES]));
 				this.newCounty.addDistrict(newDistrict);//finally we add the new district to the county we are working in
 			}
+			getData();
 		}
 		catch (FileNotFoundException e) {
 			System.out.println("FileNotFound");
@@ -105,15 +116,95 @@ public class State {
 	}
 	
 	/**
-	 * Initializes counties and districts under a state automatically
+	 * calculates the voting numbers for a state
 	 */
+	private void getData() {
+		calcRepVotes();
+		calcDemVotes();
+		calcIndVotes();
+		calcTotalVotes();
+	}
 	
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 * @return a String with the path of the directory selected for the state
+	/**
+	 * calculates the number of republican votes
 	 */
-	public String toString() {
-		return this.counties.toString();
+	private void calcRepVotes() {
+		for (int i = 0; i < this.counties.size(); i++) {
+			this.repVotes = this.repVotes + this.counties.get(i).getRepVotes();
+		}
+	}
+	
+	/**
+	 * calculates the number of democratic votes
+	 */
+	private void calcDemVotes() {
+		for (int i = 0; i < this.counties.size(); i++) {
+			this.demVotes = this.demVotes + this.counties.get(i).getDemVotes();
+		}
+	}
+	
+	/**
+	 * calculates the number of independent votes
+	 */
+	private void calcIndVotes() {
+		for (int i = 0; i < this.counties.size(); i++) {
+			this.indVotes = this.indVotes + this.counties.get(i).getIndVotes();
+		}
+	}
+	
+	/**
+	 * calculates the total number of votes
+	 */
+	private void calcTotalVotes() {
+		this.totalVotes = this.repVotes + this.demVotes + this.indVotes;
+	}
+	
+	/**
+	 * @return the number of republican votes
+	 */
+	public int getRepVotes() {
+		return this.repVotes;
+	}
+	
+	/**
+	 * @return the number of democratic votes
+	 */
+	public int getDemVotes() {
+		return this.demVotes;
+	}
+	
+	/**
+	 * @return the number of independent votes
+	 */
+	public int getIndVotes() {
+		return this.indVotes;
+	}
+	
+	/**
+	 * @return the total number of votes
+	 */
+	public int getTotalVotes() {
+		return this.totalVotes;
+	}
+	
+	/**
+	 * @return the percent of republican votes
+	 */
+	public double getRepPercent() {
+		return this.repVotes / this.totalVotes;
+	}
+	
+	/**
+	 * @return the percent of democratic votes
+	 */
+	public double getDemPercent() {
+		return this.demVotes / this.totalVotes;
+	}
+	
+	/**
+	 * @return the percent of independent votes
+	 */
+	public double getIndPercent() {
+		return this.indVotes / this.totalVotes;
 	}
 }
