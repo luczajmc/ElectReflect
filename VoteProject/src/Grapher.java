@@ -31,10 +31,32 @@ public class Grapher {
 	}
 	
 	public static void pieChartCounty(County county) {
+		DefaultPieDataset data = new DefaultPieDataset();
+		data.setValue("Republican", county.getRepVotes());
+		data.setValue("Democrat", county.getDemVotes());
+		data.setValue("Independent", county.getIndVotes());
+		
+		JFreeChart chart = ChartFactory.createPieChart("Election Results", data,
+				true, true, false);
+		
+		ChartFrame frame = new ChartFrame("Election Results", chart);
+		frame.pack();
+		frame.setVisible(true);
 		
 	}
 	
 	public static void pieChartDistrict(District district) {
+		DefaultPieDataset data = new DefaultPieDataset();
+		data.setValue("Republican", district.getRepVotes());
+		data.setValue("Democrat", district.getDemVotes());
+		data.setValue("Independent", district.getIndVotes());
+		
+		JFreeChart chart = ChartFactory.createPieChart("Election Results", data,
+				true, true, false);
+		
+		ChartFrame frame = new ChartFrame("Election Results", chart);
+		frame.pack();
+		frame.setVisible(true);
 		
 	}
 	

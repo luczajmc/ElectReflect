@@ -20,6 +20,15 @@ public class County {
 		getData();
 	}
 	
+	public County(String name, int repVotes, int demVotes, int indVotes) {
+		this.name = name;
+		this.repVotes = repVotes;
+		this.demVotes = demVotes;
+		this.indVotes = indVotes;
+		this.totalVotes = repVotes+demVotes+indVotes;
+		
+	}
+	
 	public District selectDistrict(String districtName) {
 		for (int i = 0; i < this.districts.size(); i++) {
 			if (districtName.equals(this.districts.get(i).getName())) {
