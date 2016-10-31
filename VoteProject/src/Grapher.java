@@ -1,3 +1,7 @@
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
 
 public class Grapher {
 	public static void barGraphState(State state) {
@@ -13,7 +17,17 @@ public class Grapher {
 	}
 	
 	public static void pieChartState(State state) {
+		DefaultPieDataset data = new DefaultPieDataset();
+		data.setValue("Republican", state.getRepVotes());
+		data.setValue("Democrat", state.getDemVotes());
+		data.setValue("Independent", state.getIndVotes());
 		
+		JFreeChart chart = ChartFactory.createPieChart("Election Results", data,
+				true, true, false);
+		
+		ChartFrame frame = new ChartFrame("Election Results", chart);
+		frame.pack();
+		frame.setVisible(true);
 	}
 	
 	public static void pieChartCounty(County county) {

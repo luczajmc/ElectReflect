@@ -28,6 +28,14 @@ public class State {
 	 * Creates a state, opens a file browser to get the voter data file and the voter verify file
 	 * Verifies the data being given by voter data file, and creates counties and districts from the data
 	 */
+	
+	public State(int repVotes, int demVotes, int indVotes) {
+		this.repVotes = repVotes;
+		this.demVotes = demVotes;
+		this.indVotes = indVotes;
+		this.totalVotes = repVotes+demVotes+indVotes;
+		
+	}
 	public State() {
 		this.voterData = getFile();
 		this.verifyData = getFile();
