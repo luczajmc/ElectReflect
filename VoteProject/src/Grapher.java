@@ -102,14 +102,25 @@ public class Grapher {
 	}
 	
 	public static void textState(State state) {
-		
+		System.out.println("Ohio");
+		System.out.println("\t"+"Republican: "+state.getRepPercent()*100+"% ("+state.getRepVotes()+")");
+		System.out.println("\t"+"Democrat: "+state.getDemPercent()*100+"% ("+state.getDemVotes()+")");
+		System.out.println("\t"+"Independent: "+state.getIndPercent()*100+"% ("+state.getIndVotes()+")");
 	}
 	
 	public static void textCounty(County county) {
+		System.out.println(county.getName());
+		System.out.println("\t"+"Republican: "+county.getRepPercent()*100+"% ("+county.getRepVotes()+")");
+		System.out.println("\t"+"Democrat: "+county.getDemPercent()*100+"% ("+county.getDemVotes()+")");
+		System.out.println("\t"+"Independent: "+county.getIndPercent()*100+"% ("+county.getIndVotes()+")");
 		
 	}
 	
 	public static void textDistrict(District district) {
-		
+		System.out.println(district.getName());
+		System.out.println("\t"+"Republican: "+district.getRepPercent()*100+"% ("+district.getRepVotes()+")");
+		System.out.println("\t"+"Democrat: "+district.getDemPercent()*100+"% ("+district.getDemVotes()+")");
+		System.out.println("\t"+"Independent: "+district.getIndPercent()*100+"% ("+district.getIndVotes()+")");
+	
 	}
 }

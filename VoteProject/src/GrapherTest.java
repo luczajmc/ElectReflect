@@ -16,5 +16,8 @@ public class GrapherTest {
 		
 		Grapher.barGraphCounty(county);
 
+		Grapher.textCounty(county);
+		Grapher.textDistrict(district);
+		Grapher.textState(state);
 	}
 }
