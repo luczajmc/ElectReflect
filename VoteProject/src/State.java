@@ -6,7 +6,7 @@ import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
-public class State {
+public class State extends Region {
 	final int COUNTY_NAME = 0;
 	final int DISTRICT_NAME = 1;
 	final int REP_VOTES = 2;
@@ -213,5 +213,9 @@ public class State {
 	 */
 	public double getIndPercent() {
 		return (double)this.indVotes / this.totalVotes;
+	}
+	
+	public String getName() {
+		return "Ohio";
 	}
 }

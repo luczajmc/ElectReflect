@@ -10,10 +10,10 @@ public class GrapherTest {
 		County county = new County("Butler", 38, 20, 94);
 		Grapher.pieChartCounty(county);
 		
+		
 		Grapher.barGraphState(state);
 		
 		Grapher.barGraphDistrict(district);
-		
 		Grapher.barGraphCounty(county);
 
 		Grapher.textCounty(county);

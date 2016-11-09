@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class County {
+public class County extends Region {
 	private String name;
 	private ArrayList<District> districts = new ArrayList<District>(); //holds all the districts
 	private int demVotes;

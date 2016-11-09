@@ -1,5 +1,5 @@
 
-public class District {
+public class District extends Region {
 	private String name;
 	private int repVotes;
 	private int demVotes;
