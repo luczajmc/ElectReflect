@@ -8,9 +8,9 @@ import org.jfree.data.general.DefaultPieDataset;
 public class Grapher {
 	public static void barGraphState(State state) {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
-		data.setValue(state.getRepVotes(), "Ohio", "Republican");
-		data.setValue(state.getDemVotes(), "Ohio", "Democrat");
-		data.setValue(state.getIndVotes(), "Ohio", "Independent");
+		data.setValue(state.getRepVotes(), "Republican", "Ohio");
+		data.setValue(state.getDemVotes(), "Democrat", "Ohio");
+		data.setValue(state.getIndVotes(), "Independent", "Ohio");
 		
 		JFreeChart chart = ChartFactory.createBarChart("Election Results",
 				"Party", "State", 
@@ -24,9 +24,9 @@ public class Grapher {
 	
 	public static void barGraphCounty(County county) {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
-		data.setValue(county.getRepVotes(), county.getName(), "Republican");
-		data.setValue(county.getDemVotes(), county.getName(), "Democrat");
-		data.setValue(county.getIndVotes(), county.getName(), "Independent");
+		data.setValue(county.getRepVotes(), "Republican", county.getName());
+		data.setValue(county.getDemVotes(), "Democrat", county.getName());
+		data.setValue(county.getIndVotes(), "Independent", county.getName());
 		
 		JFreeChart chart = ChartFactory.createBarChart("Election Results",
 				"Party", "State", 
