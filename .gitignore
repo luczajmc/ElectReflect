@@ -10,4 +10,4 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-
+.DS_Store
