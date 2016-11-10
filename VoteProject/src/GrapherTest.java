@@ -1,5 +1,18 @@
 
 public class GrapherTest {
+	static String name(int i) {
+		return Integer.toString(i);
+	}
+	static Region region(int i) {
+		return new County(name(i), 100+i, 90-i, 50+2*i);
+	}
+	static Region gerrymander() {
+		Gerrymander g = new Gerrymander("Southwest Ohio");
+		for (int i=0; i<20; i++) {
+			g.addRegion(region(i));
+		}
+		return g;
+	}
 	public static void main(String[] args) {
 		State state = new State(20, 39, 48);
 		Grapher.pieChartState(state);
@@ -19,5 +32,8 @@ public class GrapherTest {
 		Grapher.textCounty(county);
 		Grapher.textDistrict(district);
 		Grapher.textState(state);
+		
+		Region g = gerrymander();
+		Grapher.barGraph(g);
 	}
 }
