@@ -17,7 +17,7 @@ public class State extends Region {
 	private File verifyData;
 	private String currentCounty;
 	private County newCounty;
-	private ArrayList<County> counties; //holds all the counties
+	private ArrayList<County> counties = new ArrayList<County>(); //holds all the counties
 	
 	private int repVotes;
 	private int demVotes;
@@ -224,5 +224,10 @@ public class State extends Region {
 	
 	public String getName() {
 		return "Ohio";
+	}
+	
+	@Override
+	public ArrayList<Region> getSubregions() {
+		return new ArrayList<Region>(getCounties());
 	}
 }

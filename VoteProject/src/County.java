@@ -93,7 +93,7 @@ public class County extends Region {
 	/**
 	 * @return the districts in a county
 	 */
-	public ArrayList getDistricts() {
+	public ArrayList<District> getDistricts() {
 		return this.districts;
 	}
 
@@ -148,6 +148,11 @@ public class County extends Region {
 	 */
 	public double getIndPercent() {
 		return (double)this.indVotes/this.totalVotes;
+	}
+
+	@Override
+	public ArrayList<Region> getSubregions() {
+		return new ArrayList<>(getDistricts());
 	}
 	
 }

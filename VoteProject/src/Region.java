@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public abstract class Region {	
 	/**
 	 * @return the number of republican votes
@@ -38,4 +40,10 @@ public abstract class Region {
 	 * @return the name of the region
 	 */
 	public abstract String getName();
+	
+	/**
+	 * @return a list of all subregions
+	 */
+	public abstract ArrayList<Region> getSubregions();
+	
 }
