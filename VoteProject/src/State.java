@@ -53,7 +53,8 @@ public class State extends Region {
 		this.newCounty = new County("");
 		
 		//create a scanner that reads in the voter data from the voter data file
-		try (Scanner fileIn = new Scanner(this.voterData);) {
+		try{
+			Scanner fileIn = new Scanner(this.voterData);
 			String currentCountyName = "";
 			while (fileIn.hasNextLine()) {
 				String line = fileIn.nextLine(); //read next line
@@ -75,6 +76,12 @@ public class State extends Region {
 		}
 		catch (FileNotFoundException e) {
 			System.out.println("FileNotFound");
+		}
+		catch(NullPointerException n){
+			System.out.println("No File Provided");
+		}
+		catch(ArrayIndexOutOfBoundsException a){
+			System.out.println("Invalid File Type");
 		}
 		getData();
 	}
