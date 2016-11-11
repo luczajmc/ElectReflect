@@ -1,11 +1,37 @@
+import java.awt.Dimension;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 public class Grapher {
+	static ChartPanel panel(JFreeChart chart) {
+	    return new ChartPanel(
+	            chart,
+	            1000, /** The default panel width. */
+	            ChartPanel.DEFAULT_HEIGHT, /** The default panel height. */
+	            ChartPanel.DEFAULT_MINIMUM_DRAW_WIDTH, /** The default limit below which chart scaling kicks in. */
+	            ChartPanel.DEFAULT_MINIMUM_DRAW_HEIGHT, /** The default limit below which chart scaling kicks in. */
+	            ChartPanel.DEFAULT_MAXIMUM_DRAW_WIDTH,
+	            ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT,
+	            ChartPanel.DEFAULT_BUFFER_USED,
+	            true,  // properties
+	            true,  // save
+	            true,  // print
+	            false,  // zoom
+	            true   // tooltips
+	        );
+	}
+	static int scrollBarSize() {
+		return 30;
+	}
 	static void barGraph(Region region) {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		for (Region r : region.getSubregions()) {
@@ -20,7 +46,11 @@ public class Grapher {
 				data,
 				PlotOrientation.VERTICAL,
 				true, true, false);
-		ChartFrame frame = new ChartFrame("Election Results", chart);
+		
+		JScrollPane scrollPane = new JScrollPane(panel(chart));
+		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT+scrollBarSize()));
+		JFrame frame = new JFrame("Election Results");
+		frame.add(scrollPane);
 		frame.pack();
 		frame.setVisible(true);
 
