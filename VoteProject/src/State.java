@@ -29,6 +29,20 @@ public class State extends Region {
 	 * Verifies the data being given by voter data file, and creates counties and districts from the data
 	 */
 	
+	public State(String fileName) {
+		this(new File(fileName));
+	}
+	
+	public State(File data) {
+		this.voterData = data;
+		this.verifyData = data;
+		this.repVotes = 0;
+		this.demVotes = 0;
+		this.indVotes = 0;
+		this.totalVotes = 0;
+		getCountiesAndDistricts(); //get all the data
+	}
+	
 	public State(int repVotes, int demVotes, int indVotes) {
 		this.repVotes = repVotes;
 		this.demVotes = demVotes;
@@ -37,13 +51,7 @@ public class State extends Region {
 		
 	}
 	public State() {
-		this.voterData = getFile();
-		this.verifyData = getFile();
-		this.repVotes = 0;
-		this.demVotes = 0;
-		this.indVotes = 0;
-		this.totalVotes = 0;
-		getCountiesAndDistricts(); //get all the data
+		this(getFile());
 	}
 	
 	private void getCountiesAndDistricts() {

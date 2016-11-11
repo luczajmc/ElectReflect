@@ -13,6 +13,7 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public class Grapher {
 	static ChartPanel panel(JFreeChart chart) {
+		// TODO: should adjust the width based on how many subregions you're graphing
 	    return new ChartPanel(
 	            chart,
 	            1000, /** The default panel width. */

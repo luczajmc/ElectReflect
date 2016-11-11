@@ -1,3 +1,4 @@
+import java.io.File;
 
 public class GrapherTest {
 	static String name(int i) {
@@ -14,6 +15,15 @@ public class GrapherTest {
 		return g;
 	}
 	public static void main(String[] args) {
+		File f = new File("../Data/ExampleData.txt");
+		System.out.println(f.getAbsolutePath());
+		System.out.println(f.exists());
+
+		
+		State ohio = new State("../Data/ExampleData.txt");
+		Grapher.barGraphState(ohio);
+		
+		if (true) { return;}
 		State state = new State(20, 39, 48);
 		Grapher.pieChartState(state);
 		
