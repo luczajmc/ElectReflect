@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class District extends Region {
 	private String name;
@@ -74,5 +75,10 @@ public class District extends Region {
 	 */
 	public double getIndPercent() {
 		return (double)this.indVotes / this.totalVotes;
+	}
+
+	@Override
+	public ArrayList<Region> getSubregions() {
+		return new ArrayList<>();
 	}
 }

@@ -17,7 +17,7 @@ public class State extends Region {
 	private File verifyData;
 	private String currentCounty;
 	private County newCounty;
-	private ArrayList<County> counties; //holds all the counties
+	private ArrayList<County> counties = new ArrayList<County>(); //holds all the counties
 	
 	private int repVotes;
 	private int demVotes;
@@ -29,6 +29,20 @@ public class State extends Region {
 	 * Verifies the data being given by voter data file, and creates counties and districts from the data
 	 */
 	
+	public State(String fileName) {
+		this(new File(fileName));
+	}
+	
+	public State(File data) {
+		this.voterData = data;
+		this.verifyData = data;
+		this.repVotes = 0;
+		this.demVotes = 0;
+		this.indVotes = 0;
+		this.totalVotes = 0;
+		getCountiesAndDistricts(); //get all the data
+	}
+	
 	public State(int repVotes, int demVotes, int indVotes) {
 		this.repVotes = repVotes;
 		this.demVotes = demVotes;
@@ -37,13 +51,7 @@ public class State extends Region {
 		
 	}
 	public State() {
-		this.voterData = getFile();
-		this.verifyData = getFile();
-		this.repVotes = 0;
-		this.demVotes = 0;
-		this.indVotes = 0;
-		this.totalVotes = 0;
-		getCountiesAndDistricts(); //get all the data
+		this(getFile());
 	}
 	
 	private void getCountiesAndDistricts() {
@@ -224,5 +232,10 @@ public class State extends Region {
 	
 	public String getName() {
 		return "Ohio";
+	}
+	
+	@Override
+	public ArrayList<Region> getSubregions() {
+		return new ArrayList<Region>(getCounties());
 	}
 }
