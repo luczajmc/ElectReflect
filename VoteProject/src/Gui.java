@@ -5,12 +5,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 public class Gui extends JPanel{
-	
 	private JFrame window = new JFrame("ElectReflect");
-	private JButton start = new JButton();
-	private JComboBox graphSelect = new JComboBox();
-	private JComboBox regionSelect = new JComboBox();
+	private JButton addRegion = new JButton();
+	private JButton showData = new JButton();
+	private JComboBox<String> graphSelect = new JComboBox<String>();
+	private JList<County> countySelect = new JList<County>();
+	private JList<County> selectedValues;
 	private JTextPane title = new JTextPane();
+	private JScrollPane regionPane = new JScrollPane(countySelect);
+	private JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
+	public County[] counties;
 	
 	public Gui(){
 		super();
@@ -42,43 +46,55 @@ public class Gui extends JPanel{
 		graphSelect.addItem("Pie Chart");
 		graphSelect.addItem("Text Summary");
 		
-		add(regionSelect);
-		regionSelect.setLayout(null);
-		regionSelect.setLocation(10, 200);
-		regionSelect.setSize(100, 25);
-		regionSelect.addItem("Choose Region");
-		regionSelect.addItem("State");
-		regionSelect.addItem("Counties");
+		add(regionPane);
+		regionPane.setLocation(10, 200);
+		regionPane.setSize(100, 100);
 		
-		add(start);
-		start.setText("Start");
-		start.setLayout(null);
-		start.setLocation(10,400);
-		start.setSize(100,50);
-		start.setMnemonic(KeyEvent.VK_ENTER);
-		start.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(graphSelect.getSelectedItem().equals("Pie Chart")){
-					if(regionSelect.getSelectedItem().equals("State")){
-						Grapher.pieChartState(new State());
-					} else {
-						Grapher.pieChartCounty(new County("Butler"));
-					}
-				} else if(graphSelect.getSelectedItem().equals("Bar Graph")){
-					if(regionSelect.getSelectedItem().equals("State")){
-						Grapher.barGraphState(new State());
-					} else {
-						Grapher.barGraphCounty(new County("Butler"));
-					}
-				} else {
-					if(regionSelect.getSelectedItem().equals("State")){
-						Grapher.text(new State());
-					} else {
-						Grapher.text(new County("Butler"));
-					}
+		add(gerrymanderPane);
+		gerrymanderPane.setLocation(120, 200);
+		gerrymanderPane.setSize(100,100);
+		
+		add(addRegion);
+		addRegion.setText("Add State");
+		addRegion.setLayout(null);
+		addRegion.setLocation(120,400);
+		addRegion.setSize(100,50);
+		addRegion.setMnemonic(KeyEvent.VK_ENTER);
+		addRegion.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent arg0) {
+				State state = new State();
+				counties = new County[state.getCounties().size()];
+				
+				for(int i = 0; i < counties.length; i++){
+					counties[i] = state.getCounties().get(i);
 				}
+				countySelect.setListData(counties);
+			}
+			
+		});
+		
+		add(showData);
+		showData.setText("Show Data");
+		showData.setLayout(null);
+		showData.setLocation(20,400);
+		showData.setSize(100,50);
+		showData.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent arg0) {
+				County[] selected = new County[countySelect.getSelectedValuesList().size()];
+				
+				for(int i = 0; i < countySelect.getSelectedValuesList().size(); i++){
+					selected[i] = countySelect.getSelectedValuesList().get(i);
+				}
+				selectedValues.setListData(selected);
+//				if(graphSelect.getSelectedItem().equals("Bar Graph")){
+//					Grapher.barGraph();
+//				}
+//				
+//				if(graphSelect.getSelectedItem().equals("Pie Chart")){
+//					Grapher.pieChart();
+//				}
 			}
 			
 		});
