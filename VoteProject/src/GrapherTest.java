@@ -22,8 +22,9 @@ public class GrapherTest {
 		
 		State ohio = new State("../Data/ExampleData.txt");
 		Grapher.barGraphState(ohio);
+		Grapher.textState(ohio);
+		Grapher.pieChartState(ohio);
 		
-		if (true) { return;}
 		State state = new State(20, 39, 48);
 		Grapher.pieChartState(state);
 		
@@ -33,17 +34,5 @@ public class GrapherTest {
 		County county = new County("Butler", 38, 20, 94);
 		Grapher.pieChartCounty(county);
 		
-		
-		Grapher.barGraphState(state);
-		
-		Grapher.barGraphDistrict(district);
-		Grapher.barGraphCounty(county);
-
-		Grapher.textCounty(county);
-		Grapher.textDistrict(district);
-		Grapher.textState(state);
-		
-		Region g = gerrymander();
-		Grapher.barGraph(g);
 	}
 }
