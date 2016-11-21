@@ -2,6 +2,7 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
@@ -96,13 +97,22 @@ public class Grapher {
 	}
 	
 	public static void text(Region region) {
-		// TODO: (1) make this perform reasonably
+		// TODO: (1) leave room so the scroll bars don't overlap the text
+		//		 (2) make this perform reasonably
+		String displayText = "";
 		for (Region subregion : region.getSubregions()) {
-			System.out.println(subregion.getName());
-			System.out.println("\t"+"Republican: "+subregion.getRepPercent()*100+"% ("+subregion.getRepVotes()+")");
-			System.out.println("\t"+"Democrat: "+subregion.getDemPercent()*100+"% ("+subregion.getDemVotes()+")");
-			System.out.println("\t"+"Independent: "+subregion.getIndPercent()*100+"% ("+subregion.getIndVotes()+")");					
+			displayText += subregion.getName()+"\n";
+			displayText += "\t"+"Republican: "+subregion.getRepPercent()*100+"% ("+subregion.getRepVotes()+")"+"\n";
+			displayText += "\t"+"Democrat: "+subregion.getDemPercent()*100+"% ("+subregion.getDemVotes()+")" + "\n";
+			displayText += "\t"+"Independent: "+subregion.getIndPercent()*100+"% ("+subregion.getIndVotes()+")" + "\n";				
 		}
+		
+		JTextArea displayArea = new JTextArea(displayText);
+		JScrollPane scrollPane = new JScrollPane(displayArea);
+		JFrame frame = new JFrame("Election Results");
+		frame.add(scrollPane);
+		frame.pack();
+		frame.setVisible(true);
 	}
 	
 	public static void textState(State state) {
