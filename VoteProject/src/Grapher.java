@@ -97,8 +97,7 @@ public class Grapher {
 	}
 	
 	private static String describe(Region r) {
-		// TODO: make the text format less of a kludge
-		// TODO: also include total number of voters
+		// TODO: finalize the text format
 		String description = "";
 		String name = r.getName();
 		if (name != null) {
@@ -107,14 +106,16 @@ public class Grapher {
 		else {
 			description += "total:" + "\n";
 		}
-		description += "\t"+"Republican: "+ r.getRepPercent()*100+"% ("+r.getRepVotes()+")"+"\n";
-		description += "\t"+"Democrat: "+r.getDemPercent()*100+"% ("+r.getDemVotes()+")" + "\n";
-		description += "\t"+"Independent: "+r.getIndPercent()*100+"% ("+r.getIndVotes()+")" + "\n";	
+		description += String.format("\tRepublican: %1$d (%2$.2f%%)\n", r.getRepVotes(), r.getRepPercent()*100);
+		description += String.format("\tDemocrat: %1$d (%2$.2f%%)\n", r.getDemVotes(), r.getDemPercent()*100);
+		description += String.format("\tIndependent: %1$d (%2$.2f%%)\n", r.getIndVotes(), r.getIndPercent()*100);
+		description += String.format("\tTotal: %1$d\n", r.getTotalVotes());
 		return description;
 	}
 	
 	public static void text(Region region) {
 		// TODO: make TextArea non-editable
+		// TODO: make sure to clearly differentiate the larger region from the subregions
 		String displayText = "";
 		
 		for (Region subregion : region.getSubregions()) {
