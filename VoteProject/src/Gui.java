@@ -66,7 +66,7 @@ public class Gui extends JPanel{
 				State state = new State();
 				regions = new Region[state.getCounties().size()];
 				
-				for(int i = 0; i < regions.length-1; i++){
+				for(int i = 0; i < regions.length; i++){
 					regions[i] = state.getCounties().get(i);
 				}
 				regionSelect.setListData(regions);
