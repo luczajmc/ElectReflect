@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 public class Gui extends JPanel{
 	// FIXME: somehow there's a null element that gets in the JList and causes a
 	//		  NullPointerException when it gets passed to Gerrymander()
-	// TODO: disable Show Data when you haven't added a state yet
 	private JFrame window = new JFrame("ElectReflect");
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
@@ -76,11 +75,13 @@ public class Gui extends JPanel{
 		
 		add(showData);
 		showData.setText("Show Data");
+		showData.setEnabled(false);
 		showData.setLocation(120,300);
 		showData.setSize(100,50);
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
+				showData.setEnabled(true);
 				Region[] selected = new Region[regionSelect.getSelectedValuesList().size()];
 				
 				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
