@@ -4,6 +4,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+/**
+ * This class is the user interface for the Elect Reflect project for CSE 201.
+ * It allows users to select files, select displays, and look at voter data.
+ * 
+ * @author Steven Bower
+ * @version 2016-11-21
+ *
+ */
+
 public class Gui extends JPanel{
 	// FIXME: somehow there's a null element that gets in the JList and causes a
 	//		  NullPointerException when it gets passed to Gerrymander()
@@ -74,7 +83,6 @@ public class Gui extends JPanel{
 		addRegion.setText("Add State");
 		addRegion.setLocation(10,300);
 		addRegion.setSize(100,50);
-		addRegion.setMnemonic(KeyEvent.VK_ENTER);
 		addRegion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {				
@@ -125,9 +133,13 @@ public class Gui extends JPanel{
 		window.repaint();
 	}
 	
+	//========================================================================== Getters
+	
 	public static Component getFrame(){
 		return frame;
 	}
+	
+	//========================================================================== Main method
 	
 	public static void main(String[] args){
 		new Gui();
