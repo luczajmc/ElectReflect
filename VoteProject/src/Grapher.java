@@ -96,23 +96,32 @@ public class Grapher {
 		pieChart(district);
 	}
 	
-	private static String describe(Region r, String prefix) {
+	private static String describe(Region r) {
 		// make the text format less of a kludge
 		String description = "";
-		description += prefix + r.getName() +"\n";
-		description += prefix + "\t"+"Republican: "+ r.getRepPercent()*100+"% ("+r.getRepVotes()+")"+"\n";
-		description += prefix + "\t"+"Democrat: "+r.getDemPercent()*100+"% ("+r.getDemVotes()+")" + "\n";
-		description += prefix + "\t"+"Independent: "+r.getIndPercent()*100+"% ("+r.getIndVotes()+")" + "\n";	
+		String name = r.getName();
+		if (name != null) {
+			description += name + "\n";
+		}
+		else {
+			description += "total:" + "\n";
+		}
+		description += "\t"+"Republican: "+ r.getRepPercent()*100+"% ("+r.getRepVotes()+")"+"\n";
+		description += "\t"+"Democrat: "+r.getDemPercent()*100+"% ("+r.getDemVotes()+")" + "\n";
+		description += "\t"+"Independent: "+r.getIndPercent()*100+"% ("+r.getIndVotes()+")" + "\n";	
 		return description;
 	}
 	
 	public static void text(Region region) {
 		// TODO: don't say null when a region doesn't have a name
-		String displayText = describe(region, "");
+		String displayText = "";
 		
 		for (Region subregion : region.getSubregions()) {
-			displayText += describe(subregion, "\t");				
+			displayText += describe(subregion);				
 		}
+		
+		displayText += "\n";
+		displayText += describe(region);
 		
 		JTextArea displayArea = new JTextArea(displayText);
 		JScrollPane scrollPane = new JScrollPane(displayArea);
