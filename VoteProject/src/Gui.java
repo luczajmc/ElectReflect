@@ -9,12 +9,12 @@ public class Gui extends JPanel{
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
 	private JComboBox<String> graphSelect = new JComboBox<String>();
-	private JList<County> countySelect = new JList<County>();
-	private JList<County> selectedValues;
+	private JList<Region> regionSelect = new JList<Region>();
+	private JList<Region> selectedValues = new JList<Region>();
 	private JTextPane title = new JTextPane();
-	private JScrollPane regionPane = new JScrollPane(countySelect);
+	private JScrollPane regionPane = new JScrollPane(regionSelect);
 	private JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
-	public County[] counties;
+	public Region[] regions;
 	
 	public Gui(){
 		super();
@@ -64,12 +64,12 @@ public class Gui extends JPanel{
 			
 			public void actionPerformed(ActionEvent arg0) {
 				State state = new State();
-				counties = new County[state.getCounties().size()];
+				regions = new Region[state.getCounties().size()];
 				
-				for(int i = 0; i < counties.length; i++){
-					counties[i] = state.getCounties().get(i);
+				for(int i = 0; i < regions.length-1; i++){
+					regions[i] = state.getCounties().get(i);
 				}
-				countySelect.setListData(counties);
+				regionSelect.setListData(regions);
 			}
 			
 		});
@@ -82,19 +82,24 @@ public class Gui extends JPanel{
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				County[] selected = new County[countySelect.getSelectedValuesList().size()];
+				Region[] selected = new Region[regionSelect.getSelectedValuesList().size()];
 				
-				for(int i = 0; i < countySelect.getSelectedValuesList().size(); i++){
-					selected[i] = countySelect.getSelectedValuesList().get(i);
+				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+					selected[i] = regionSelect.getSelectedValuesList().get(i);
 				}
+				
 				selectedValues.setListData(selected);
-//				if(graphSelect.getSelectedItem().equals("Bar Graph")){
-//					Grapher.barGraph();
-//				}
-//				
-//				if(graphSelect.getSelectedItem().equals("Pie Chart")){
-//					Grapher.pieChart();
-//				}
+				if(graphSelect.getSelectedItem().equals("Bar Graph")){
+					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
+				}
+				
+				if(graphSelect.getSelectedItem().equals("Pie Chart")){
+					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
+				}
+				
+				if(graphSelect.getSelectedItem().equals("Text Summary")){
+					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+				}
 			}
 			
 		});
