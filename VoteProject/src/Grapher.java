@@ -70,6 +70,7 @@ public class Grapher {
 	}
 	
 	public static void pieChart(Region region) {
+		// TODO: this should have more labels
 		DefaultPieDataset data = new DefaultPieDataset();
 		data.setValue("Republican", region.getRepVotes());
 		data.setValue("Democrat", region.getDemVotes());
@@ -95,10 +96,13 @@ public class Grapher {
 	}
 	
 	public static void text(Region region) {
-		System.out.println(region.getName());
-		System.out.println("\t"+"Republican: "+region.getRepPercent()*100+"% ("+region.getRepVotes()+")");
-		System.out.println("\t"+"Democrat: "+region.getDemPercent()*100+"% ("+region.getDemVotes()+")");
-		System.out.println("\t"+"Independent: "+region.getIndPercent()*100+"% ("+region.getIndVotes()+")");		
+		// TODO: (1) make this perform reasonably
+		for (Region subregion : region.getSubregions()) {
+			System.out.println(subregion.getName());
+			System.out.println("\t"+"Republican: "+subregion.getRepPercent()*100+"% ("+subregion.getRepVotes()+")");
+			System.out.println("\t"+"Democrat: "+subregion.getDemPercent()*100+"% ("+subregion.getDemVotes()+")");
+			System.out.println("\t"+"Independent: "+subregion.getIndPercent()*100+"% ("+subregion.getIndVotes()+")");					
+		}
 	}
 	
 	public static void textState(State state) {
