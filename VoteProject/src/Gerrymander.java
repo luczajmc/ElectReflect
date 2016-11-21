@@ -42,6 +42,10 @@ public class Gerrymander extends Region {
 	 */
 	public void addRegion(Region r) {
 		this.regions.add(r);
+		this.repVotes += r.getRepVotes();
+		this.demVotes += r.getDemVotes();
+		this.indVotes += r.getIndVotes();
+		this.totalVotes += r.getTotalVotes();
 	}
 	
 	/**
