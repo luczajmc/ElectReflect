@@ -7,7 +7,8 @@ import java.awt.event.KeyEvent;
 public class Gui extends JPanel{
 	// FIXME: somehow there's a null element that gets in the JList and causes a
 	//		  NullPointerException when it gets passed to Gerrymander()
-	private JFrame window = new JFrame("ElectReflect");
+	private static JFrame window = new JFrame("ElectReflect");
+	private static JFrame frame = new JFrame("Message");
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
 	private JComboBox<String> graphSelect = new JComboBox<String>();
@@ -27,6 +28,9 @@ public class Gui extends JPanel{
 		this.setLayout(null);
 		window.add(this);
 		window.setVisible(true);
+		
+		frame.setSize(100, 100);
+		frame.setLocation((window.getWidth() - frame.getWidth()) / 2, (window.getHeight() - frame.getHeight())/2);
 		
 		title.setVisible(true);
 		title.setText("ElectReflect");
@@ -61,14 +65,19 @@ public class Gui extends JPanel{
 		addRegion.setMnemonic(KeyEvent.VK_ENTER);
 		addRegion.addActionListener(new ActionListener(){
 			
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0) {				
 				State state = new State();
 				regions = new Region[state.getCounties().size()];
 				
 				for(int i = 0; i < regions.length-1; i++){
 					regions[i] = state.getCounties().get(i);
 				}
+				
 				regionSelect.setListData(regions);
+				
+				if(regions.length > 1){
+					showData.setEnabled(true);
+				}
 			}
 			
 		});
@@ -81,7 +90,6 @@ public class Gui extends JPanel{
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				showData.setEnabled(true);
 				Region[] selected = new Region[regionSelect.getSelectedValuesList().size()];
 				
 				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
@@ -100,11 +108,27 @@ public class Gui extends JPanel{
 				if(graphSelect.getSelectedItem().equals("Text Summary")){
 					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
+				
+				if(graphSelect.getSelectedItem().equals("Choose Display")){
+					JOptionPane.showMessageDialog(frame, "Please choose at least one data display.");
+				}
 			}
 			
 		});
 		
 		window.repaint();
+	}
+	
+	public static int getWindowHeight(){
+		return window.getHeight();
+	}
+	
+	public static int getWindowWidth(){
+		return window.getWidth();
+	}
+	
+	public static Component getFrame(){
+		return frame;
 	}
 	
 	public static void main(String[] args){

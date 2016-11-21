@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class State extends Region {
 	final int COUNTY_NAME = 0;
@@ -84,13 +85,13 @@ public class State extends Region {
 			}
 		}
 		catch (FileNotFoundException e) {
-			System.out.println("FileNotFound");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File not found.");
 		}
 		catch(NullPointerException n){
-			System.out.println("No File Provided");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "No file provided.");
 		}
 		catch(ArrayIndexOutOfBoundsException a){
-			System.out.println("Invalid File Type");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "Invalid file type.");
 		}
 		getData();
 	}
