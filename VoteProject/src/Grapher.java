@@ -96,14 +96,22 @@ public class Grapher {
 		pieChart(district);
 	}
 	
+	private static String describe(Region r, String prefix) {
+		// make the text format less of a kludge
+		String description = "";
+		description += prefix + r.getName() +"\n";
+		description += prefix + "\t"+"Republican: "+ r.getRepPercent()*100+"% ("+r.getRepVotes()+")"+"\n";
+		description += prefix + "\t"+"Democrat: "+r.getDemPercent()*100+"% ("+r.getDemVotes()+")" + "\n";
+		description += prefix + "\t"+"Independent: "+r.getIndPercent()*100+"% ("+r.getIndVotes()+")" + "\n";	
+		return description;
+	}
+	
 	public static void text(Region region) {
-		// TODO: (1) make this perform reasonably
-		String displayText = "";
+		// TODO: don't say null when a region doesn't have a name
+		String displayText = describe(region, "");
+		
 		for (Region subregion : region.getSubregions()) {
-			displayText += subregion.getName()+"\n";
-			displayText += "\t"+"Republican: "+subregion.getRepPercent()*100+"% ("+subregion.getRepVotes()+")"+"\n";
-			displayText += "\t"+"Democrat: "+subregion.getDemPercent()*100+"% ("+subregion.getDemVotes()+")" + "\n";
-			displayText += "\t"+"Independent: "+subregion.getIndPercent()*100+"% ("+subregion.getIndVotes()+")" + "\n";				
+			displayText += describe(subregion, "\t");				
 		}
 		
 		JTextArea displayArea = new JTextArea(displayText);
