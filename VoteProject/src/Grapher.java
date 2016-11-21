@@ -14,10 +14,11 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public class Grapher {
 	static ChartPanel panel(JFreeChart chart) {
-		// TODO: should adjust the width based on how many subregions you're graphing
+		// TODO: see if you can't add padding / shrink the window to make sure the width of
+		// 		 the plot is always the same size
 	    return new ChartPanel(
 	            chart,
-	            1000, /** The default panel width. */
+	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
 	            ChartPanel.DEFAULT_HEIGHT, /** The default panel height. */
 	            ChartPanel.DEFAULT_MINIMUM_DRAW_WIDTH, /** The default limit below which chart scaling kicks in. */
 	            ChartPanel.DEFAULT_MINIMUM_DRAW_HEIGHT, /** The default limit below which chart scaling kicks in. */
@@ -46,11 +47,11 @@ public class Grapher {
 		JFreeChart chart = ChartFactory.createBarChart("Election Results",
 				"", "", 
 				data,
-				PlotOrientation.VERTICAL,
+				PlotOrientation.HORIZONTAL,
 				true, true, false);
 		
 		JScrollPane scrollPane = new JScrollPane(panel(chart));
-		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT+scrollBarSize()));
+		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize(), ChartPanel.DEFAULT_HEIGHT+scrollBarSize()));
 		JFrame frame = new JFrame("Election Results");
 		frame.add(scrollPane);
 		frame.pack();
@@ -116,6 +117,7 @@ public class Grapher {
 	public static void text(Region region) {
 		// TODO: make TextArea non-editable
 		// TODO: make sure to clearly differentiate the larger region from the subregions
+		// TODO: maybe don't show a total if there's only one county?
 		String displayText = "";
 		
 		for (Region subregion : region.getSubregions()) {
