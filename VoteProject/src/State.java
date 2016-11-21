@@ -69,6 +69,7 @@ public class State extends Region {
 				String[] data = line.split(","); //split the line into an array containing each comma separated value
 				currentCountyName = data[COUNTY_NAME]; // set the current county name as the name of the county in the line
 				
+				// TODO: this needs to handle duplicate items that aren't right next to each other
 				if (!this.currentCounty.equals(currentCountyName)) { //checks if the name of the current county == the name 
 																	 //of the county in the previous line
 					this.currentCounty = currentCountyName; //sets the current county name to the new county name

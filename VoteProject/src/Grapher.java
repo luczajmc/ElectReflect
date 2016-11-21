@@ -97,7 +97,8 @@ public class Grapher {
 	}
 	
 	private static String describe(Region r) {
-		// make the text format less of a kludge
+		// TODO: make the text format less of a kludge
+		// TODO: also include total number of voters
 		String description = "";
 		String name = r.getName();
 		if (name != null) {
@@ -113,7 +114,7 @@ public class Grapher {
 	}
 	
 	public static void text(Region region) {
-		// TODO: don't say null when a region doesn't have a name
+		// TODO: make TextArea non-editable
 		String displayText = "";
 		
 		for (Region subregion : region.getSubregions()) {
