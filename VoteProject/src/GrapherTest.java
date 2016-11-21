@@ -25,6 +25,11 @@ public class GrapherTest {
 		Grapher.textState(ohio);
 		Grapher.pieChartState(ohio);
 		
+		State panOhio = new State("../Data/Ohio.csv");
+		Grapher.barGraphState(panOhio);
+		Grapher.textState(panOhio);
+		Grapher.pieChartState(panOhio);
+		
 		State state = new State(20, 39, 48);
 		Grapher.pieChartState(state);
 		
