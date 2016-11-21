@@ -46,4 +46,8 @@ public abstract class Region {
 	 */
 	public abstract ArrayList<Region> getSubregions();
 	
+	public String toString() {
+		return this.getName();
+	}
+	
 }
