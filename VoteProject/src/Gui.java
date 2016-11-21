@@ -19,7 +19,7 @@ public class Gui extends JPanel{
 	public Gui(){
 		super();
 		super.setBackground(Color.white);
-		window.setBounds(0, 0, 600, 600);
+		window.setBounds(0, 0, 450, 450);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
 		this.setLayout(null);
@@ -30,7 +30,7 @@ public class Gui extends JPanel{
 		title.setVisible(true);
 		title.setText("ElectReflect");
 		title.setSize(145,50);
-		title.setLocation(227,20);
+		title.setLocation(150,20);
 		title.setFont(new Font("Times New Roman", 0,28));
 		title.setForeground(Color.blue);
 		title.setAlignmentY(CENTER_ALIGNMENT);
@@ -39,7 +39,7 @@ public class Gui extends JPanel{
 		
 		add(graphSelect);
 		graphSelect.setLayout(null);
-		graphSelect.setLocation(10, 300);
+		graphSelect.setLocation(10, 200);
 		graphSelect.setSize(100, 25);
 		graphSelect.addItem("Choose Display");
 		graphSelect.addItem("Bar Graph");
@@ -47,17 +47,17 @@ public class Gui extends JPanel{
 		graphSelect.addItem("Text Summary");
 		
 		add(regionPane);
-		regionPane.setLocation(10, 200);
+		regionPane.setLocation(10, 100);
 		regionPane.setSize(100, 100);
 		
 		add(gerrymanderPane);
-		gerrymanderPane.setLocation(120, 200);
+		gerrymanderPane.setLocation(120, 100);
 		gerrymanderPane.setSize(100,100);
 		
 		add(addRegion);
 		addRegion.setText("Add State");
 		addRegion.setLayout(null);
-		addRegion.setLocation(120,400);
+		addRegion.setLocation(10,300);
 		addRegion.setSize(100,50);
 		addRegion.setMnemonic(KeyEvent.VK_ENTER);
 		addRegion.addActionListener(new ActionListener(){
@@ -77,7 +77,7 @@ public class Gui extends JPanel{
 		add(showData);
 		showData.setText("Show Data");
 		showData.setLayout(null);
-		showData.setLocation(20,400);
+		showData.setLocation(120,300);
 		showData.setSize(100,50);
 		showData.addActionListener(new ActionListener(){
 			
