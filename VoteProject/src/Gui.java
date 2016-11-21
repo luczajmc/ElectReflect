@@ -9,9 +9,14 @@ public class Gui extends JPanel{
 	//		  NullPointerException when it gets passed to Gerrymander()
 	private static JFrame window = new JFrame("ElectReflect");
 	private static JFrame frame = new JFrame("Message");
+	
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
-	private JComboBox<String> graphSelect = new JComboBox<String>();
+	
+	private JCheckBox barGraph = new JCheckBox("Bar Graph");
+	private JCheckBox pieChart = new JCheckBox("Pie Chart");
+	private JCheckBox textSum = new JCheckBox("Text Summary");
+	
 	private JList<Region> regionSelect = new JList<Region>();
 	private JList<Region> selectedValues = new JList<Region>();
 	private JTextPane title = new JTextPane();
@@ -42,21 +47,28 @@ public class Gui extends JPanel{
 		title.setEditable(false);
 		add(title);
 		
-		add(graphSelect);
-		graphSelect.setLocation(10, 200);
-		graphSelect.setSize(100, 25);
-		graphSelect.addItem("Choose Display");
-		graphSelect.addItem("Bar Graph");
-		graphSelect.addItem("Pie Chart");
-		graphSelect.addItem("Text Summary");
+		add(barGraph);
+		barGraph.setBackground(Color.white);
+		barGraph.setSize(125, 25);
+		barGraph.setLocation(10, 200);
+		
+		add(pieChart);
+		pieChart.setBackground(Color.white);
+		pieChart.setSize(125, 25);
+		pieChart.setLocation(10, 225);
+		
+		add(textSum);
+		textSum.setBackground(Color.white);
+		textSum.setSize(125, 25);
+		textSum.setLocation(10, 250);
 		
 		add(regionPane);
 		regionPane.setLocation(10, 100);
-		regionPane.setSize(100, 100);
+		regionPane.setSize(125, 100);
 		
 		add(gerrymanderPane);
-		gerrymanderPane.setLocation(120, 100);
-		gerrymanderPane.setSize(100,100);
+		gerrymanderPane.setLocation(160, 100);
+		gerrymanderPane.setSize(125,100);
 		
 		add(addRegion);
 		addRegion.setText("Add State");
@@ -97,34 +109,20 @@ public class Gui extends JPanel{
 				}
 				
 				selectedValues.setListData(selected);
-				if(graphSelect.getSelectedItem().equals("Bar Graph")){
+				if(barGraph.isSelected()){
 					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
-				
-				if(graphSelect.getSelectedItem().equals("Pie Chart")){
+				if(pieChart.isSelected()){
 					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
-				
-				if(graphSelect.getSelectedItem().equals("Text Summary")){
+				if(textSum.isSelected()){
 					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
-				}
-				
-				if(graphSelect.getSelectedItem().equals("Choose Display")){
-					JOptionPane.showMessageDialog(frame, "Please choose at least one data display.");
 				}
 			}
 			
 		});
 		
 		window.repaint();
-	}
-	
-	public static int getWindowHeight(){
-		return window.getHeight();
-	}
-	
-	public static int getWindowWidth(){
-		return window.getWidth();
 	}
 	
 	public static Component getFrame(){
