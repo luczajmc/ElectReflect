@@ -97,8 +97,7 @@ public class Grapher {
 	}
 	
 	public static void text(Region region) {
-		// TODO: (1) leave room so the scroll bars don't overlap the text
-		//		 (2) make this perform reasonably
+		// TODO: (1) make this perform reasonably
 		String displayText = "";
 		for (Region subregion : region.getSubregions()) {
 			displayText += subregion.getName()+"\n";
@@ -109,6 +108,7 @@ public class Grapher {
 		
 		JTextArea displayArea = new JTextArea(displayText);
 		JScrollPane scrollPane = new JScrollPane(displayArea);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		JFrame frame = new JFrame("Election Results");
 		frame.add(scrollPane);
 		frame.pack();
