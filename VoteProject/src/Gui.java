@@ -26,7 +26,6 @@ public class Gui extends JPanel{
 		window.add(this);
 		window.setVisible(true);
 		
-		title.setLayout(null);
 		title.setVisible(true);
 		title.setText("ElectReflect");
 		title.setSize(145,50);
@@ -38,7 +37,6 @@ public class Gui extends JPanel{
 		add(title);
 		
 		add(graphSelect);
-		graphSelect.setLayout(null);
 		graphSelect.setLocation(10, 300);
 		graphSelect.setSize(100, 25);
 		graphSelect.addItem("Choose Display");
@@ -56,7 +54,6 @@ public class Gui extends JPanel{
 		
 		add(addRegion);
 		addRegion.setText("Add State");
-		addRegion.setLayout(null);
 		addRegion.setLocation(120,400);
 		addRegion.setSize(100,50);
 		addRegion.setMnemonic(KeyEvent.VK_ENTER);
@@ -76,7 +73,6 @@ public class Gui extends JPanel{
 		
 		add(showData);
 		showData.setText("Show Data");
-		showData.setLayout(null);
 		showData.setLocation(20,400);
 		showData.setSize(100,50);
 		showData.addActionListener(new ActionListener(){
@@ -103,6 +99,8 @@ public class Gui extends JPanel{
 			}
 			
 		});
+		
+		window.repaint();
 	}
 	
 	public static void main(String[] args){
