@@ -140,6 +140,8 @@ public class Grapher {
 		displayText += describe(region);
 		
 		JTextArea displayArea = new JTextArea(displayText);
+		displayArea.setEditable(false);
+		
 		JScrollPane scrollPane = new JScrollPane(displayArea);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		JFrame frame = new JFrame("Election Results");
