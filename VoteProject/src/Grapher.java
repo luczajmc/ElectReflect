@@ -13,29 +13,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 public class Grapher {
-	static ChartPanel panel(JFreeChart chart) {
-		// TODO: see if you can't add padding / shrink the window to make sure the width of
-		// 		 the plot is always the same size
-	    return new ChartPanel(
-	            chart,
-	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
-	            ChartPanel.DEFAULT_HEIGHT, /** The default panel height. */
-	            ChartPanel.DEFAULT_MINIMUM_DRAW_WIDTH, /** The default limit below which chart scaling kicks in. */
-	            ChartPanel.DEFAULT_MINIMUM_DRAW_HEIGHT, /** The default limit below which chart scaling kicks in. */
-	            ChartPanel.DEFAULT_MAXIMUM_DRAW_WIDTH,
-	            ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT,
-	            ChartPanel.DEFAULT_BUFFER_USED,
-	            true,  // properties
-	            true,  // save
-	            true,  // print
-	            false,  // zoom
-	            true   // tooltips
-	        );
-	}
-	static int scrollBarSize() {
-		return 30;
-	}
-	static void barGraph(Region region) {
+	static JFreeChart chart(Region region) {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		for (Region r : region.getSubregions()) {
 			data.setValue(r.getRepVotes(), "Republican", r.getName());
@@ -50,8 +28,42 @@ public class Grapher {
 				PlotOrientation.HORIZONTAL,
 				true, true, false);
 		
-		JScrollPane scrollPane = new JScrollPane(panel(chart));
-		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize(), ChartPanel.DEFAULT_HEIGHT+scrollBarSize()));
+		return chart;
+	}
+	
+	static ChartPanel chartPanel(Region region) {
+		// TODO: see if you can't add padding / shrink the window to make sure the width of
+		// 		 the plot is always the same size
+		// TODO: make fontHeight actually correspond to the font in the graph,
+		//		 and possibly this code should be smarter
+		int fontHeight = 15;
+		int numCounties = region.getSubregions().size();
+		int extraHeight = 0;
+		if (numCounties>25) {
+			extraHeight += (numCounties-25)*fontHeight;
+		}
+		
+	    return new ChartPanel(
+	            chart(region),
+	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
+	            ChartPanel.DEFAULT_HEIGHT+extraHeight, /** The default panel height. */
+	            ChartPanel.DEFAULT_MINIMUM_DRAW_WIDTH, /** The default limit below which chart scaling kicks in. */
+	            ChartPanel.DEFAULT_MINIMUM_DRAW_HEIGHT, /** The default limit below which chart scaling kicks in. */
+	            ChartPanel.DEFAULT_MAXIMUM_DRAW_WIDTH,
+	            ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT+extraHeight,
+	            ChartPanel.DEFAULT_BUFFER_USED,
+	            true,  // properties
+	            true,  // save
+	            true,  // print
+	            false,  // zoom
+	            true   // tooltips
+	        );
+	}
+	
+	static void barGraph(Region region) {
+		int scrollBarSize = 30;
+		JScrollPane scrollPane = new JScrollPane(chartPanel(region));
+		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT+scrollBarSize));
 		JFrame frame = new JFrame("Election Results");
 		frame.add(scrollPane);
 		frame.pack();
