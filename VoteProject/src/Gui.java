@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
  * 
  * @author Steven Bower
  * @version 2016-11-21
+ * @update 2016-11-22:  Added  a select all displays check box and some comments.
  *
  */
 
@@ -23,6 +24,7 @@ public class Gui extends JPanel{
 	private JCheckBox barGraph = new JCheckBox("Bar Graph");
 	private JCheckBox pieChart = new JCheckBox("Pie Chart");
 	private JCheckBox textSum = new JCheckBox("Text Summary");
+	private JCheckBox allDisplays = new JCheckBox("All Displays");
 	
 	private JList<Region> regionSelect = new JList<Region>();
 	private JList<Region> selectedValues = new JList<Region>();
@@ -44,6 +46,7 @@ public class Gui extends JPanel{
 		frame.setSize(100, 100);
 		frame.setLocation((window.getWidth() - frame.getWidth()) / 2, (window.getHeight() - frame.getHeight())/2);
 		
+		//========================================================================== Title
 		title.setVisible(true);
 		title.setText("ElectReflect");
 		title.setSize(145,50);
@@ -54,32 +57,40 @@ public class Gui extends JPanel{
 		title.setEditable(false);
 		add(title);
 		
+		//========================================================================== JCheckBoxes
+		add(allDisplays);
+		allDisplays.setBackground(Color.white);
+		allDisplays.setSize(125,25);
+		allDisplays.setLocation(163, 100);
+		
 		add(barGraph);
 		barGraph.setBackground(Color.white);
 		barGraph.setSize(125, 25);
-		barGraph.setLocation(10, 200);
+		barGraph.setLocation(163, 125);
 		
 		add(pieChart);
 		pieChart.setBackground(Color.white);
 		pieChart.setSize(125, 25);
-		pieChart.setLocation(10, 225);
+		pieChart.setLocation(163, 150);
 		
 		add(textSum);
 		textSum.setBackground(Color.white);
 		textSum.setSize(125, 25);
-		textSum.setLocation(10, 250);
+		textSum.setLocation(163, 175);
 		
+		//========================================================================== JTextPanes
 		add(regionPane);
 		regionPane.setLocation(10, 100);
 		regionPane.setSize(125, 100);
 		
 		add(gerrymanderPane);
-		gerrymanderPane.setLocation(160, 100);
+		gerrymanderPane.setLocation(300, 100);
 		gerrymanderPane.setSize(125,100);
 		
+		//========================================================================== JButtons
 		add(addRegion);
 		addRegion.setText("Add State");
-		addRegion.setLocation(10,300);
+		addRegion.setLocation(22,200);
 		addRegion.setSize(100,50);
 		addRegion.addActionListener(new ActionListener(){
 			
@@ -103,7 +114,7 @@ public class Gui extends JPanel{
 		add(showData);
 		showData.setText("Show Data");
 		showData.setEnabled(false);
-		showData.setLocation(120,300);
+		showData.setLocation(312,200);
 		showData.setSize(100,50);
 		showData.addActionListener(new ActionListener(){
 			
@@ -115,6 +126,12 @@ public class Gui extends JPanel{
 				}
 				
 				selectedValues.setListData(selected);
+				if(allDisplays.isSelected()){
+					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+					return;
+				}
 				if(barGraph.isSelected()){
 					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
