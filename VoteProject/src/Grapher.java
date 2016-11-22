@@ -38,13 +38,15 @@ public class Grapher {
 	static ChartPanel chartPanel(Region region) {
 		// TODO: see if you can't add padding / shrink the window to make sure the width of
 		// 		 the plot is always the same size
-		// TODO: make fontHeight actually correspond to the font in the graph,
-		//		 and possibly this code should be smarter
-		int fontHeight = 15;
+		// TODO: there's extra padding for the graphs with more bars, because barGroupHeight
+		//		 doesn't count padding separately, so adding more bars just multiplies this
+		//		 padding; get rid of it if you can
+		int maxCounties = 10;
+		int barGroupHeight = ChartPanel.DEFAULT_HEIGHT/maxCounties;
 		int numCounties = region.getSubregions().size();
 		int extraHeight = 0;
-		if (numCounties>25) {
-			extraHeight += (numCounties-25)*fontHeight;
+		if (numCounties>maxCounties) {
+			extraHeight += (numCounties-maxCounties)*barGroupHeight;
 		}
 		
 	    return new ChartPanel(
@@ -104,7 +106,6 @@ public class Grapher {
 	}
 	
 	public static void pieChart(Region region) {
-		// TODO: this should have more labels
 		JSplitPane splitPane = new JSplitPane();
 
 		DefaultPieDataset data = new DefaultPieDataset();
