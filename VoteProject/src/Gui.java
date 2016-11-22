@@ -40,7 +40,7 @@ public class Gui extends JPanel{
 		//========================================================================== Constructor
 		super();
 		super.setBackground(Color.white);
-		window.setBounds(0, 0, 450, 450);
+		window.setBounds(0, 0, 450, 350);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
 		this.setLayout(null);
