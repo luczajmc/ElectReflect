@@ -1,6 +1,7 @@
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +20,12 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.xy.Vector;
+import org.jfree.ui.RectangleEdge;
 
 public class Grapher {
 	static JFreeChart chart(Region region) {
@@ -47,7 +50,7 @@ public class Grapher {
 	}
 	
 	final static int maxCounties = 10;
-	
+	final static int padding = 20;
 	// @return  approximately how much height, in pixels, the bars for one Region will
 	// 			take up on screen
 	static int barGroupHeight(int numCounties) {
@@ -55,7 +58,7 @@ public class Grapher {
 			numCounties = maxCounties;
 		}
 		
-		return ChartPanel.DEFAULT_HEIGHT/numCounties;
+		return (ChartPanel.DEFAULT_HEIGHT-padding)/numCounties;
 	}
 		
 	// @return  approximately how much extra height the chart needs, in pixels, to
@@ -75,7 +78,6 @@ public class Grapher {
 		// TODO: see if you can't add padding / shrink the window to make sure the width of
 		// 		 the plot is always the same size
 		// FIXME: try to get rid of the extra padding that shows up in graphs with more bars
-		
 	    return new ChartPanel(
 	            chart(region),
 	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
@@ -96,16 +98,23 @@ public class Grapher {
 	static class JumpList extends JList<Region> {
 		Region[] regions;
 		JScrollPane pane;
+		ChartPanel chartPanel;
 		
 		void jumpToCounty() {
-			pane.getViewport().setViewPosition(
-					new Point(0, this.getSelectedIndex() * barGroupHeight(this.regions.length)));
+			CategoryAxis axis = new CategoryAxis();
+			Rectangle2D area = chartPanel.getChartRenderingInfo().getChartArea();
+
+			double offset = axis.getCategoryStart(this.getSelectedIndex(), this.regions.length,
+					area, RectangleEdge.LEFT);
+			System.out.println(offset);
+			pane.getViewport().setViewPosition(new Point(0, (int) offset));
 		}
 		
-		JumpList(Region[] regions, JScrollPane pane) {
+		JumpList(Region[] regions, JScrollPane pane, ChartPanel chartPanel) {
 			super(regions);
 			this.regions = regions;
 			this.pane = pane;
+			this.chartPanel = chartPanel;
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			this.addListSelectionListener(new ListSelectionListener() {
 				
@@ -135,7 +144,7 @@ public class Grapher {
 		// FIXME: this very decidedly gets out of sync around the middle of the graph
 		Region[] subregions = new Region[region.getSubregions().size()];
 		subregions = region.getSubregions().toArray(subregions);
-		JumpList list = new JumpList(subregions, scrollPane);
+		JumpList list = new JumpList(subregions, scrollPane, chartPanel);
 		JScrollPane scrollableList = new JScrollPane(list);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
