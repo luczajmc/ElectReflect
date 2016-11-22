@@ -1,4 +1,6 @@
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,9 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JViewport;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -42,14 +46,26 @@ public class Grapher {
 		return chart;
 	}
 	
+	final static int maxCounties = 10;
+	
+	// @return  approximately how much height, in pixels, the bars for one Region will
+	// 			take up on screen
+	static int barGroupHeight(int numCounties) {
+		if (numCounties > maxCounties) {
+			numCounties = maxCounties;
+		}
+		
+		return ChartPanel.DEFAULT_HEIGHT/numCounties;
+	}
+		
+	// @return  approximately how much extra height the chart needs, in pixels, to
+	//			display all the subregions without squishing them
 	static int extraSpace(Region region) {
-		int maxCounties = 10;
-		int barGroupHeight = ChartPanel.DEFAULT_HEIGHT/maxCounties;
 		int numCounties = region.getSubregions().size();
 		int extraHeight = 0;
 		
 		if (numCounties>maxCounties) {
-			extraHeight += (numCounties-maxCounties)*barGroupHeight;
+			extraHeight += (numCounties-maxCounties)*barGroupHeight(numCounties);
 		}
 		
 		return extraHeight;
@@ -77,33 +93,24 @@ public class Grapher {
 	        );
 	}
 	
-	static class FilterList extends JList<Region> {
-		ChartPanel panel;
+	static class JumpList extends JList<Region> {
+		Region[] regions;
+		JScrollPane pane;
 		
-		
-		void filterChart() {
-			List<Region> selectedList = this.getSelectedValuesList();
-			Region filteredRegion = new Gerrymander(selectedList);
-			
-			JFreeChart chart = chart(filteredRegion);
-			
-			panel.setChart(chart);
-			panel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, 
-					ChartPanel.DEFAULT_HEIGHT+extraSpace(filteredRegion)));
-			panel.setMaximumDrawHeight(ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT +
-					extraSpace(filteredRegion));
-			
-			panel.revalidate();
+		void jumpToCounty() {
+			pane.getViewport().setViewPosition(
+					new Point(0, this.getSelectedIndex() * barGroupHeight(this.regions.length)));
 		}
 		
-		FilterList(Region[] regions, ChartPanel panel) {
+		JumpList(Region[] regions, JScrollPane pane) {
 			super(regions);
-			this.panel = panel;
-			this.setSelectionInterval(0, regions.length-1);
+			this.regions = regions;
+			this.pane = pane;
+			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			this.addListSelectionListener(new ListSelectionListener() {
 				
 				public void valueChanged(ListSelectionEvent e) {
-					filterChart();
+					jumpToCounty();
 				}
 			});
 		}
@@ -115,18 +122,23 @@ public class Grapher {
 		// FIXME: I'm not sure if this works for Regions that don't have any subregions
 		JSplitPane splitPane = new JSplitPane();
 
-		int scrollBarSize = 30;
 		ChartPanel chartPanel = chartPanel(region);
-		JScrollPane scrollPane = new JScrollPane(chartPanel);
+		JViewport port = new JViewport();
+		port.add(chartPanel);
+
+		JScrollPane scrollPane = new JScrollPane(port);
+		int scrollBarSize = 30;
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT+scrollBarSize));
 
 		splitPane.setLeftComponent(scrollPane);
 
+		// FIXME: this very decidedly gets out of sync around the middle of the graph
 		Region[] subregions = new Region[region.getSubregions().size()];
 		subregions = region.getSubregions().toArray(subregions);
-		FilterList list = new FilterList(subregions, chartPanel);
+		JumpList list = new JumpList(subregions, scrollPane);
 		JScrollPane scrollableList = new JScrollPane(list);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
 		splitPane.setRightComponent(scrollableList);
 	
 		JFrame frame = new JFrame("Election Results");
