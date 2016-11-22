@@ -1,9 +1,15 @@
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
@@ -12,6 +18,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.Vector;
 
 public class Grapher {
 	static JFreeChart chart(Region region) {
@@ -35,28 +42,32 @@ public class Grapher {
 		return chart;
 	}
 	
-	static ChartPanel chartPanel(Region region) {
-		// TODO: see if you can't add padding / shrink the window to make sure the width of
-		// 		 the plot is always the same size
-		// TODO: there's extra padding for the graphs with more bars, because barGroupHeight
-		//		 doesn't count padding separately, so adding more bars just multiplies this
-		//		 padding; get rid of it if you can
+	static int extraSpace(Region region) {
 		int maxCounties = 10;
 		int barGroupHeight = ChartPanel.DEFAULT_HEIGHT/maxCounties;
 		int numCounties = region.getSubregions().size();
 		int extraHeight = 0;
+		
 		if (numCounties>maxCounties) {
 			extraHeight += (numCounties-maxCounties)*barGroupHeight;
 		}
 		
+		return extraHeight;
+	}
+	
+	static ChartPanel chartPanel(Region region) {
+		// TODO: see if you can't add padding / shrink the window to make sure the width of
+		// 		 the plot is always the same size
+		// FIXME: try to get rid of the extra padding that shows up in graphs with more bars
+		
 	    return new ChartPanel(
 	            chart(region),
 	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
-	            ChartPanel.DEFAULT_HEIGHT+extraHeight, /** The default panel height. */
+	            ChartPanel.DEFAULT_HEIGHT+extraSpace(region), /** The default panel height. */
 	            ChartPanel.DEFAULT_MINIMUM_DRAW_WIDTH, /** The default limit below which chart scaling kicks in. */
 	            ChartPanel.DEFAULT_MINIMUM_DRAW_HEIGHT, /** The default limit below which chart scaling kicks in. */
 	            ChartPanel.DEFAULT_MAXIMUM_DRAW_WIDTH,
-	            ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT+extraHeight,
+	            ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT+extraSpace(region),
 	            ChartPanel.DEFAULT_BUFFER_USED,
 	            true,  // properties
 	            true,  // save
@@ -66,12 +77,60 @@ public class Grapher {
 	        );
 	}
 	
+	static class FilterList extends JList<Region> {
+		ChartPanel panel;
+		
+		
+		void filterChart() {
+			List<Region> selectedList = this.getSelectedValuesList();
+			Region filteredRegion = new Gerrymander(selectedList);
+			
+			JFreeChart chart = chart(filteredRegion);
+			
+			panel.setChart(chart);
+			panel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, 
+					ChartPanel.DEFAULT_HEIGHT+extraSpace(filteredRegion)));
+			panel.setMaximumDrawHeight(ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT +
+					extraSpace(filteredRegion));
+			
+			panel.revalidate();
+		}
+		
+		FilterList(Region[] regions, ChartPanel panel) {
+			super(regions);
+			this.panel = panel;
+			this.setSelectionInterval(0, regions.length-1);
+			this.addListSelectionListener(new ListSelectionListener() {
+				
+				public void valueChanged(ListSelectionEvent e) {
+					filterChart();
+				}
+			});
+		}
+		
+		
+	}
+	
 	static void barGraph(Region region) {
+		// FIXME: I'm not sure if this works for Regions that don't have any subregions
+		JSplitPane splitPane = new JSplitPane();
+
 		int scrollBarSize = 30;
-		JScrollPane scrollPane = new JScrollPane(chartPanel(region));
+		ChartPanel chartPanel = chartPanel(region);
+		JScrollPane scrollPane = new JScrollPane(chartPanel);
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT+scrollBarSize));
+
+		splitPane.setLeftComponent(scrollPane);
+
+		Region[] subregions = new Region[region.getSubregions().size()];
+		subregions = region.getSubregions().toArray(subregions);
+		FilterList list = new FilterList(subregions, chartPanel);
+		JScrollPane scrollableList = new JScrollPane(list);
+		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		splitPane.setRightComponent(scrollableList);
+	
 		JFrame frame = new JFrame("Election Results");
-		frame.add(scrollPane);
+		frame.add(splitPane);
 		frame.pack();
 		frame.setVisible(true);
 

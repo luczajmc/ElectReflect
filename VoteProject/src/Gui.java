@@ -14,8 +14,6 @@ import java.awt.event.KeyEvent;
  */
 
 public class Gui extends JPanel{
-	// FIXME: somehow there's a null element that gets in the JList and causes a
-	//		  NullPointerException when it gets passed to Gerrymander()
 	private static JFrame window = new JFrame("ElectReflect");
 	private static JFrame frame = new JFrame("Message");
 	

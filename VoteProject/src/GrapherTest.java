@@ -15,6 +15,7 @@ public class GrapherTest {
 		return g;
 	}
 	public static void main(String[] args) {
+		
 		File f = new File("../Data/ExampleData.txt");
 		System.out.println(f.getAbsolutePath());
 		System.out.println(f.exists());
