@@ -2,6 +2,7 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 
 import org.jfree.chart.ChartFactory;
@@ -14,6 +15,9 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public class Grapher {
 	static JFreeChart chart(Region region) {
+		// TODO: label the axes
+		// TODO: figure out how to handle the fact that some counties are _so_ much larger
+		//		 than some others
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		for (Region r : region.getSubregions()) {
 			data.setValue(r.getRepVotes(), "Republican", r.getName());
@@ -83,8 +87,26 @@ public class Grapher {
 		barGraph(district);
 	}
 	
+	static String regionList(Region region) {
+		String name = region.getName();
+		
+		if (name != null) {
+			return name + "\n";
+		}
+		else {
+			String list = "";
+			for (Region subregion : region.getSubregions()) {
+				list += subregion.getName() + "\n";
+			}
+			return list;
+		}
+		
+	}
+	
 	public static void pieChart(Region region) {
 		// TODO: this should have more labels
+		JSplitPane splitPane = new JSplitPane();
+
 		DefaultPieDataset data = new DefaultPieDataset();
 		data.setValue("Republican", region.getRepVotes());
 		data.setValue("Democrat", region.getDemVotes());
@@ -92,8 +114,18 @@ public class Grapher {
 		
 		JFreeChart chart = ChartFactory.createPieChart("Election Results", data,
 				true, true, false);
+
+		ChartPanel chartPanel = new ChartPanel(chart);
+		splitPane.setLeftComponent(chartPanel);
 		
-		ChartFrame frame = new ChartFrame("Election Results", chart);
+		JTextArea list = new JTextArea(regionList(region));
+		list.setEditable(false);
+		JScrollPane scrollableList = new JScrollPane(list);
+		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		splitPane.setRightComponent(scrollableList);
+		
+		JFrame frame = new JFrame("Election Results");
+		frame.add(splitPane);
 		frame.pack();
 		frame.setVisible(true);
 	}
@@ -127,7 +159,6 @@ public class Grapher {
 	}
 	
 	public static void text(Region region) {
-		// TODO: make TextArea non-editable
 		// TODO: make sure to clearly differentiate the larger region from the subregions
 		// TODO: maybe don't show a total if there's only one county?
 		String displayText = "";
