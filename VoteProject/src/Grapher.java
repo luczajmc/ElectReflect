@@ -1,12 +1,17 @@
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -21,6 +26,7 @@ import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
@@ -129,6 +135,8 @@ public class Grapher {
 	
 	static void barGraph(Region region) {
 		// FIXME: I'm not sure if this works for Regions that don't have any subregions
+		// FIXME: this still gets out of sync further down in the graph
+		// TODO: make clone preserve your viewport in both scrollpanes
 		JSplitPane splitPane = new JSplitPane();
 
 		ChartPanel chartPanel = chartPanel(region);
@@ -141,14 +149,28 @@ public class Grapher {
 
 		splitPane.setLeftComponent(scrollPane);
 
-		// FIXME: this very decidedly gets out of sync around the middle of the graph
+		JPanel navigationPanel = new JPanel();
+		navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.PAGE_AXIS));
+		
 		Region[] subregions = new Region[region.getSubregions().size()];
 		subregions = region.getSubregions().toArray(subregions);
 		JumpList list = new JumpList(subregions, scrollPane, chartPanel);
 		JScrollPane scrollableList = new JScrollPane(list);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		navigationPanel.add(scrollableList);
+		
+		JButton cloneButton = new JButton("Clone graph");
+		cloneButton.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent arg0) {
+				barGraph(region);
+			}
+			
+		});
+		navigationPanel.add(cloneButton);
 
-		splitPane.setRightComponent(scrollableList);
+		splitPane.setRightComponent(navigationPanel);
 	
 		JFrame frame = new JFrame("Election Results");
 		frame.add(splitPane);
