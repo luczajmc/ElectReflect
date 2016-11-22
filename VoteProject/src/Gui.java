@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
  * 
  * @author Steven Bower
  * @version 2016-11-21
+ * @update 2016-11-22:  Added  a select all displays check box and some comments.
  *
  */
 
@@ -23,27 +24,35 @@ public class Gui extends JPanel{
 	private JCheckBox barGraph = new JCheckBox("Bar Graph");
 	private JCheckBox pieChart = new JCheckBox("Pie Chart");
 	private JCheckBox textSum = new JCheckBox("Text Summary");
+	private JCheckBox allDisplays = new JCheckBox("All Displays");
 	
 	private JList<Region> regionSelect = new JList<Region>();
 	private JList<Region> selectedValues = new JList<Region>();
+	
 	private JTextPane title = new JTextPane();
 	private JScrollPane regionPane = new JScrollPane(regionSelect);
 	private JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
+	
 	public Region[] regions;
 	
 	public Gui(){
+		
+		//========================================================================== Constructor
 		super();
 		super.setBackground(Color.white);
-		window.setBounds(0, 0, 450, 450);
+		window.setBounds(0, 0, 450, 350);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
 		this.setLayout(null);
 		window.add(this);
 		window.setVisible(true);
 		
+		
+		//This frame is the frame used for dialog boxes when an error occurs
 		frame.setSize(100, 100);
 		frame.setLocation((window.getWidth() - frame.getWidth()) / 2, (window.getHeight() - frame.getHeight())/2);
 		
+		//========================================================================== Title
 		title.setVisible(true);
 		title.setText("ElectReflect");
 		title.setSize(145,50);
@@ -54,32 +63,47 @@ public class Gui extends JPanel{
 		title.setEditable(false);
 		add(title);
 		
-		add(barGraph);
+		//========================================================================== JCheckBoxes
+		
+		add(allDisplays); // an option to select all three displays
+		allDisplays.setBackground(Color.white);
+		allDisplays.setSize(125,25);
+		allDisplays.setLocation(163, 100);
+		
+		add(barGraph); // an option to just display the bar graph
 		barGraph.setBackground(Color.white);
 		barGraph.setSize(125, 25);
-		barGraph.setLocation(10, 200);
+		barGraph.setLocation(163, 125);
 		
-		add(pieChart);
+		add(pieChart); // an option to just display the pie chart
 		pieChart.setBackground(Color.white);
 		pieChart.setSize(125, 25);
-		pieChart.setLocation(10, 225);
+		pieChart.setLocation(163, 150);
 		
-		add(textSum);
+		add(textSum); // an option to just display a text summary
 		textSum.setBackground(Color.white);
 		textSum.setSize(125, 25);
-		textSum.setLocation(10, 250);
+		textSum.setLocation(163, 175);
 		
+		//========================================================================== JTextPanes
 		add(regionPane);
 		regionPane.setLocation(10, 100);
 		regionPane.setSize(125, 100);
 		
 		add(gerrymanderPane);
-		gerrymanderPane.setLocation(160, 100);
+		gerrymanderPane.setLocation(300, 100);
 		gerrymanderPane.setSize(125,100);
 		
+		//========================================================================== JButtons
+		/**
+		 * This is a JButton that adds a region to the gui.  It locally stores the state in
+		 * an array and then transfers that to a JList.
+		 * 
+		 * This button also enables the show data button if a valid file is given.
+		 */
 		add(addRegion);
 		addRegion.setText("Add State");
-		addRegion.setLocation(10,300);
+		addRegion.setLocation(22,200);
 		addRegion.setSize(100,50);
 		addRegion.addActionListener(new ActionListener(){
 			
@@ -100,10 +124,15 @@ public class Gui extends JPanel{
 			
 		});
 		
+		/**
+		 * This is a JButton that looks at which check boxes are selected and then
+		 * displays the selected data from the first list, transfers it to a second
+		 * list, and then calls Grapher.java to display the data.
+		 */
 		add(showData);
 		showData.setText("Show Data");
 		showData.setEnabled(false);
-		showData.setLocation(120,300);
+		showData.setLocation(312,200);
 		showData.setSize(100,50);
 		showData.addActionListener(new ActionListener(){
 			
@@ -115,6 +144,12 @@ public class Gui extends JPanel{
 				}
 				
 				selectedValues.setListData(selected);
+				if(allDisplays.isSelected()){
+					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+					return; // this prevents the user from selecting all check boxes and having two of each display pop up
+				}
 				if(barGraph.isSelected()){
 					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
@@ -132,7 +167,12 @@ public class Gui extends JPanel{
 	}
 	
 	//========================================================================== Getters
-	
+	/**
+	 * This getter is so that State.java has access to the frame created in this class.
+	 * This allows an easier way to create dialog boxes in State.java for error handling.
+	 * 
+	 * @return frame
+	 */
 	public static Component getFrame(){
 		return frame;
 	}
