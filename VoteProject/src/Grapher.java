@@ -3,6 +3,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -133,13 +136,96 @@ public class Grapher {
 		
 	}
 	
+	static class SyncedChartPanel extends ChartPanel {
+		ChartPanel sister;
+		
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			super.mouseEntered(e);
+			sister.mouseEntered(e);
+		}
+		
+		@Override
+		public void mouseExited(MouseEvent e) {
+			super.mouseExited(e);
+			sister.mouseExited(e);
+		}
+		
+		@Override
+		public void mousePressed(MouseEvent e) {
+			super.mousePressed(e);
+			sister.mousePressed(e);
+		}
+		
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			super.mouseDragged(e);
+			sister.mouseDragged(e);
+		}
+		
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			super.mouseReleased(e);
+			sister.mouseReleased(e);
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			super.mouseClicked(e);
+			sister.mouseClicked(e);
+		}
+		
+		public SyncedChartPanel(JFreeChart chart, int width, int height, int minWidth,
+				int minHeight, int maxWidth, int maxHeight, boolean defaultBuffer,
+				boolean properties, boolean save, boolean print, boolean zoom,
+				boolean tooltips) {
+			super(chart, width, height, minWidth, minHeight, maxWidth, maxHeight,
+					defaultBuffer, properties, save, print, zoom, tooltips, tooltips);
+			
+		}
+		
+		public void setSisterPanel(ChartPanel sister) {
+			this.sister = sister;
+		}
+	}
+	
+	static SyncedChartPanel syncedChartPanel(Region region) {
+		// TODO: see if you can't add padding / shrink the window to make sure the width of
+		// 		 the plot is always the same size
+		// FIXME: try to get rid of the extra padding that shows up in graphs with more bars
+	    return new SyncedChartPanel(
+	            chart(region),
+	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
+	            ChartPanel.DEFAULT_HEIGHT+extraSpace(region), /** The default panel height. */
+	            ChartPanel.DEFAULT_MINIMUM_DRAW_WIDTH, /** The default limit below which chart scaling kicks in. */
+	            ChartPanel.DEFAULT_MINIMUM_DRAW_HEIGHT, /** The default limit below which chart scaling kicks in. */
+	            ChartPanel.DEFAULT_MAXIMUM_DRAW_WIDTH,
+	            ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT+extraSpace(region),
+	            ChartPanel.DEFAULT_BUFFER_USED,
+	            true,  // properties
+	            true,  // save
+	            true,  // print
+	            false,  // zoom
+	            true   // tooltips
+	        );
+	}
+
+	
 	static void barGraph(Region region) {
 		// FIXME: I'm not sure if this works for Regions that don't have any subregions
 		// FIXME: this still gets out of sync further down in the graph
 		// TODO: make clone preserve your viewport in both scrollpanes
+		// TODO: maybe we could show the range axis still as you're scrolling
+		// FIXME: the sister chart that shows the axis and the main chart aren't quite
+		//		  synchronized: make them use the same zoom method instead of just taking
+		//		  taking the same mouse events
 		JSplitPane splitPane = new JSplitPane();
 
-		ChartPanel chartPanel = chartPanel(region);
+		ChartPanel sisterPanel = chartPanel(region);
+		
+		SyncedChartPanel chartPanel = syncedChartPanel(region);
+		chartPanel.setSisterPanel(sisterPanel);
+
 		JViewport port = new JViewport();
 		port.add(chartPanel);
 
@@ -147,7 +233,16 @@ public class Grapher {
 		int scrollBarSize = 30;
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT+scrollBarSize));
 
-		splitPane.setLeftComponent(scrollPane);
+		JSplitPane chartPane = new JSplitPane();
+		chartPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+
+		JViewport axisPort = new JViewport();
+		axisPort.add(sisterPanel);
+		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, 50));
+		chartPane.setTopComponent(axisPort);
+		chartPane.setBottomComponent(scrollPane);
+		
+		splitPane.setLeftComponent(chartPane);
 
 		JPanel navigationPanel = new JPanel();
 		navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.PAGE_AXIS));
