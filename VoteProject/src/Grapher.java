@@ -240,6 +240,7 @@ public class Grapher {
 		chartPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		chartPane.setTopComponent(axisPort);
 		chartPane.setBottomComponent(scrollPane);
+		chartPane.setOneTouchExpandable(true);
 		
 		splitPane.setLeftComponent(chartPane);
 
