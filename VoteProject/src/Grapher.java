@@ -216,12 +216,15 @@ public class Grapher {
 		// FIXME: this still gets out of sync further down in the graph
 		// TODO: make clone preserve your viewport in both scrollpanes
 		// TODO: maybe we could show the range axis still as you're scrolling
-		// FIXME: the sister chart that shows the axis and the main chart aren't quite
-		//		  synchronized: make them use the same zoom method instead of just taking
-		//		  taking the same mouse events
+		// TODO: maybe sync the horizontal scrolling of the two charts also
 		JSplitPane splitPane = new JSplitPane();
 
 		ChartPanel sisterPanel = chartPanel(region);
+		JScrollPane sisterScrollPane = new JScrollPane(sisterPanel);
+		sisterScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		JViewport axisPort = new JViewport();
+		axisPort.add(sisterScrollPane);
+		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, 50));
 		
 		SyncedChartPanel chartPanel = syncedChartPanel(region);
 		chartPanel.setSisterPanel(sisterPanel);
@@ -235,10 +238,6 @@ public class Grapher {
 
 		JSplitPane chartPane = new JSplitPane();
 		chartPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-
-		JViewport axisPort = new JViewport();
-		axisPort.add(sisterPanel);
-		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, 50));
 		chartPane.setTopComponent(axisPort);
 		chartPane.setBottomComponent(scrollPane);
 		
