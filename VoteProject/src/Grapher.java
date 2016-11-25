@@ -110,12 +110,12 @@ public class Grapher {
 		ChartPanel chartPanel;
 		
 		void jumpToCounty() {
-			CategoryAxis axis = new CategoryAxis();
-			Rectangle2D area = chartPanel.getChartRenderingInfo().getChartArea();
+			CategoryPlot plot = chartPanel.getChart().getCategoryPlot();
+			CategoryAxis axis = plot.getDomainAxis();
+			Rectangle2D area = chartPanel.getChartRenderingInfo().getPlotInfo().getDataArea();
 
 			double offset = axis.getCategoryStart(this.getSelectedIndex(), this.regions.length,
 					area, RectangleEdge.LEFT);
-			System.out.println(offset);
 			pane.getViewport().setViewPosition(new Point(0, (int) offset));
 		}
 		
