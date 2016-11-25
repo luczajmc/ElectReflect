@@ -60,25 +60,37 @@ public class District extends Region {
 	 * @return the percentage of democratic votes
 	 */
 	public double getDemPercent() {
-		return (double)this.demVotes / this.totalVotes;
+		return (double) checkNum(this.demVotes, this.totalVotes);
 	}
 	
 	/**
 	 * @return the percentage of republican votes
 	 */
 	public double getRepPercent() {
-		return (double)this.repVotes / this.totalVotes;
+		return (double) checkNum(this.repVotes, this.totalVotes);
 	}
 	
 	/**
 	 * @return the percentage of independent votes
 	 */
 	public double getIndPercent() {
-		return (double)this.indVotes / this.totalVotes;
+		return (double) checkNum(this.indVotes, this.totalVotes);
 	}
 
 	@Override
 	public ArrayList<Region> getSubregions() {
 		return new ArrayList<>();
+	}
+	
+	/**
+	 * @return the resulting percentage after checking for arithmetic errors
+	 */
+	private double checkNum(double doubleIn, double totalVotes) {
+		try {
+			double result = doubleIn / totalVotes;
+			return result;
+		} catch (ArithmeticException e) {
+			return 0;
+		}
 	}
 }
