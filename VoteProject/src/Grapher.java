@@ -245,16 +245,17 @@ public class Grapher {
 
 		JViewport port = new JViewport();
 		port.add(chartPanel);
-
+		
 		JScrollPane scrollPane = new JScrollPane(port);
 		int scrollBarSize = 30;
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT+scrollBarSize));
-
+		
 		JSplitPane chartPane = new JSplitPane();
 		chartPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		chartPane.setTopComponent(axisPort);
 		chartPane.setBottomComponent(scrollPane);
-		chartPane.setOneTouchExpandable(true);
+		chartPane.setEnabled(false);
+		chartPane.setDividerSize(0);
 		
 		splitPane.setLeftComponent(chartPane);
 
