@@ -117,7 +117,7 @@ public class Gui extends JPanel{
 				
 				regionSelect.setListData(regions);
 				
-				if(regions.length > 1){
+				if(regions.length >= 1){
 					showData.setEnabled(true);
 				}
 			}

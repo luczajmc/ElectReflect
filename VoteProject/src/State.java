@@ -91,7 +91,12 @@ public class State extends Region {
 			JOptionPane.showMessageDialog(Gui.getFrame(), "No file provided.");
 		}
 		catch(ArrayIndexOutOfBoundsException a){
-			JOptionPane.showMessageDialog(Gui.getFrame(), "Invalid file type.");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			this.counties.clear();
+		}
+		catch(NumberFormatException f){
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			this.counties.clear();
 		}
 		getData();
 	}
@@ -215,21 +220,21 @@ public class State extends Region {
 	 * @return the percent of republican votes
 	 */
 	public double getRepPercent() {
-		return (double)this.repVotes / this.totalVotes;
+		return (double) checkNum(this.demVotes, this.totalVotes);
 	}
 	
 	/**
 	 * @return the percent of democratic votes
 	 */
 	public double getDemPercent() {
-		return (double)this.demVotes / this.totalVotes;
+		return (double) checkNum(this.repVotes, this.totalVotes);
 	}
 	
 	/**
 	 * @return the percent of independent votes
 	 */
 	public double getIndPercent() {
-		return (double)this.indVotes / this.totalVotes;
+		return (double) checkNum(this.indVotes, this.totalVotes);
 	}
 	
 	public String getName() {
@@ -239,5 +244,17 @@ public class State extends Region {
 	@Override
 	public ArrayList<Region> getSubregions() {
 		return new ArrayList<Region>(getCounties());
+	}
+	
+	/**
+	 * @return the resulting percentage after checking for arithmetic errors
+	 */
+	private double checkNum(double doubleIn, double totalVotes) {
+		try {
+			double result = doubleIn / totalVotes;
+			return result;
+		} catch (ArithmeticException e) {
+			return 0;
+		}
 	}
 }
