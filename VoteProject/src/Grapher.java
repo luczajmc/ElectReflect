@@ -1,13 +1,11 @@
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Comparator;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,15 +15,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.ChartMouseEvent;
-import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -33,7 +27,6 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.xy.Vector;
 import org.jfree.ui.RectangleEdge;
 
 public class Grapher {
@@ -42,7 +35,10 @@ public class Grapher {
 		// TODO: figure out how to handle the fact that some counties are _so_ much larger
 		//		 than some others
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
-		for (Region r : region.getSubregions()) {
+		ArrayList<Region> subregions = region.getSubregions();
+		
+		subregions = sortHigherPopulationsFirst(subregions);
+		for (Region r : subregions) {
 			data.setValue(r.getRepVotes(), "Republican", r.getName());
 			data.setValue(r.getDemVotes(), "Democrat", r.getName());
 			data.setValue(r.getIndVotes(), "Independent", r.getName());
@@ -210,6 +206,24 @@ public class Grapher {
 	        );
 	}
 
+	static ArrayList<Region> sortHigherPopulationsFirst(ArrayList<Region> regions) {
+		ArrayList<Region> regionsClone = new ArrayList<>();
+		for (Region region : regions) {
+			regionsClone.add(region);
+		}
+		regionsClone.sort(new Comparator<Region>() {
+
+			@Override
+			public int compare(Region o1, Region o2) {
+				Region here = (Region) o1;
+				Region there = (Region) o2;
+				
+				return Integer.compare(there.getTotalVotes(), here.getTotalVotes()); // sort largest counties first
+			}
+			
+		});
+		return regionsClone;
+	}
 	
 	static void barGraph(Region region) {
 		// FIXME: I'm not sure if this works for Regions that don't have any subregions
@@ -248,7 +262,9 @@ public class Grapher {
 		navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.PAGE_AXIS));
 		
 		Region[] subregions = new Region[region.getSubregions().size()];
-		subregions = region.getSubregions().toArray(subregions);
+		ArrayList<Region> subregionsList = region.getSubregions();
+		subregionsList = sortHigherPopulationsFirst(subregionsList);
+		subregions = subregionsList.toArray(subregions);
 		JumpList list = new JumpList(subregions, scrollPane, chartPanel);
 		JScrollPane scrollableList = new JScrollPane(list);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
