@@ -25,6 +25,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotRenderingInfo;
+import org.jfree.chart.plot.Zoomable;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleEdge;
@@ -100,6 +102,9 @@ public class Grapher {
 	        );
 	}
 	
+	static int maxVotes(Region region) {
+		return region.getTotalVotes();
+	}
 	static class JumpList extends JList<Region> {
 		Region[] regions;
 		JScrollPane pane;
@@ -108,12 +113,30 @@ public class Grapher {
 		void jumpToCounty() {
 			CategoryPlot plot = chartPanel.getChart().getCategoryPlot();
 			CategoryAxis axis = plot.getDomainAxis();
-			Rectangle2D area = chartPanel.getChartRenderingInfo().getPlotInfo().getDataArea();
+			
+			PlotRenderingInfo info = chartPanel.getChartRenderingInfo().getPlotInfo();
+			Rectangle2D area = info.getDataArea();
 
 			double offset = axis.getCategoryStart(this.getSelectedIndex(), this.regions.length,
 					area, RectangleEdge.LEFT);
-			pane.getViewport().setViewPosition(new Point(0, (int) offset));
-		}
+			Point destination = new Point(0, (int) offset);
+
+			double maxVotesShown = maxVotes(this.getSelectedValue());
+			double maxVotes = plot.getRangeAxis().getRange().getUpperBound();
+			double scale = maxVotesShown/maxVotes;
+			
+			plot.zoomRangeAxes(0, scale, info, destination);
+			
+			ChartPanel sisterPanel = ((SyncedChartPanel) chartPanel).getSisterPanel();
+			PlotRenderingInfo sisterInfo = sisterPanel.getChartRenderingInfo().getPlotInfo();
+			CategoryPlot sisterPlot = sisterPanel.getChart().getCategoryPlot();
+			sisterPlot.zoomRangeAxes(0, scale, sisterInfo, new Point(0,0));
+			
+			pane.getViewport().setViewPosition(destination);
+
+			
+
+}
 		
 		JumpList(Region[] regions, JScrollPane pane, ChartPanel chartPanel) {
 			super(regions);
@@ -182,6 +205,10 @@ public class Grapher {
 		
 		public void setSisterPanel(ChartPanel sister) {
 			this.sister = sister;
+		}
+		
+		public ChartPanel getSisterPanel() {
+			return this.sister;
 		}
 	}
 	
