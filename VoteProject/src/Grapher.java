@@ -85,137 +85,6 @@ public class Grapher {
 		// TODO: see if you can't add padding / shrink the window to make sure the width of
 		// 		 the plot is always the same size
 		// FIXME: try to get rid of the extra padding that shows up in graphs with more bars
-	    return new ChartPanel(
-	            chart(region),
-	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
-	            ChartPanel.DEFAULT_HEIGHT+extraSpace(region), /** The default panel height. */
-	            ChartPanel.DEFAULT_MINIMUM_DRAW_WIDTH, /** The default limit below which chart scaling kicks in. */
-	            ChartPanel.DEFAULT_MINIMUM_DRAW_HEIGHT, /** The default limit below which chart scaling kicks in. */
-	            ChartPanel.DEFAULT_MAXIMUM_DRAW_WIDTH,
-	            ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT+extraSpace(region),
-	            ChartPanel.DEFAULT_BUFFER_USED,
-	            true,  // properties
-	            true,  // save
-	            true,  // print
-	            false,  // zoom
-	            true   // tooltips
-	        );
-	}
-	
-	static int maxVotes(Region region) {
-		return region.getTotalVotes();
-	}
-	static class JumpList extends JList<Region> {
-		Region[] regions;
-		JScrollPane pane;
-		ChartPanel chartPanel;
-		
-		void jumpToCounty() {
-			CategoryPlot plot = chartPanel.getChart().getCategoryPlot();
-			CategoryAxis axis = plot.getDomainAxis();
-			
-			PlotRenderingInfo info = chartPanel.getChartRenderingInfo().getPlotInfo();
-			Rectangle2D area = info.getDataArea();
-
-			double offset = axis.getCategoryStart(this.getSelectedIndex(), this.regions.length,
-					area, RectangleEdge.LEFT);
-			Point destination = new Point(0, (int) offset);
-
-			double maxVotesShown = maxVotes(this.getSelectedValue());
-			double maxVotes = plot.getRangeAxis().getRange().getUpperBound();
-			double scale = maxVotesShown/maxVotes;
-			
-			plot.zoomRangeAxes(0, scale, info, destination);
-			
-			ChartPanel sisterPanel = ((SyncedChartPanel) chartPanel).getSisterPanel();
-			PlotRenderingInfo sisterInfo = sisterPanel.getChartRenderingInfo().getPlotInfo();
-			CategoryPlot sisterPlot = sisterPanel.getChart().getCategoryPlot();
-			sisterPlot.zoomRangeAxes(0, scale, sisterInfo, new Point(0,0));
-			
-			pane.getViewport().setViewPosition(destination);
-
-			
-
-}
-		
-		JumpList(Region[] regions, JScrollPane pane, ChartPanel chartPanel) {
-			super(regions);
-			this.regions = regions;
-			this.pane = pane;
-			this.chartPanel = chartPanel;
-			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			this.addListSelectionListener(new ListSelectionListener() {
-				
-				public void valueChanged(ListSelectionEvent e) {
-					jumpToCounty();
-				}
-			});
-		}
-		
-		
-	}
-	
-	static class SyncedChartPanel extends ChartPanel {
-		ChartPanel sister;
-		
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			super.mouseEntered(e);
-			sister.mouseEntered(e);
-		}
-		
-		@Override
-		public void mouseExited(MouseEvent e) {
-			super.mouseExited(e);
-			sister.mouseExited(e);
-		}
-		
-		@Override
-		public void mousePressed(MouseEvent e) {
-			super.mousePressed(e);
-			sister.mousePressed(e);
-		}
-		
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			super.mouseDragged(e);
-			sister.mouseDragged(e);
-		}
-		
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			super.mouseReleased(e);
-			sister.mouseReleased(e);
-		}
-		
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			super.mouseClicked(e);
-			sister.mouseClicked(e);
-		}
-		
-		public SyncedChartPanel(JFreeChart chart, int width, int height, int minWidth,
-				int minHeight, int maxWidth, int maxHeight, boolean defaultBuffer,
-				boolean properties, boolean save, boolean print, boolean zoom,
-				boolean tooltips) {
-			super(chart, width, height, minWidth, minHeight, maxWidth, maxHeight,
-					defaultBuffer, properties, save, print, zoom, tooltips, tooltips);
-			
-		}
-		
-		public void setSisterPanel(ChartPanel sister) {
-			this.sister = sister;
-		}
-		
-		public ChartPanel getSisterPanel() {
-			return this.sister;
-		}
-	}
-	
-	static SyncedChartPanel syncedChartPanel(Region region) {
-		// TODO: see if you can't add padding / shrink the window to make sure the width of
-		// 		 the plot is always the same size
-		// FIXME: try to get rid of the extra padding that shows up in graphs with more bars
 	    return new SyncedChartPanel(
 	            chart(region),
 	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
@@ -231,6 +100,10 @@ public class Grapher {
 	            false,  // zoom
 	            true   // tooltips
 	        );
+	}
+	
+	static SyncedChartPanel syncedChartPanel(Region region) {
+	    return (SyncedChartPanel) chartPanel(region);
 	}
 
 	static ArrayList<Region> sortHigherPopulationsFirst(ArrayList<Region> regions) {
@@ -254,10 +127,10 @@ public class Grapher {
 	
 	static void barGraph(Region region) {
 		// FIXME: I'm not sure if this works for Regions that don't have any subregions
-		// FIXME: this still gets out of sync further down in the graph
 		// TODO: make clone preserve your viewport in both scrollpanes
-		// TODO: maybe we could show the range axis still as you're scrolling
 		// TODO: maybe sync the horizontal scrolling of the two charts also
+		// FIXME: the plot should start at the same zoom as if you jump to the largest
+		//		  county
 		JSplitPane splitPane = new JSplitPane();
 
 		ChartPanel sisterPanel = chartPanel(region);
@@ -347,6 +220,8 @@ public class Grapher {
 	}
 	
 	public static void pieChart(Region region) {
+		// TODO: maybe make it possible to select a county to see what slice of the pie
+		//		 it takes up
 		JSplitPane splitPane = new JSplitPane();
 
 		DefaultPieDataset data = new DefaultPieDataset();
