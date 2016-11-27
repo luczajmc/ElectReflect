@@ -60,7 +60,7 @@ public class Gui extends JPanel{
 		add(blueStripe);
 		blueStripe.setBackground(Color.decode("#4085F4"));
 		blueStripe.setSize(450,65);
-		blueStripe.setLocation(0, 260);
+		blueStripe.setLocation(0, 250);
 		
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -101,30 +101,30 @@ public class Gui extends JPanel{
 		add(allDisplays); // an option to select all three displays
 		allDisplays.setBackground(Color.white);
 		allDisplays.setSize(125,25);
-		allDisplays.setLocation(163, 100);
+		allDisplays.setLocation(163, 80);
 		
 		add(barGraph); // an option to just display the bar graph
 		barGraph.setBackground(Color.white);
 		barGraph.setSize(125, 25);
-		barGraph.setLocation(163, 125);
+		barGraph.setLocation(163, 105);
 		
 		add(pieChart); // an option to just display the pie chart
 		pieChart.setBackground(Color.white);
 		pieChart.setSize(125, 25);
-		pieChart.setLocation(163, 150);
+		pieChart.setLocation(163, 130);
 		
 		add(textSum); // an option to just display a text summary
 		textSum.setBackground(Color.white);
 		textSum.setSize(125, 25);
-		textSum.setLocation(163, 175);
+		textSum.setLocation(163, 155);
 		
 		//========================================================================== JTextPanes
 		add(regionPane);
-		regionPane.setLocation(10, 100);
+		regionPane.setLocation(10, 80);
 		regionPane.setSize(125, 100);
 		
 		add(gerrymanderPane);
-		gerrymanderPane.setLocation(300, 100);
+		gerrymanderPane.setLocation(300, 80);
 		gerrymanderPane.setSize(125,100);
 		
 		//========================================================================== JButtons
@@ -136,7 +136,7 @@ public class Gui extends JPanel{
 		 */
 		add(addRegion);
 		addRegion.setText("Add State");
-		addRegion.setLocation(22,200);
+		addRegion.setLocation(22,190);
 		addRegion.setSize(100,50);
 		addRegion.setToolTipText("Add a text file with voter data.");
 		addRegion.setBackground(Color.white);
@@ -167,7 +167,7 @@ public class Gui extends JPanel{
 		add(showData);
 		showData.setText("<html>" + "Show Data" + "<html>");
 		showData.setEnabled(false);
-		showData.setLocation(312,200);
+		showData.setLocation(312,190);
 		showData.setSize(100,50);
 		showData.setBackground(Color.white);
 		showData.setToolTipText("Open selected displays in separate windows.");
