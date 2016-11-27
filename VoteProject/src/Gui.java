@@ -40,6 +40,8 @@ public class Gui extends JPanel{
 	private JToolTip addStateTip = new JToolTip();
 	
 	public Region[] regions;
+	public Region[] selected;
+	public State state;
 	
 	public Gui(){
 		
@@ -150,7 +152,7 @@ public class Gui extends JPanel{
 		addRegion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {				
-				State state = new State();
+				state = new State();
 				regions = new Region[state.getCounties().size()];
 				
 				for(int i = 0; i < regions.length; i++){
@@ -181,7 +183,7 @@ public class Gui extends JPanel{
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				Region[] selected = new Region[regionSelect.getSelectedValuesList().size()];
+				selected = new Region[regionSelect.getSelectedValuesList().size()];
 				
 				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
 					selected[i] = regionSelect.getSelectedValuesList().get(i);
