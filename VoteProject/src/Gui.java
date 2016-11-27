@@ -24,6 +24,7 @@ public class Gui extends JPanel{
 	
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
+	private JButton addSubregion = new JButton();
 	
 	private JCheckBox barGraph = new JCheckBox("Bar Graph");
 	private JCheckBox pieChart = new JCheckBox("Pie Chart");
@@ -213,6 +214,26 @@ public class Gui extends JPanel{
 				if(textSum.isSelected()){
 					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
+			}
+			
+		});
+		
+		add(addSubregion);
+		addSubregion.setText("<html>" + "Add County" + "<html>");
+		addSubregion.setLocation(163, 190);
+		addSubregion.setSize(100,50);
+		addSubregion.setBackground(Color.white);
+		addSubregion.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
+		addSubregion.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent arg0) {
+				selected = new Region[regionSelect.getSelectedValuesList().size()];
+				
+				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+					selected[i] = regionSelect.getSelectedValuesList().get(i);
+				}
+				
+				selectedValues.setListData(selected);
 			}
 			
 		});
