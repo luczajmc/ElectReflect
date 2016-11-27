@@ -60,11 +60,16 @@ public class State extends Region {
 		this.counties = new ArrayList<County>();
 		this.currentCounty = "";
 		this.newCounty = new County("");
+		int lineCounter = 1;
 		
 		//create a scanner that reads in the voter data from the voter data file
 		try{
 			Scanner fileIn = new Scanner(this.voterData);
 			String currentCountyName = "";
+			if (this.voterData.length() == 0) {
+				JOptionPane.showMessageDialog(Gui.getFrame(), "File contains no data.");
+				return;
+			}
 			while (fileIn.hasNextLine()) {
 				String line = fileIn.nextLine(); //read next line
 				String[] data = line.split(","); //split the line into an array containing each comma separated value
@@ -82,6 +87,7 @@ public class State extends Region {
 				District newDistrict = new District(data[DISTRICT_NAME], Integer.parseInt(data[REP_VOTES]),
 						Integer.parseInt(data[DEM_VOTES]), Integer.parseInt(data[IND_VOTES]));
 				this.newCounty.addDistrict(newDistrict);//finally we add the new district to the county we are working in
+				lineCounter++;
 			}
 		}
 		catch (FileNotFoundException e) {
@@ -91,11 +97,11 @@ public class State extends Region {
 			JOptionPane.showMessageDialog(Gui.getFrame(), "No file provided.");
 		}
 		catch(ArrayIndexOutOfBoundsException a){
-			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data. (Line: " + lineCounter + ")");
 			this.counties.clear();
 		}
 		catch(NumberFormatException f){
-			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data. (Line: " + lineCounter + ")");
 			this.counties.clear();
 		}
 		getData();
