@@ -138,7 +138,7 @@ public class Gui extends JPanel{
 		addRegion.setText("Add State");
 		addRegion.setLocation(22,190);
 		addRegion.setSize(100,50);
-		addRegion.setToolTipText("Add a text file with voter data.");
+		addRegion.setToolTipText("<html>" + "Add a text or csv file" + "<br>" + "with voter data." + "<html>");
 		addRegion.setBackground(Color.white);
 		addRegion.addActionListener(new ActionListener(){
 			
@@ -170,7 +170,7 @@ public class Gui extends JPanel{
 		showData.setLocation(312,190);
 		showData.setSize(100,50);
 		showData.setBackground(Color.white);
-		showData.setToolTipText("Open selected displays in separate windows.");
+		showData.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
