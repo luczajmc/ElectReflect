@@ -1,10 +1,13 @@
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.swing.text.AttributeSet.CharacterAttribute;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.font.TextAttribute;
+import java.util.Map;
 
 /**
  * This class is the user interface for the Elect Reflect project for CSE 201.
@@ -46,6 +49,7 @@ public class Gui extends JPanel{
 		//========================================================================== Constructor
 		super();
 		super.setBackground(Color.white);
+		
 		window.setBounds(0, 0, 450, 350);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
@@ -54,7 +58,7 @@ public class Gui extends JPanel{
 		window.setVisible(true);
 		
 		add(blueStripe);
-		blueStripe.setBackground(Color.decode("#65B0FE"));
+		blueStripe.setBackground(Color.decode("#4085F4"));
 		blueStripe.setSize(450,65);
 		blueStripe.setLocation(0, 260);
 		
@@ -69,22 +73,28 @@ public class Gui extends JPanel{
 		frame.setLocation((window.getWidth() - frame.getWidth()) / 2, (window.getHeight() - frame.getHeight())/2);
 		
 		//========================================================================== Title
-		title.setVisible(true);
-		title.setText("ElectReflect");
-		title.setSize(450,65);
-		title.setLocation(0,0);
-		title.setFont(new Font("Times New Roman", 0,32));
-		title.setBackground(Color.decode("#FE7465"));
-		title.setAlignmentX(JTextPane.CENTER_ALIGNMENT);
-		title.setEditable(false);
-		title.setToolTipText("<html>" +"A software that interprets" + "<br>" + "and displays voter data." + "<html>");
-		add(title);
+		
+		// this underlines the title
+		Font font = new Font("Times New Roman", 0,32);
+		Map attr = font.getAttributes();
+		attr.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 		
 		// this centers the title
 		StyledDocument doc = title.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		doc.setParagraphAttributes(0, doc.getLength()-1, center, false);
+				
+		title.setVisible(true);
+		title.setText("ElectReflect");
+		title.setSize(450,65);
+		title.setLocation(0,0);
+		title.setFont(font.deriveFont(attr));
+		title.setBackground(Color.decode("#FE4841"));
+		title.setAlignmentX(JTextPane.CENTER_ALIGNMENT);
+		title.setEditable(false);
+		title.setToolTipText("<html>" +"A software that interprets" + "<br>" + "and displays voter data." + "<html>");
+		add(title);		
 		
 		//========================================================================== JCheckBoxes
 		
