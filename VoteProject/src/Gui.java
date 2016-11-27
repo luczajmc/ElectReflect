@@ -95,6 +95,7 @@ public class Gui extends JPanel{
 		
 		//========================================================================== JCheckBoxes
 
+
 		
 		add(allDisplays); // an option to select all three displays
 		allDisplays.setBackground(Color.white);
@@ -191,7 +192,6 @@ public class Gui extends JPanel{
 				
 				selectedValues.setListData(selected);
 				if(allDisplays.isSelected()){
-
 					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
 					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
 					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
@@ -199,6 +199,8 @@ public class Gui extends JPanel{
 				}
 				if(barGraph.isSelected()){
 					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
+				}
+				if(pieChart.isSelected()){
 					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
 					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
 					return; // this prevents the user from selecting all check boxes and having two of each display pop up
