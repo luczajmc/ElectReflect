@@ -44,6 +44,8 @@ public class Gui extends JPanel{
 	public Region[] selected;
 	public State state;
 	
+	public int numItems = 0;
+	
 	public Gui(){
 		
 		//========================================================================== Constructor
@@ -227,10 +229,14 @@ public class Gui extends JPanel{
 		addSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				selected = new Region[regionSelect.getSelectedValuesList().size()];
+				selected = new Region[regions.length];
 				
-				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
-					selected[i] = regionSelect.getSelectedValuesList().get(i);
+//				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+//					selected[i] = regionSelect.getSelectedValuesList().get(i);
+//				}
+				for(Region r : regionSelect.getSelectedValuesList()){
+					selected[numItems] = regionSelect.getSelectedValuesList().get(numItems);
+					numItems++;
 				}
 				
 				selectedValues.setListData(selected);
