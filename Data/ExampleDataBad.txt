@@ -1,0 +1,10 @@
+Adams,BrattonW2,58,1,340
+Adams,Locust Grove,78,0,275
+Adams,Green,58,0,89
+Adams,Liberty,75,0,268
+Allen,Bratton,58,1,340
+Allen,Locust Grove,78,0,275
+Allen,Green,58,0,89
+Allen,Liberty,75,0,268
+Allen, Allen, Allen, Allen
+Allen,1,2,3,4,5
