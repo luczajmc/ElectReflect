@@ -95,8 +95,6 @@ public class Gui extends JPanel{
 		
 		//========================================================================== JCheckBoxes
 
-
-		
 		add(allDisplays); // an option to select all three displays
 		allDisplays.setBackground(Color.white);
 		allDisplays.setSize(125,25);
@@ -106,7 +104,6 @@ public class Gui extends JPanel{
 		barGraph.setBackground(Color.white);
 		barGraph.setSize(125, 25);
 		barGraph.setLocation(163, 105);
-
 		
 		add(allDisplays); // an option to select all three displays
 		allDisplays.setBackground(Color.white);
