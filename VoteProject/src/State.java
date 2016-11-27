@@ -96,9 +96,6 @@ public class State extends Region {
 				lineCounter++;
 			}
 		}
-		catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(Gui.getFrame(), "File not found.");
-		}
 		catch(NullPointerException n){
 			JOptionPane.showMessageDialog(Gui.getFrame(), "No file provided.");
 		}
@@ -202,7 +199,8 @@ public class State extends Region {
 		return false;
 	}
 	/*
-	public File checkNumVotes(voterData, checkFile) {
+	public File checkNumVotes(checkFile) {
+		Scanner checkFile
 	}
 	*/
 	/**
