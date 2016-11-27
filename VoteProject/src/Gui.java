@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.text.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +20,7 @@ import java.awt.event.KeyEvent;
 public class Gui extends JPanel{
 	private static JFrame window = new JFrame("ElectReflect");
 	private static JFrame frame = new JFrame("Message");
+	private static JPanel blueStripe = new JPanel();
 	
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
@@ -50,6 +53,11 @@ public class Gui extends JPanel{
 		window.add(this);
 		window.setVisible(true);
 		
+		add(blueStripe);
+		blueStripe.setBackground(Color.decode("#65B0FE"));
+		blueStripe.setSize(450,65);
+		blueStripe.setLocation(0, 260);
+		
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e){
@@ -63,14 +71,20 @@ public class Gui extends JPanel{
 		//========================================================================== Title
 		title.setVisible(true);
 		title.setText("ElectReflect");
-		title.setSize(145,50);
-		title.setLocation(150,20);
-		title.setFont(new Font("Times New Roman", 0,28));
-		title.setForeground(Color.blue);
-		title.setAlignmentY(CENTER_ALIGNMENT);
+		title.setSize(450,65);
+		title.setLocation(0,0);
+		title.setFont(new Font("Times New Roman", 0,32));
+		title.setBackground(Color.decode("#FE7465"));
+		title.setAlignmentX(JTextPane.CENTER_ALIGNMENT);
 		title.setEditable(false);
 		title.setToolTipText("<html>" +"A software that interprets" + "<br>" + "and displays voter data." + "<html>");
 		add(title);
+		
+		// this centers the title
+		StyledDocument doc = title.getStyledDocument();
+		SimpleAttributeSet center = new SimpleAttributeSet();
+		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		doc.setParagraphAttributes(0, doc.getLength()-1, center, false);
 		
 		//========================================================================== JCheckBoxes
 		
@@ -115,6 +129,7 @@ public class Gui extends JPanel{
 		addRegion.setLocation(22,200);
 		addRegion.setSize(100,50);
 		addRegion.setToolTipText("Add a text file with voter data.");
+		addRegion.setBackground(Color.white);
 		addRegion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {				
@@ -144,6 +159,7 @@ public class Gui extends JPanel{
 		showData.setEnabled(false);
 		showData.setLocation(312,200);
 		showData.setSize(100,50);
+		showData.setBackground(Color.white);
 		showData.setToolTipText("Open selected displays in separate windows.");
 		showData.addActionListener(new ActionListener(){
 			
