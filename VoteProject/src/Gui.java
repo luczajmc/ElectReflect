@@ -1,14 +1,12 @@
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.AttributeSet.CharacterAttribute;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
 import java.util.Map;
-
 /**
  * This class is the user interface for the Elect Reflect project for CSE 201.
  * It allows users to select files, select displays, and look at voter data.
@@ -19,7 +17,6 @@ import java.util.Map;
  * @update 2016-11-26:  Added JToolTips to the JButtons
  *
  */
-
 public class Gui extends JPanel{
 	private static JFrame window = new JFrame("ElectReflect");
 	private static JFrame frame = new JFrame("Message");
@@ -97,6 +94,18 @@ public class Gui extends JPanel{
 		add(title);		
 		
 		//========================================================================== JCheckBoxes
+
+		
+		add(allDisplays); // an option to select all three displays
+		allDisplays.setBackground(Color.white);
+		allDisplays.setSize(125,25);
+		allDisplays.setLocation(163, 80);
+		
+		add(barGraph); // an option to just display the bar graph
+		barGraph.setBackground(Color.white);
+		barGraph.setSize(125, 25);
+		barGraph.setLocation(163, 105);
+
 		
 		add(allDisplays); // an option to select all three displays
 		allDisplays.setBackground(Color.white);
@@ -182,6 +191,13 @@ public class Gui extends JPanel{
 				
 				selectedValues.setListData(selected);
 				if(allDisplays.isSelected()){
+
+					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+					return; // this prevents the user from selecting all check boxes and having two of each display pop up
+				}
+				if(barGraph.isSelected()){
 					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
 					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
 					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
@@ -219,5 +235,4 @@ public class Gui extends JPanel{
 	public static void main(String[] args){
 		new Gui();
 	}
-
 }
