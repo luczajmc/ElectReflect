@@ -62,15 +62,20 @@ public class State extends Region {
 		this.counties = new ArrayList<County>();
 		this.currentCounty = "";
 		this.newCounty = new County("");
+		int lineCounter = 1;
 		
 		//create a scanner that reads in the voter data from the voter data file
 		try{
-			Scanner fileIn = new Scanner(this.voterData);
+			Scanner fileIn = new Scanner("Filtered_Data.csv");
 			
 			verifyRecords();
 			out.close();
 			
 			String currentCountyName = "";
+			if (this.voterData.length() == 0) {
+				JOptionPane.showMessageDialog(Gui.getFrame(), "File contains no data.");
+				return;
+			}
 			while (fileIn.hasNextLine()) {
 				String line = fileIn.nextLine(); //read next line
 				String[] data = line.split(","); //split the line into an array containing each comma separated value
@@ -88,20 +93,18 @@ public class State extends Region {
 				District newDistrict = new District(data[DISTRICT_NAME], Integer.parseInt(data[REP_VOTES]),
 						Integer.parseInt(data[DEM_VOTES]), Integer.parseInt(data[IND_VOTES]));
 				this.newCounty.addDistrict(newDistrict);//finally we add the new district to the county we are working in
+				lineCounter++;
 			}
-		}
-		catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(Gui.getFrame(), "File not found.");
 		}
 		catch(NullPointerException n){
 			JOptionPane.showMessageDialog(Gui.getFrame(), "No file provided.");
 		}
 		catch(ArrayIndexOutOfBoundsException a){
-			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data. (Line: " + lineCounter + ")");
 			this.counties.clear();
 		}
 		catch(NumberFormatException f){
-			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data. (Line: " + lineCounter + ")");
 			this.counties.clear();
 		}
 		getData();
@@ -125,6 +128,9 @@ public class State extends Region {
 		//voterData = checkNumVotes(voterData, checkFile);
 	}
 	
+	/**
+	 * @return a file with the duplicate problem taken care of
+	 */
 	private File findAndRemoveDuplicates() {
 		try {
 			Scanner fileIn = new Scanner(voterData);
@@ -137,11 +143,9 @@ public class State extends Region {
 				String line = fileIn.nextLine();
 				String[] data = line.split(",");
 				
-				for (int i = 0; i < countyDistrict.length; i++) {
-					countyDistrict[i] = data[i];
-				}
-				
-				if (!duplicate(countyDistrictList, countyDistrict)) {
+				countyDistrict = line.split(","); //adds the new line to an array for comparison
+			
+				if (!duplicate(countyDistrictList, countyDistrict)) { //checks if countyDistrict is not already in the countyDistrictList
 					countyDistrictList.add(countyDistrict);
 				}
 				
@@ -173,11 +177,16 @@ public class State extends Region {
 		return null;
 	}
 	
+	/**
+	 * @param countyDistrictList
+	 * @param countyDistrict
+	 * @return if the current line is a duplicate
+	 */
 	private boolean duplicate(ArrayList<String[]> countyDistrictList, String[] countyDistrict) {
-		for (int i = 0; i < countyDistrictList.size(); i++) {
+		for (int i = 0; i < countyDistrictList.size(); i++) { //loops through countyDistrictList
 			int duplicateCheck = 0;
-			for (int k = 0; i < countyDistrict.length; k++) {
-				if (countyDistrictList.get(i)[k].equals(countyDistrict[k])) {
+			for (int k = 0; k < countyDistrict.length; k++) { //loops through the countyDistrict array
+				if (countyDistrictList.get(i)[k].equals(countyDistrict[k])) { //if the countyDistrict == countyDistrictList
 					duplicateCheck++;
 					System.out.println("countyDistrictList: " + countyDistrictList.get(i)[k]);
 					System.out.println("countyDistrict: " + countyDistrict[k]);
@@ -190,7 +199,8 @@ public class State extends Region {
 		return false;
 	}
 	/*
-	public File checkNumVotes(voterData, checkFile) {
+	public File checkNumVotes(checkFile) {
+		Scanner checkFile
 	}
 	*/
 	/**

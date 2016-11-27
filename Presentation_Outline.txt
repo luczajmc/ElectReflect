@@ -1,0 +1,51 @@
+Presentation Breakdown:
+1. What we did
+	- reads in a CSV file
+	- filters the data to remove duplicates
+	- checks if the number of voters is correct
+	- logs problematic data in an error file
+	- saves a clean version of the data for future use
+	- gives a user the option to select the data they want to see
+	- displays the data in bar chart form
+	- displays the data in pie chart form
+	- displays the data in text form
+	- Allows the user to display all or one chart
+2. How we did it
+	- Gui
+		- buttons
+		- selection list
+		- tooltips
+		- colors
+		- look and feel
+		- libraries
+		- etc
+	- Getting data
+		- Region
+		- State
+		- County
+		- District
+		- filterdata
+			- remove duplicates
+			- check num of votes
+		- error handling
+		- error log
+		- clean data save
+	- Showing Data
+		- bar graph
+			- zoom
+			- etc.
+		- pie chart
+			- layout
+			- etc.
+		- text
+			- layout
+			- etc.
+3. Why we did it that way
+	- Steven GUI, explain
+	- Reese Data, explain
+	- Matthew Graphing, explain
+
+4. Things we should have done
+	- add anything you think would make this better/we would add with more time
+5. Demo
+	- demo of the proram
