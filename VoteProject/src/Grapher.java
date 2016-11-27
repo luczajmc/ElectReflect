@@ -127,7 +127,6 @@ public class Grapher {
 	
 	static void barGraph(Region region) {
 		// FIXME: I'm not sure if this works for Regions that don't have any subregions
-		// TODO: make clone preserve your viewport in both scrollpanes
 		// TODO: maybe sync the horizontal scrolling of the two charts also
 		// FIXME: the plot should start at the same zoom as if you jump to the largest
 		//		  county
@@ -172,16 +171,6 @@ public class Grapher {
 		
 		navigationPanel.add(scrollableList);
 		
-		JButton cloneButton = new JButton("Clone graph");
-		cloneButton.addActionListener(new ActionListener(){
-			
-			public void actionPerformed(ActionEvent arg0) {
-				barGraph(region);
-			}
-			
-		});
-		navigationPanel.add(cloneButton);
-
 		splitPane.setRightComponent(navigationPanel);
 	
 		JFrame frame = new JFrame("Election Results");
