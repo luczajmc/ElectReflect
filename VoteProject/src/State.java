@@ -65,7 +65,7 @@ public class State extends Region {
 		
 		//create a scanner that reads in the voter data from the voter data file
 		try{
-			Scanner fileIn = new Scanner(this.voterData);
+			Scanner fileIn = new Scanner("Filtered_Data.csv");
 			
 			verifyRecords();
 			out.close();
@@ -125,6 +125,9 @@ public class State extends Region {
 		//voterData = checkNumVotes(voterData, checkFile);
 	}
 	
+	/**
+	 * @return a file with the duplicate problem taken care of
+	 */
 	private File findAndRemoveDuplicates() {
 		try {
 			Scanner fileIn = new Scanner(voterData);
@@ -137,11 +140,9 @@ public class State extends Region {
 				String line = fileIn.nextLine();
 				String[] data = line.split(",");
 				
-				for (int i = 0; i < countyDistrict.length; i++) {
-					countyDistrict[i] = data[i];
-				}
-				
-				if (!duplicate(countyDistrictList, countyDistrict)) {
+				countyDistrict = line.split(","); //adds the new line to an array for comparison
+			
+				if (!duplicate(countyDistrictList, countyDistrict)) { //checks if countyDistrict is not already in the countyDistrictList
 					countyDistrictList.add(countyDistrict);
 				}
 				
@@ -173,11 +174,16 @@ public class State extends Region {
 		return null;
 	}
 	
+	/**
+	 * @param countyDistrictList
+	 * @param countyDistrict
+	 * @return if the current line is a duplicate
+	 */
 	private boolean duplicate(ArrayList<String[]> countyDistrictList, String[] countyDistrict) {
-		for (int i = 0; i < countyDistrictList.size(); i++) {
+		for (int i = 0; i < countyDistrictList.size(); i++) { //loops through countyDistrictList
 			int duplicateCheck = 0;
-			for (int k = 0; i < countyDistrict.length; k++) {
-				if (countyDistrictList.get(i)[k].equals(countyDistrict[k])) {
+			for (int k = 0; k < countyDistrict.length; k++) { //loops through the countyDistrict array
+				if (countyDistrictList.get(i)[k].equals(countyDistrict[k])) { //if the countyDistrict == countyDistrictList
 					duplicateCheck++;
 					System.out.println("countyDistrictList: " + countyDistrictList.get(i)[k]);
 					System.out.println("countyDistrict: " + countyDistrict[k]);
