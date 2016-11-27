@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
  * @author Steven Bower
  * @version 2016-11-21
  * @update 2016-11-22:  Added  a select all displays check box and some comments.
+ * @update 2016-11-26:  Added JToolTips to the JButtons
  *
  */
 
@@ -63,6 +64,7 @@ public class Gui extends JPanel{
 		title.setForeground(Color.blue);
 		title.setAlignmentY(CENTER_ALIGNMENT);
 		title.setEditable(false);
+		title.setToolTipText("<html>" +"A software that interprets" + "<br>" + "and displays voter data." + "<html>");
 		add(title);
 		
 		//========================================================================== JCheckBoxes
