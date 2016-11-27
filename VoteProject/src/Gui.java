@@ -33,6 +33,8 @@ public class Gui extends JPanel{
 	private JScrollPane regionPane = new JScrollPane(regionSelect);
 	private JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
 	
+	private JToolTip addStateTip = new JToolTip();
+	
 	public Region[] regions;
 	
 	public Gui(){
@@ -105,6 +107,7 @@ public class Gui extends JPanel{
 		addRegion.setText("Add State");
 		addRegion.setLocation(22,200);
 		addRegion.setSize(100,50);
+		addRegion.setToolTipText("Add a text file with voter data.");
 		addRegion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {				
@@ -134,6 +137,7 @@ public class Gui extends JPanel{
 		showData.setEnabled(false);
 		showData.setLocation(312,200);
 		showData.setSize(100,50);
+		showData.setToolTipText("Open selected displays in separate windows.");
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
