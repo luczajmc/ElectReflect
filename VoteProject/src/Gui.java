@@ -50,6 +50,11 @@ public class Gui extends JPanel{
 		window.add(this);
 		window.setVisible(true);
 		
+		try{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 		
 		//This frame is the frame used for dialog boxes when an error occurs
 		frame.setSize(100, 100);
@@ -135,7 +140,7 @@ public class Gui extends JPanel{
 		 * list, and then calls Grapher.java to display the data.
 		 */
 		add(showData);
-		showData.setText("Show Data");
+		showData.setText("<html>" + "Show Data" + "<html>");
 		showData.setEnabled(false);
 		showData.setLocation(312,200);
 		showData.setSize(100,50);
