@@ -1,8 +1,13 @@
 import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.text.AttributeSet.CharacterAttribute;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.font.TextAttribute;
+import java.util.Map;
 
 /**
  * This class is the user interface for the Elect Reflect project for CSE 201.
@@ -11,12 +16,14 @@ import java.awt.event.KeyEvent;
  * @author Steven Bower
  * @version 2016-11-21
  * @update 2016-11-22:  Added  a select all displays check box and some comments.
+ * @update 2016-11-26:  Added JToolTips to the JButtons
  *
  */
 
 public class Gui extends JPanel{
 	private static JFrame window = new JFrame("ElectReflect");
 	private static JFrame frame = new JFrame("Message");
+	private static JPanel blueStripe = new JPanel();
 	
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
@@ -33,6 +40,8 @@ public class Gui extends JPanel{
 	private JScrollPane regionPane = new JScrollPane(regionSelect);
 	private JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
 	
+	private JToolTip addStateTip = new JToolTip();
+	
 	public Region[] regions;
 	
 	public Gui(){
@@ -40,6 +49,7 @@ public class Gui extends JPanel{
 		//========================================================================== Constructor
 		super();
 		super.setBackground(Color.white);
+		
 		window.setBounds(0, 0, 450, 350);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
@@ -47,51 +57,74 @@ public class Gui extends JPanel{
 		window.add(this);
 		window.setVisible(true);
 		
+		add(blueStripe);
+		blueStripe.setBackground(Color.decode("#4085F4"));
+		blueStripe.setSize(450,65);
+		blueStripe.setLocation(0, 250);
+		
+		try{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 		
 		//This frame is the frame used for dialog boxes when an error occurs
 		frame.setSize(100, 100);
 		frame.setLocation((window.getWidth() - frame.getWidth()) / 2, (window.getHeight() - frame.getHeight())/2);
 		
 		//========================================================================== Title
+		
+		// this underlines the title
+		Font font = new Font("Times New Roman", 0,32);
+		Map attr = font.getAttributes();
+		attr.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+		
+		// this centers the title
+		StyledDocument doc = title.getStyledDocument();
+		SimpleAttributeSet center = new SimpleAttributeSet();
+		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		doc.setParagraphAttributes(0, doc.getLength()-1, center, false);
+				
 		title.setVisible(true);
 		title.setText("ElectReflect");
-		title.setSize(145,50);
-		title.setLocation(150,20);
-		title.setFont(new Font("Times New Roman", 0,28));
-		title.setForeground(Color.blue);
-		title.setAlignmentY(CENTER_ALIGNMENT);
+		title.setSize(450,65);
+		title.setLocation(0,0);
+		title.setFont(font.deriveFont(attr));
+		title.setBackground(Color.decode("#FE4841"));
+		title.setAlignmentX(JTextPane.CENTER_ALIGNMENT);
 		title.setEditable(false);
-		add(title);
+		title.setToolTipText("<html>" +"A software that interprets" + "<br>" + "and displays voter data." + "<html>");
+		add(title);		
 		
 		//========================================================================== JCheckBoxes
 		
 		add(allDisplays); // an option to select all three displays
 		allDisplays.setBackground(Color.white);
 		allDisplays.setSize(125,25);
-		allDisplays.setLocation(163, 100);
+		allDisplays.setLocation(163, 80);
 		
 		add(barGraph); // an option to just display the bar graph
 		barGraph.setBackground(Color.white);
 		barGraph.setSize(125, 25);
-		barGraph.setLocation(163, 125);
+		barGraph.setLocation(163, 105);
 		
 		add(pieChart); // an option to just display the pie chart
 		pieChart.setBackground(Color.white);
 		pieChart.setSize(125, 25);
-		pieChart.setLocation(163, 150);
+		pieChart.setLocation(163, 130);
 		
 		add(textSum); // an option to just display a text summary
 		textSum.setBackground(Color.white);
 		textSum.setSize(125, 25);
-		textSum.setLocation(163, 175);
+		textSum.setLocation(163, 155);
 		
 		//========================================================================== JTextPanes
 		add(regionPane);
-		regionPane.setLocation(10, 100);
+		regionPane.setLocation(10, 80);
 		regionPane.setSize(125, 100);
 		
 		add(gerrymanderPane);
-		gerrymanderPane.setLocation(300, 100);
+		gerrymanderPane.setLocation(300, 80);
 		gerrymanderPane.setSize(125,100);
 		
 		//========================================================================== JButtons
@@ -103,8 +136,10 @@ public class Gui extends JPanel{
 		 */
 		add(addRegion);
 		addRegion.setText("Add State");
-		addRegion.setLocation(22,200);
+		addRegion.setLocation(22,190);
 		addRegion.setSize(100,50);
+		addRegion.setToolTipText("Add a text file with voter data.");
+		addRegion.setBackground(Color.white);
 		addRegion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {				
@@ -130,10 +165,12 @@ public class Gui extends JPanel{
 		 * list, and then calls Grapher.java to display the data.
 		 */
 		add(showData);
-		showData.setText("Show Data");
+		showData.setText("<html>" + "Show Data" + "<html>");
 		showData.setEnabled(false);
-		showData.setLocation(312,200);
+		showData.setLocation(312,190);
 		showData.setSize(100,50);
+		showData.setBackground(Color.white);
+		showData.setToolTipText("Open selected displays in separate windows.");
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
