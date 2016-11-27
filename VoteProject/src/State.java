@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -15,7 +17,8 @@ public class State extends Region {
 	final int IND_VOTES = 4;
 	
 	private File voterData;
-	private File verifyData;
+	private File logFile;
+	private PrintWriter out;
 	private String currentCounty;
 	private County newCounty;
 	private ArrayList<County> counties = new ArrayList<County>(); //holds all the counties
@@ -36,7 +39,6 @@ public class State extends Region {
 	
 	public State(File data) {
 		this.voterData = data;
-		this.verifyData = data;
 		this.repVotes = 0;
 		this.demVotes = 0;
 		this.indVotes = 0;
@@ -52,7 +54,7 @@ public class State extends Region {
 		
 	}
 	public State() {
-		this(getFile());
+		this(getFile("Select the file with voter data"));
 	}
 	
 	private void getCountiesAndDistricts() {
@@ -64,6 +66,10 @@ public class State extends Region {
 		//create a scanner that reads in the voter data from the voter data file
 		try{
 			Scanner fileIn = new Scanner(this.voterData);
+			
+			verifyRecords();
+			out.close();
+			
 			String currentCountyName = "";
 			while (fileIn.hasNextLine()) {
 				String line = fileIn.nextLine(); //read next line
@@ -101,14 +107,98 @@ public class State extends Region {
 		getData();
 	}
 	
-	private boolean verifyRecords(){
-		return true;
+	/**
+	 * verifies and filters the data by removing duplicates and counting votes
+	 */
+	private void verifyRecords(){
+		logFile = new File("Error_Log.txt");
+		
+		try {
+			out = new PrintWriter(logFile);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		File checkFile = getFile("Select the file to verify the number of votes");
+		File filteredData = findAndRemoveDuplicates();
+		//voterData = checkNumVotes(voterData, checkFile);
 	}
 	
+	private File findAndRemoveDuplicates() {
+		try {
+			Scanner fileIn = new Scanner(voterData);
+			File filterFile = new File("Filtered_Data.csv");
+			PrintWriter filterPrint = new PrintWriter(filterFile);
+			String[] countyDistrict = {"","","","",""};
+			ArrayList<String[]> countyDistrictList = new ArrayList<String[]>();
+			
+			while (fileIn.hasNextLine()) {
+				String line = fileIn.nextLine();
+				String[] data = line.split(",");
+				
+				for (int i = 0; i < countyDistrict.length; i++) {
+					countyDistrict[i] = data[i];
+				}
+				
+				if (!duplicate(countyDistrictList, countyDistrict)) {
+					countyDistrictList.add(countyDistrict);
+				}
+				
+				else {
+					out.println("Duplicate Found: " + data[0] + ", " + data[1]);
+				}
+			}
+			for (int i = 0; i < countyDistrictList.size(); i++) {
+				filterPrint.println(countyDistrictList.get(i)[0] + ", " + 
+						countyDistrictList.get(i)[1]);
+			}
+			filterPrint.close();
+			return filterFile;
+		}
+		catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File not found.");
+		}
+		catch(NullPointerException n){
+			JOptionPane.showMessageDialog(Gui.getFrame(), "No file provided.");
+		}
+		catch(ArrayIndexOutOfBoundsException a){
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			this.counties.clear();
+		}
+		catch(NumberFormatException f){
+			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			this.counties.clear();
+		}
+		return null;
+	}
+	
+	private boolean duplicate(ArrayList<String[]> countyDistrictList, String[] countyDistrict) {
+		for (int i = 0; i < countyDistrictList.size(); i++) {
+			int duplicateCheck = 0;
+			for (int k = 0; i < countyDistrict.length; k++) {
+				if (countyDistrictList.get(i)[k].equals(countyDistrict[k])) {
+					duplicateCheck++;
+					System.out.println("countyDistrictList: " + countyDistrictList.get(i)[k]);
+					System.out.println("countyDistrict: " + countyDistrict[k]);
+				}
+				if (duplicateCheck == 5) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	/*
+	public File checkNumVotes(voterData, checkFile) {
+	}
+	*/
 	/**
 	 * @return a File chosen by the user
 	 */
-	private static File getFile() {
+	private static File getFile(String prompt) {
+		
+		JOptionPane.showMessageDialog(null, prompt);
 		
 		JFrame fileFrame = new JFrame("Choose CSV File");
 		fileFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
