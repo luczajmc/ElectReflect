@@ -164,9 +164,9 @@ public class State extends Region {
 			}
 			for (int i = 0; i < countyDistrictList.size(); i++) {
 				filterPrint.println(countyDistrictList.get(i)[0] + ", " + 
-						countyDistrictList.get(i)[1] + ", " +
-						countyDistrictList.get(i)[2] + ", " + 
-						countyDistrictList.get(i)[3] + ", " +
+						countyDistrictList.get(i)[1] + "," +
+						countyDistrictList.get(i)[2] + "," + 
+						countyDistrictList.get(i)[3] + "," +
 						countyDistrictList.get(i)[4]);
 				filterPrint.flush();
 			}
