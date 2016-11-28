@@ -132,7 +132,7 @@ public class State extends Region {
 		File checkFile = getFile("Select the file to verify the number of votes");
 		findAndRemoveDuplicates();
 		System.out.println("duplicates removed");
-		//checkNumVotes(checkFile);
+		checkNumVotes(checkFile);
 		System.out.println("Votes tallied, incorrect numbers have been corrected");
 	}
 	
@@ -249,7 +249,11 @@ public class State extends Region {
 		try {
 			PrintWriter filterOut = new PrintWriter(filterFile);
 			for (int i = 0; i < fixedData.size(); i++) {
-				filterOut.print(fixedData.get(i));
+				filterOut.println(fixedData.get(i)[0] + "," + 
+						fixedData.get(i)[1] + "," +
+						fixedData.get(i)[2] + "," + 
+						fixedData.get(i)[3] + "," +
+						fixedData.get(i)[4]);
 			}
 			filterOut.flush();
 			filterOut.close();
