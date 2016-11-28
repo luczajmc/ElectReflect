@@ -194,8 +194,6 @@ public class Grapher {
 	}
 	
 	public static void pieChart(Region region) {
-		// TODO: maybe make it possible to select a county to see what slice of the pie
-		//		 it takes up
 		JSplitPane splitPane = new JSplitPane();
 
 		DefaultPieDataset data = new DefaultPieDataset();
@@ -235,7 +233,6 @@ public class Grapher {
 	}
 	
 	private static String describe(Region r) {
-		// TODO: finalize the text format
 		String description = "";
 		String name = r.getName();
 		if (name != null) {
@@ -252,7 +249,6 @@ public class Grapher {
 	}
 	
 	public static void text(Region region) {
-		// TODO: make sure to clearly differentiate the larger region from the subregions
 		// TODO: maybe don't show a total if there's only one county?
 		String displayText = "";
 		

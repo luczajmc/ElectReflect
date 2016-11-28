@@ -43,7 +43,36 @@ public class GrapherTest {
 		
 		frame.pack();
 		frame.setVisible(true);
+
+		JFrame mergeFrame = new JFrame("Merge");
+		mergeFrame.getContentPane().setLayout(new BoxLayout(mergeFrame.getContentPane(), BoxLayout.LINE_AXIS));
 		
+		JList gerryList = new JList(panOhio.getCounties().toArray());
+		mergeFrame.add(gerryList);
+
+		JList regionList = new JList();
+		regionList.addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+				Region r = (Region) ((JList) e.getSource()).getSelectedValue();
+				System.out.println(r.getSubregions());
+			}
+			
+		});
+
+		mergeFrame.add(regionList);
+		
+		mergeFrame.add(new MergeButton(gerryList, regionList));
+		
+		mergeFrame.pack();
+		mergeFrame.setVisible(true);
+		
+		if(true) {
+			return;
+		}
+
 		File f = new File("../Data/ExampleData.txt");
 		System.out.println(f.getAbsolutePath());
 		System.out.println(f.exists());
