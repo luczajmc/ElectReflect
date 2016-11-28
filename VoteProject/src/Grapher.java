@@ -1,11 +1,6 @@
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Paint;
 import java.awt.Point;
-import java.awt.TexturePaint;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Comparator;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -23,15 +18,9 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.PlotRenderingInfo;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.urls.StandardCategoryURLGenerator;
-import org.jfree.chart.util.ParamChecks;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
@@ -45,7 +34,7 @@ public class Grapher {
         CategoryAxis categoryAxis = new CategoryAxis(categoryAxisLabel);
         ValueAxis valueAxis = new NumberAxis(valueAxisLabel);
 
-        BarRenderer renderer = new BarRenderer();
+        TexturedBarRenderer renderer = new TexturedBarRenderer();
         
         ItemLabelPosition position1 = new ItemLabelPosition(
                 ItemLabelAnchor.OUTSIDE3, TextAnchor.CENTER_LEFT);
@@ -84,6 +73,12 @@ public class Grapher {
         JFreeChart chart = new JFreeChart("Election Results", plot);
         
         new StandardChartTheme("JFree").apply(chart);
+        
+        // you have to do this after you apply the theme, because the theme
+        // resets the BarPainter
+        TexturedBarRenderer renderer = (TexturedBarRenderer) plot.getRenderer();
+        renderer.setBarPainter(new StandardBarPainter());
+
         return chart;
 	}
 	
@@ -115,7 +110,6 @@ public class Grapher {
 	static ChartPanel chartPanel(Region region) {
 		// TODO: see if you can't add padding / shrink the window to make sure the width of
 		// 		 the plot is always the same size
-		// FIXME: try to get rid of the extra padding that shows up in graphs with more bars
 	    ChartPanel panel = new ChartPanel(chart(region));
 	    panel.setMaximumDrawHeight(ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT+extraSpace(region));
 	    panel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT+extraSpace(region)));
@@ -143,19 +137,6 @@ public class Grapher {
 		SyncedCategoryPlot plot = (SyncedCategoryPlot) chartPanel.getChart().getPlot();
 		plot.setSisterPlot(sisterPanel.getChart().getCategoryPlot());
 		
-		Paint[] paints = TexturePaintMaker.getPaints();
-		DefaultDrawingSupplier supplier = new DefaultDrawingSupplier(
-				paints,
-				DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE,
-				DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,
-				DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE,
-				DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE);
-		chartPanel.getChart().getCategoryPlot().setDrawingSupplier(supplier, true);
-
-		CategoryItemRenderer renderer = chartPanel.getChart().getCategoryPlot().getRenderer();
-		BarRenderer barRenderer = (BarRenderer) renderer;
-		barRenderer.setBarPainter(new StandardBarPainter());
-
 		JViewport port = new JViewport();
 		port.add(chartPanel);
 		
