@@ -1,5 +1,7 @@
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Paint;
+import java.awt.Point;
 import java.awt.TexturePaint;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -126,6 +128,8 @@ public class Grapher {
 		// TODO: maybe sync the horizontal scrolling of the two charts also
 		// FIXME: the plot should start at the same zoom as if you jump to the largest
 		//		  county
+		final int headerSize = 50;
+		
 		JSplitPane splitPane = new JSplitPane();
 
 		ChartPanel sisterPanel = new DeadChartPanel(chart(region));
@@ -133,7 +137,7 @@ public class Grapher {
 		sisterScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		JViewport axisPort = new JViewport();
 		axisPort.add(sisterScrollPane);
-		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, 50));
+		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, headerSize));
 		
 		ChartPanel chartPanel = chartPanel(region);
 		SyncedCategoryPlot plot = (SyncedCategoryPlot) chartPanel.getChart().getPlot();
@@ -157,7 +161,8 @@ public class Grapher {
 		
 		JScrollPane scrollPane = new JScrollPane(port);
 		int scrollBarSize = 30;
-		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT+scrollBarSize));
+		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT-headerSize));
+		scrollPane.setMinimumSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT-headerSize));
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JSplitPane chartPane = new JSplitPane();
@@ -180,6 +185,8 @@ public class Grapher {
 		JScrollPane scrollableList = new JScrollPane(list);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
+		scrollPane.getViewport().setViewPosition(new Point(0, headerSize));
+		
 		navigationPanel.add(scrollableList);
 		
 		splitPane.setRightComponent(navigationPanel);
@@ -190,7 +197,6 @@ public class Grapher {
 		
 		frame.setLocationByPlatform(true);
 		frame.setVisible(true);
-
 	}
 	
 	public static void barGraphState(State state) {

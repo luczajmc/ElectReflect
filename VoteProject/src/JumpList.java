@@ -57,6 +57,7 @@ public class JumpList extends JList<Region> {
 			this.pane = pane;
 			this.chartPanel = chartPanel;
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			
 			this.addListSelectionListener(new ListSelectionListener() {
 				
 				public void valueChanged(ListSelectionEvent e) {
