@@ -1,4 +1,11 @@
 import java.io.File;
+import java.util.Comparator;
+
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class GrapherTest {
 	static String name(int i) {
@@ -14,8 +21,32 @@ public class GrapherTest {
 		}
 		return g;
 	}
-	public static void main(String[] args) {
+	
+	static JFrame frame(String title) {
+		JFrame frame = new JFrame(title);
+		frame.setLocationByPlatform(true);
+		frame.setVisible(true);
 		
+		return frame;
+	}
+	public static void main(String[] args) {
+
+		JFrame frame = new JFrame("Sort");
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.LINE_AXIS));
+
+		State panOhio = new State("../Data/Ohio.csv");
+		JList countyList = new JList(panOhio.getCounties().toArray());
+		frame.add(countyList);
+		
+		SortMenu sortMenu = new SortMenu(RegionSorter.getOrderings().toArray(), countyList);
+		frame.add(sortMenu);
+		
+		frame.pack();
+		frame.setVisible(true);
+		
+		if (true) {
+			return;
+		}
 		File f = new File("../Data/ExampleData.txt");
 		System.out.println(f.getAbsolutePath());
 		System.out.println(f.exists());
@@ -26,7 +57,7 @@ public class GrapherTest {
 		Grapher.textState(ohio);
 		Grapher.pieChartState(ohio);
 		
-		State panOhio = new State("../Data/Ohio.csv");
+		panOhio = new State("../Data/Ohio.csv");
 		Grapher.barGraphState(panOhio);
 		Grapher.textState(panOhio);
 		Grapher.pieChartState(panOhio);

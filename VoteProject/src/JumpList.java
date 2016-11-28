@@ -50,7 +50,7 @@ public class JumpList extends JList<Region> {
 
 			
 
-}
+		}
 		
 		JumpList(Region[] regions, JScrollPane pane, ChartPanel chartPanel) {
 			super(regions);
