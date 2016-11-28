@@ -187,13 +187,13 @@ public class Gui extends JPanel{
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				selected = new Region[regionSelect.getSelectedValuesList().size()];
-				
-				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
-					selected[i] = regionSelect.getSelectedValuesList().get(i);
-				}
-				
-				selectedValues.setListData(selected);
+//				selected = new Region[regionSelect.getSelectedValuesList().size()];
+//				
+//				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+//					selected[i] = regionSelect.getSelectedValuesList().get(i);
+//				}
+//				
+//				selectedValues.setListData(selected);
 				if(allDisplays.isSelected()){
 					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
 					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
@@ -223,47 +223,30 @@ public class Gui extends JPanel{
 		
 		add(addSubregion);
 		addSubregion.setText("<html>" + "Add County" + "<html>");
-		addSubregion.setLocation(163, 190);
+		addSubregion.setLocation(153, 190);
 		addSubregion.setEnabled(false);
-		addSubregion.setSize(100,25);
+		addSubregion.setSize(125,25);
 		addSubregion.setBackground(Color.white);
-		// TODO: change tooltip
-		addSubregion.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
+		addSubregion.setToolTipText("<html>" + "Add a county to display." + "<html>");
 		addSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				selected = new Region[regions.length];
 				
-				for(int i = numItems; i < regionSelect.getSelectedValuesList().size(); i++){
-					selected[i] = regionSelect.getSelectedValuesList().get(i);
-					numItems++;
-				}		
-				selectedValues.setListData(selected);
 			}
 		});
 		
 		add(removeSubregion);
 		removeSubregion.setText("<html>" + "Remove County" + "<html>");
-		removeSubregion.setLocation(163, 215);
+		removeSubregion.setLocation(153, 215);
 		removeSubregion.setEnabled(false);
-		removeSubregion.setSize(100,25);
+		removeSubregion.setSize(125,25);
 		removeSubregion.setBackground(Color.white);
-		// TODO: change tool tip
-		removeSubregion.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
+		removeSubregion.setToolTipText("<html>" + "Remove a county from the" +"<br>" + "list of counties to display." + "<html>");
 		removeSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				for(Region r : selectedValues.getSelectedValuesList()){
-					for(int i = 0; i < selected.length; i++){
-						if(selected[i].equals(r)){
-							selected[i] = null;
-						}
-					}
-				}
 				
-				selectedValues.setListData(selected);
 			}
-			
 		});
 		
 		window.repaint();
