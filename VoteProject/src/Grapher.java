@@ -24,8 +24,6 @@ import org.jfree.data.general.DefaultPieDataset;
 public class Grapher {
 	static JFreeChart chart(Region region) {
 		// TODO: label the axes
-		// TODO: figure out how to handle the fact that some counties are _so_ much larger
-		//		 than some others
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		ArrayList<Region> subregions = region.getSubregions();
 		
@@ -101,7 +99,6 @@ public class Grapher {
 		// TODO: maybe sync the horizontal scrolling of the two charts also
 		// FIXME: the plot should start at the same zoom as if you jump to the largest
 		//		  county
-		// FIXME: the bottom plot should always have a scrollbar also 
 		JSplitPane splitPane = new JSplitPane();
 
 		ChartPanel sisterPanel = chartPanel(region);
@@ -133,6 +130,7 @@ public class Grapher {
 		JScrollPane scrollPane = new JScrollPane(port);
 		int scrollBarSize = 30;
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT+scrollBarSize));
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JSplitPane chartPane = new JSplitPane();
 		chartPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
