@@ -3,6 +3,7 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
+import java.util.ArrayList;
 import java.util.Map;
 /**
  * This class is the user interface for the Elect Reflect project for CSE 201.
@@ -205,8 +206,6 @@ public class Gui extends JPanel{
 				}
 				if(pieChart.isSelected()){
 					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
-					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
-					return; // this prevents the user from selecting all check boxes and having two of each display pop up
 				}
 				if(barGraph.isSelected()){
 					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
@@ -231,7 +230,15 @@ public class Gui extends JPanel{
 		addSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
+				if(selected == null){
+					selected = new Region[regionSelect.getSelectedValuesList().size()];
+				}
 				
+				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+					selected[i] = regionSelect.getSelectedValuesList().get(i);
+				}
+				
+				selectedValues.setListData(selected);
 			}
 		});
 		
