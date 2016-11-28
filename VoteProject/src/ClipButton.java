@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 
-public class RemoveButton extends JButton {
+public class ClipButton extends JButton {
 	JList list;
 	
 	void remove() {
@@ -18,7 +18,7 @@ public class RemoveButton extends JButton {
 		ListSelectionModel selectionModel = list.getSelectionModel();
 		
 		for (int i=0; i<model.getSize(); i++) {
-			if (!selectionModel.isSelectedIndex(i)) {
+			if (selectionModel.isSelectedIndex(i)) {
 				regions.add((Region) model.getElementAt(i));
 			}
 		}
@@ -26,8 +26,8 @@ public class RemoveButton extends JButton {
 		list.setListData(regions.toArray());
 	}
 	
-	public RemoveButton(JList list) {
-		super("Remove");
+	public ClipButton(JList list) {
+		super("Clip");
 		this.list = list;
 		
 		this.addActionListener(new ActionListener() {
