@@ -1,10 +1,7 @@
 import javax.swing.*;
 import javax.swing.text.*;
-import javax.swing.text.AttributeSet.CharacterAttribute;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.util.Map;
 /**
@@ -25,6 +22,7 @@ public class Gui extends JPanel{
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
 	private JButton addSubregion = new JButton();
+	private JButton removeSubregion = new JButton();
 	
 	private JCheckBox barGraph = new JCheckBox("Bar Graph");
 	private JCheckBox pieChart = new JCheckBox("Pie Chart");
@@ -166,6 +164,7 @@ public class Gui extends JPanel{
 				
 				if(regions.length >= 1){
 					showData.setEnabled(true);
+					addSubregion.setEnabled(true);
 				}
 			}
 			
@@ -223,8 +222,10 @@ public class Gui extends JPanel{
 		add(addSubregion);
 		addSubregion.setText("<html>" + "Add County" + "<html>");
 		addSubregion.setLocation(163, 190);
+		addSubregion.setEnabled(false);
 		addSubregion.setSize(100,50);
 		addSubregion.setBackground(Color.white);
+		// TODO: change tooltip
 		addSubregion.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
 		addSubregion.addActionListener(new ActionListener(){
 			
@@ -238,6 +239,31 @@ public class Gui extends JPanel{
 					selected[numItems] = regionSelect.getSelectedValuesList().get(numItems);
 					numItems++;
 				}
+				
+				selectedValues.setListData(selected);
+			}
+			
+		});
+		
+		add(removeSubregion);
+		removeSubregion.setText("<html>" + "Remove County" + "<html>");
+		removeSubregion.setLocation(163, 240);
+		removeSubregion.setEnabled(false);
+		removeSubregion.setSize(100,50);
+		removeSubregion.setBackground(Color.white);
+		// TODO: change tool tip
+		removeSubregion.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
+		removeSubregion.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent arg0) {
+				for(Region r : selectedValues.getSelectedValuesList()){
+					for(int i = 0; i < selected.length; i++){
+						if(selected[i].equals(r)){
+							selected[i] = null;
+						}
+					}
+				}
+				
 				
 				selectedValues.setListData(selected);
 			}
