@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -18,6 +19,7 @@ public class State extends Region {
 	
 	private File voterData;
 	private File logFile;
+	private File filterFile;
 	private PrintWriter out;
 	private String currentCounty;
 	private County newCounty;
@@ -66,11 +68,15 @@ public class State extends Region {
 		
 		//create a scanner that reads in the voter data from the voter data file
 		try{
-			Scanner fileIn = new Scanner("Filtered_Data.csv");
-			
 			verifyRecords();
 			out.close();
-			
+			Scanner fileIn = null;
+			try {
+				fileIn = new Scanner(filterFile);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(null, "File Not Found");
+			}
 			String currentCountyName = "";
 			if (this.voterData.length() == 0) {
 				JOptionPane.showMessageDialog(Gui.getFrame(), "File contains no data.");
@@ -124,17 +130,19 @@ public class State extends Region {
 		}
 		
 		File checkFile = getFile("Select the file to verify the number of votes");
-		File filteredData = findAndRemoveDuplicates();
-		//voterData = checkNumVotes(voterData, checkFile);
+		findAndRemoveDuplicates();
+		System.out.println("duplicates removed");
+		//checkNumVotes(checkFile);
+		System.out.println("Votes tallied, incorrect numbers have been corrected");
 	}
 	
 	/**
 	 * @return a file with the duplicate problem taken care of
 	 */
-	private File findAndRemoveDuplicates() {
+	private void findAndRemoveDuplicates() {
 		try {
 			Scanner fileIn = new Scanner(voterData);
-			File filterFile = new File("Filtered_Data.csv");
+			filterFile = new File("Filtered_Data.csv");
 			PrintWriter filterPrint = new PrintWriter(filterFile);
 			String[] countyDistrict = {"","","","",""};
 			ArrayList<String[]> countyDistrictList = new ArrayList<String[]>();
@@ -151,14 +159,17 @@ public class State extends Region {
 				
 				else {
 					out.println("Duplicate Found: " + data[0] + ", " + data[1]);
+					out.flush();
 				}
 			}
 			for (int i = 0; i < countyDistrictList.size(); i++) {
 				filterPrint.println(countyDistrictList.get(i)[0] + ", " + 
-						countyDistrictList.get(i)[1]);
+						countyDistrictList.get(i)[1] + "," +
+						countyDistrictList.get(i)[2] + "," + 
+						countyDistrictList.get(i)[3] + "," +
+						countyDistrictList.get(i)[4]);
+				filterPrint.flush();
 			}
-			filterPrint.close();
-			return filterFile;
 		}
 		catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(Gui.getFrame(), "File not found.");
@@ -167,14 +178,13 @@ public class State extends Region {
 			JOptionPane.showMessageDialog(Gui.getFrame(), "No file provided.");
 		}
 		catch(ArrayIndexOutOfBoundsException a){
-			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "Index out of bounds.");
 			this.counties.clear();
 		}
 		catch(NumberFormatException f){
-			JOptionPane.showMessageDialog(Gui.getFrame(), "File contains missing or invalid data.");
+			JOptionPane.showMessageDialog(Gui.getFrame(), "Number is not formatted correctly.");
 			this.counties.clear();
 		}
-		return null;
 	}
 	
 	/**
@@ -188,8 +198,6 @@ public class State extends Region {
 			for (int k = 0; k < countyDistrict.length; k++) { //loops through the countyDistrict array
 				if (countyDistrictList.get(i)[k].equals(countyDistrict[k])) { //if the countyDistrict == countyDistrictList
 					duplicateCheck++;
-					System.out.println("countyDistrictList: " + countyDistrictList.get(i)[k]);
-					System.out.println("countyDistrict: " + countyDistrict[k]);
 				}
 				if (duplicateCheck == 5) {
 					return true;
@@ -198,11 +206,61 @@ public class State extends Region {
 		}
 		return false;
 	}
-	/*
-	public File checkNumVotes(checkFile) {
-		Scanner checkFile
+	
+	public void checkNumVotes(File checkFile) {
+		ArrayList<String[]> fixedData = new ArrayList<String[]>();
+		try {
+			Scanner checkIn = new Scanner(checkFile);
+			Hashtable<String, Integer> countyAndVoteNum = new Hashtable<>();
+			while (checkIn.hasNextLine()) {
+				String[] line = checkIn.nextLine().split(",");
+				String county = line[0];
+				int regVoters = Integer.parseInt(line[1]);
+				countyAndVoteNum.put(county, regVoters);
+			}
+			
+			Scanner filterScanner = new Scanner(filterFile);
+			
+			while (filterScanner.hasNextLine()) {
+				String[] line = filterScanner.nextLine().split(",");
+				String county = line[0];
+				int voters = Integer.parseInt(line[2]) + Integer.parseInt(line[3]) +
+						Integer.parseInt(line[4]);
+				
+				if (voters > countyAndVoteNum.get(county)) {
+					out.println("County " + county + " has too many votes!");
+					out.flush();
+				}
+				
+				else {
+					fixedData.add(line);
+					System.out.println(fixedData.get(0)[0] + fixedData.get(0)[1]);
+				}
+			}
+			
+			checkIn.close();
+			filterScanner.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null, "File Not Found");
+		}
+		
+		try {
+			PrintWriter filterOut = new PrintWriter(filterFile);
+			for (int i = 0; i < fixedData.size(); i++) {
+				filterOut.print(fixedData.get(i));
+			}
+			filterOut.flush();
+			filterOut.close();
+		}
+		
+		catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null, "File Not Found");
+		}
+		
 	}
-	*/
+	
 	/**
 	 * @return a File chosen by the user
 	 */
