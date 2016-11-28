@@ -80,9 +80,6 @@ public class GrapherTest {
 		mergeFrame.pack();
 		mergeFrame.setVisible(true);
 		
-		if(true) {
-			return;
-		}
 
 		File f = new File("../Data/ExampleData.txt");
 		System.out.println(f.getAbsolutePath());

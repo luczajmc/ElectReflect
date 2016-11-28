@@ -1,6 +1,7 @@
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.TexturePaint;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 import javax.swing.BoxLayout;
@@ -13,15 +14,56 @@ import javax.swing.JViewport;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.urls.StandardCategoryURLGenerator;
+import org.jfree.chart.util.ParamChecks;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.TextAnchor;
 
 public class Grapher {
+	
+    static SyncedCategoryPlot createPlot(String categoryAxisLabel,
+    		String valueAxisLabel, CategoryDataset dataset) {
+
+        CategoryAxis categoryAxis = new CategoryAxis(categoryAxisLabel);
+        ValueAxis valueAxis = new NumberAxis(valueAxisLabel);
+
+        BarRenderer renderer = new BarRenderer();
+        
+        ItemLabelPosition position1 = new ItemLabelPosition(
+                ItemLabelAnchor.OUTSIDE3, TextAnchor.CENTER_LEFT);
+        renderer.setBasePositiveItemLabelPosition(position1);
+        ItemLabelPosition position2 = new ItemLabelPosition(
+                ItemLabelAnchor.OUTSIDE9, TextAnchor.CENTER_RIGHT);
+        renderer.setBaseNegativeItemLabelPosition(position2);
+        
+        renderer.setBaseToolTipGenerator(
+                new StandardCategoryToolTipGenerator());
+        renderer.setBaseItemURLGenerator(
+                new StandardCategoryURLGenerator());
+
+        SyncedCategoryPlot plot = new SyncedCategoryPlot(dataset, categoryAxis, valueAxis,
+                renderer);
+        plot.setOrientation(PlotOrientation.HORIZONTAL);
+        
+        return plot;
+    }
+
 	static JFreeChart chart(Region region) {
 		// TODO: label the axes
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
@@ -35,13 +77,12 @@ public class Grapher {
 			
 		}
 		
-		JFreeChart chart = ChartFactory.createBarChart("Election Results",
-				"", "", 
-				data,
-				PlotOrientation.HORIZONTAL,
-				true, true, false);
+		SyncedCategoryPlot plot = createPlot("", "", data);
 		
-		return chart;
+        JFreeChart chart = new JFreeChart("Election Results", plot);
+        
+        new StandardChartTheme("JFree").apply(chart);
+        return chart;
 	}
 	
 	final static int maxCounties = 10;
@@ -73,25 +114,11 @@ public class Grapher {
 		// TODO: see if you can't add padding / shrink the window to make sure the width of
 		// 		 the plot is always the same size
 		// FIXME: try to get rid of the extra padding that shows up in graphs with more bars
-	    return new SyncedChartPanel(
-	            chart(region),
-	            ChartPanel.DEFAULT_WIDTH, /** The default panel width. */
-	            ChartPanel.DEFAULT_HEIGHT+extraSpace(region), /** The default panel height. */
-	            ChartPanel.DEFAULT_MINIMUM_DRAW_WIDTH, /** The default limit below which chart scaling kicks in. */
-	            ChartPanel.DEFAULT_MINIMUM_DRAW_HEIGHT, /** The default limit below which chart scaling kicks in. */
-	            ChartPanel.DEFAULT_MAXIMUM_DRAW_WIDTH,
-	            ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT+extraSpace(region),
-	            ChartPanel.DEFAULT_BUFFER_USED,
-	            true,  // properties
-	            true,  // save
-	            true,  // print
-	            false,  // zoom
-	            true   // tooltips
-	        );
-	}
-	
-	static SyncedChartPanel syncedChartPanel(Region region) {
-	    return (SyncedChartPanel) chartPanel(region);
+	    ChartPanel panel = new ChartPanel(chart(region));
+	    panel.setMaximumDrawHeight(ChartPanel.DEFAULT_MAXIMUM_DRAW_HEIGHT+extraSpace(region));
+	    panel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT+extraSpace(region)));
+
+	    return panel;
 	}
 	
 	static void barGraph(Region region) {
@@ -101,15 +128,16 @@ public class Grapher {
 		//		  county
 		JSplitPane splitPane = new JSplitPane();
 
-		ChartPanel sisterPanel = chartPanel(region);
+		ChartPanel sisterPanel = new DeadChartPanel(chart(region));
 		JScrollPane sisterScrollPane = new JScrollPane(sisterPanel);
 		sisterScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		JViewport axisPort = new JViewport();
 		axisPort.add(sisterScrollPane);
 		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, 50));
 		
-		SyncedChartPanel chartPanel = syncedChartPanel(region);
-		chartPanel.setSisterPanel(sisterPanel);
+		ChartPanel chartPanel = chartPanel(region);
+		SyncedCategoryPlot plot = (SyncedCategoryPlot) chartPanel.getChart().getPlot();
+		plot.setSisterPlot(sisterPanel.getChart().getCategoryPlot());
 		
 		Paint[] paints = TexturePaintMaker.getPaints();
 		DefaultDrawingSupplier supplier = new DefaultDrawingSupplier(

@@ -29,7 +29,7 @@ public class JumpList extends JList<Region> {
 				return;
 			}
 			
-			CategoryPlot plot = chartPanel.getChart().getCategoryPlot();
+			SyncedCategoryPlot plot = (SyncedCategoryPlot) chartPanel.getChart().getCategoryPlot();
 			CategoryAxis axis = plot.getDomainAxis();
 			
 			PlotRenderingInfo info = chartPanel.getChartRenderingInfo().getPlotInfo();
@@ -44,12 +44,7 @@ public class JumpList extends JList<Region> {
 			double scale = maxVotesShown/maxVotes;
 			
 			plot.zoomRangeAxes(0, scale, info, destination);
-			
-			ChartPanel sisterPanel = ((SyncedChartPanel) chartPanel).getSisterPanel();
-			PlotRenderingInfo sisterInfo = sisterPanel.getChartRenderingInfo().getPlotInfo();
-			CategoryPlot sisterPlot = sisterPanel.getChart().getCategoryPlot();
-			sisterPlot.zoomRangeAxes(0, scale, sisterInfo, new Point(0,0));
-			
+						
 			pane.getViewport().setViewPosition(destination);
 
 			
