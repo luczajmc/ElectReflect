@@ -1,4 +1,6 @@
 import java.awt.Dimension;
+import java.awt.Paint;
+import java.awt.TexturePaint;
 import java.util.ArrayList;
 import java.util.Comparator;
 import javax.swing.BoxLayout;
@@ -11,15 +13,17 @@ import javax.swing.JViewport;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 public class Grapher {
 	static JFreeChart chart(Region region) {
 		// TODO: label the axes
-		// TODO: figure out how to handle the fact that some counties are _so_ much larger
-		//		 than some others
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		ArrayList<Region> subregions = region.getSubregions();
 		
@@ -95,7 +99,6 @@ public class Grapher {
 		// TODO: maybe sync the horizontal scrolling of the two charts also
 		// FIXME: the plot should start at the same zoom as if you jump to the largest
 		//		  county
-		// FIXME: the bottom plot should always have a scrollbar also 
 		JSplitPane splitPane = new JSplitPane();
 
 		ChartPanel sisterPanel = chartPanel(region);
@@ -107,6 +110,19 @@ public class Grapher {
 		
 		SyncedChartPanel chartPanel = syncedChartPanel(region);
 		chartPanel.setSisterPanel(sisterPanel);
+		
+		Paint[] paints = TexturePaintMaker.getPaints();
+		DefaultDrawingSupplier supplier = new DefaultDrawingSupplier(
+				paints,
+				DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE,
+				DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,
+				DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE,
+				DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE);
+		chartPanel.getChart().getCategoryPlot().setDrawingSupplier(supplier, true);
+
+		CategoryItemRenderer renderer = chartPanel.getChart().getCategoryPlot().getRenderer();
+		BarRenderer barRenderer = (BarRenderer) renderer;
+		barRenderer.setBarPainter(new StandardBarPainter());
 
 		JViewport port = new JViewport();
 		port.add(chartPanel);
@@ -114,6 +130,7 @@ public class Grapher {
 		JScrollPane scrollPane = new JScrollPane(port);
 		int scrollBarSize = 30;
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT+scrollBarSize));
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JSplitPane chartPane = new JSplitPane();
 		chartPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -243,7 +260,7 @@ public class Grapher {
 			displayText += describe(subregion);				
 		}
 		
-		displayText += "\n";
+		displayText += "===\n";
 		displayText += describe(region);
 		
 		JTextArea displayArea = new JTextArea(displayText);

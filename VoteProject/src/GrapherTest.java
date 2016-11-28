@@ -16,7 +16,7 @@ public class GrapherTest {
 	}
 	static Region gerrymander() {
 		Gerrymander g = new Gerrymander("Southwest Ohio");
-		for (int i=0; i<20; i++) {
+		for (int i=0; i<1; i++) {
 			g.addRegion(region(i));
 		}
 		return g;
@@ -44,9 +44,6 @@ public class GrapherTest {
 		frame.pack();
 		frame.setVisible(true);
 		
-		if (true) {
-			return;
-		}
 		File f = new File("../Data/ExampleData.txt");
 		System.out.println(f.getAbsolutePath());
 		System.out.println(f.exists());
@@ -71,5 +68,8 @@ public class GrapherTest {
 		County county = new County("Butler", 38, 20, 94);
 		Grapher.pieChartCounty(county);
 		
+		Region g = gerrymander();
+		Grapher.barGraph(g);
+		Grapher.text(g);
 	}
 }
