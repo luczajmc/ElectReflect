@@ -70,5 +70,6 @@ public class GrapherTest {
 		
 		Region g = gerrymander();
 		Grapher.barGraph(g);
+		Grapher.text(g);
 	}
 }

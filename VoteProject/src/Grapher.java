@@ -260,7 +260,7 @@ public class Grapher {
 			displayText += describe(subregion);				
 		}
 		
-		displayText += "\n";
+		displayText += "===\n";
 		displayText += describe(region);
 		
 		JTextArea displayArea = new JTextArea(displayText);
