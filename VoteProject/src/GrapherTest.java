@@ -1,7 +1,10 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Comparator;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
@@ -64,7 +67,15 @@ public class GrapherTest {
 
 		mergeFrame.add(regionList);
 		
+		mergeFrame.add(new SortMenu(RegionSorter.getOrderings().toArray(), gerryList));
+		
 		mergeFrame.add(new MergeButton(gerryList, regionList));
+		
+		mergeFrame.add(new SplitButton(regionList, gerryList));
+		
+		mergeFrame.add(new RemoveButton(gerryList));
+		
+		mergeFrame.add(new GraphButton(regionList));
 		
 		mergeFrame.pack();
 		mergeFrame.setVisible(true);

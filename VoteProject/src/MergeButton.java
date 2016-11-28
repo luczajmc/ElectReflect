@@ -32,6 +32,7 @@ public class MergeButton extends JButton {
 	}
 	
 	public MergeButton(JList<Region> source, JList<Region> destination) {
+		super("Merge");
 		this.source = source;
 		this.destination = destination;
 		
