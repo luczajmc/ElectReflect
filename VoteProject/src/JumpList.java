@@ -25,6 +25,10 @@ public class JumpList extends JList<Region> {
 		
 
 		void jumpToCounty() {
+			if (this.getSelectedValue() == null) {
+				return;
+			}
+			
 			CategoryPlot plot = chartPanel.getChart().getCategoryPlot();
 			CategoryAxis axis = plot.getDomainAxis();
 			
