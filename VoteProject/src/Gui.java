@@ -155,6 +155,7 @@ public class Gui extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {				
 				state = new State();
 				regions = new Region[state.getCounties().size()];
+				System.out.println(state.getCounties().size());
 				
 				for(int i = 0; i < regions.length; i++){
 					regions[i] = state.getCounties().get(i);
@@ -165,6 +166,7 @@ public class Gui extends JPanel{
 				if(regions.length >= 1){
 					showData.setEnabled(true);
 					addSubregion.setEnabled(true);
+					removeSubregion.setEnabled(true);
 				}
 			}
 			
@@ -223,7 +225,7 @@ public class Gui extends JPanel{
 		addSubregion.setText("<html>" + "Add County" + "<html>");
 		addSubregion.setLocation(163, 190);
 		addSubregion.setEnabled(false);
-		addSubregion.setSize(100,50);
+		addSubregion.setSize(100,25);
 		addSubregion.setBackground(Color.white);
 		// TODO: change tooltip
 		addSubregion.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
@@ -232,24 +234,19 @@ public class Gui extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				selected = new Region[regions.length];
 				
-//				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
-//					selected[i] = regionSelect.getSelectedValuesList().get(i);
-//				}
-				for(Region r : regionSelect.getSelectedValuesList()){
-					selected[numItems] = regionSelect.getSelectedValuesList().get(numItems);
+				for(int i = numItems; i < regionSelect.getSelectedValuesList().size(); i++){
+					selected[i] = regionSelect.getSelectedValuesList().get(i);
 					numItems++;
-				}
-				
+				}		
 				selectedValues.setListData(selected);
 			}
-			
 		});
 		
 		add(removeSubregion);
 		removeSubregion.setText("<html>" + "Remove County" + "<html>");
-		removeSubregion.setLocation(163, 240);
+		removeSubregion.setLocation(163, 215);
 		removeSubregion.setEnabled(false);
-		removeSubregion.setSize(100,50);
+		removeSubregion.setSize(100,25);
 		removeSubregion.setBackground(Color.white);
 		// TODO: change tool tip
 		removeSubregion.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
@@ -263,7 +260,6 @@ public class Gui extends JPanel{
 						}
 					}
 				}
-				
 				
 				selectedValues.setListData(selected);
 			}
