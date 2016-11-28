@@ -1,14 +1,12 @@
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.AttributeSet.CharacterAttribute;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
 import java.util.Map;
-
 /**
  * This class is the user interface for the Elect Reflect project for CSE 201.
  * It allows users to select files, select displays, and look at voter data.
@@ -19,7 +17,6 @@ import java.util.Map;
  * @update 2016-11-26:  Added JToolTips to the JButtons
  *
  */
-
 public class Gui extends JPanel{
 	private static JFrame window = new JFrame("ElectReflect");
 	private static JFrame frame = new JFrame("Message");
@@ -27,6 +24,7 @@ public class Gui extends JPanel{
 	
 	private JButton addRegion = new JButton();
 	private JButton showData = new JButton();
+	private JButton addSubregion = new JButton();
 	
 	private JCheckBox barGraph = new JCheckBox("Bar Graph");
 	private JCheckBox pieChart = new JCheckBox("Pie Chart");
@@ -43,6 +41,10 @@ public class Gui extends JPanel{
 	private JToolTip addStateTip = new JToolTip();
 	
 	public Region[] regions;
+	public Region[] selected;
+	public State state;
+	
+	public int numItems = 0;
 	
 	public Gui(){
 		
@@ -97,6 +99,16 @@ public class Gui extends JPanel{
 		add(title);		
 		
 		//========================================================================== JCheckBoxes
+
+		add(allDisplays); // an option to select all three displays
+		allDisplays.setBackground(Color.white);
+		allDisplays.setSize(125,25);
+		allDisplays.setLocation(163, 80);
+		
+		add(barGraph); // an option to just display the bar graph
+		barGraph.setBackground(Color.white);
+		barGraph.setSize(125, 25);
+		barGraph.setLocation(163, 105);
 		
 		add(allDisplays); // an option to select all three displays
 		allDisplays.setBackground(Color.white);
@@ -143,7 +155,7 @@ public class Gui extends JPanel{
 		addRegion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {				
-				State state = new State();
+				state = new State();
 				regions = new Region[state.getCounties().size()];
 				
 				for(int i = 0; i < regions.length; i++){
@@ -174,7 +186,7 @@ public class Gui extends JPanel{
 		showData.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				Region[] selected = new Region[regionSelect.getSelectedValuesList().size()];
+				selected = new Region[regionSelect.getSelectedValuesList().size()];
 				
 				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
 					selected[i] = regionSelect.getSelectedValuesList().get(i);
@@ -192,10 +204,42 @@ public class Gui extends JPanel{
 				}
 				if(pieChart.isSelected()){
 					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+					return; // this prevents the user from selecting all check boxes and having two of each display pop up
+				}
+				if(barGraph.isSelected()){
+					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
+				}
+				if(pieChart.isSelected()){
+					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
 				if(textSum.isSelected()){
 					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
+			}
+			
+		});
+		
+		add(addSubregion);
+		addSubregion.setText("<html>" + "Add County" + "<html>");
+		addSubregion.setLocation(163, 190);
+		addSubregion.setSize(100,50);
+		addSubregion.setBackground(Color.white);
+		addSubregion.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
+		addSubregion.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent arg0) {
+				selected = new Region[regions.length];
+				
+//				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+//					selected[i] = regionSelect.getSelectedValuesList().get(i);
+//				}
+				for(Region r : regionSelect.getSelectedValuesList()){
+					selected[numItems] = regionSelect.getSelectedValuesList().get(numItems);
+					numItems++;
+				}
+				
+				selectedValues.setListData(selected);
 			}
 			
 		});
@@ -219,5 +263,4 @@ public class Gui extends JPanel{
 	public static void main(String[] args){
 		new Gui();
 	}
-
 }

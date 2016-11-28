@@ -1,35 +1,19 @@
 import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.PlotRenderingInfo;
-import org.jfree.chart.plot.Zoomable;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.ui.RectangleEdge;
 
 public class Grapher {
 	static JFreeChart chart(Region region) {
@@ -39,7 +23,7 @@ public class Grapher {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		ArrayList<Region> subregions = region.getSubregions();
 		
-		subregions = sortHigherPopulationsFirst(subregions);
+		subregions.sort(RegionSorter.reverse(RegionSorter.byPopulation()));
 		for (Region r : subregions) {
 			data.setValue(r.getRepVotes(), "Republican", r.getName());
 			data.setValue(r.getDemVotes(), "Democrat", r.getName());
@@ -105,25 +89,6 @@ public class Grapher {
 	static SyncedChartPanel syncedChartPanel(Region region) {
 	    return (SyncedChartPanel) chartPanel(region);
 	}
-
-	static ArrayList<Region> sortHigherPopulationsFirst(ArrayList<Region> regions) {
-		ArrayList<Region> regionsClone = new ArrayList<>();
-		for (Region region : regions) {
-			regionsClone.add(region);
-		}
-		regionsClone.sort(new Comparator<Region>() {
-
-			@Override
-			public int compare(Region o1, Region o2) {
-				Region here = (Region) o1;
-				Region there = (Region) o2;
-				
-				return Integer.compare(there.getTotalVotes(), here.getTotalVotes()); // sort largest counties first
-			}
-			
-		});
-		return regionsClone;
-	}
 	
 	static void barGraph(Region region) {
 		// FIXME: I'm not sure if this works for Regions that don't have any subregions
@@ -163,7 +128,7 @@ public class Grapher {
 		
 		Region[] subregions = new Region[region.getSubregions().size()];
 		ArrayList<Region> subregionsList = region.getSubregions();
-		subregionsList = sortHigherPopulationsFirst(subregionsList);
+		subregionsList.sort(RegionSorter.reverse(RegionSorter.byPopulation()));
 		subregions = subregionsList.toArray(subregions);
 		JumpList list = new JumpList(subregions, scrollPane, chartPanel);
 		JScrollPane scrollableList = new JScrollPane(list);
@@ -176,6 +141,8 @@ public class Grapher {
 		JFrame frame = new JFrame("Election Results");
 		frame.add(splitPane);
 		frame.pack();
+		
+		frame.setLocationByPlatform(true);
 		frame.setVisible(true);
 
 	}
@@ -233,6 +200,8 @@ public class Grapher {
 		JFrame frame = new JFrame("Election Results");
 		frame.add(splitPane);
 		frame.pack();
+		
+		frame.setLocationByPlatform(true);
 		frame.setVisible(true);
 	}
 	public static void pieChartState(State state) {
@@ -284,6 +253,8 @@ public class Grapher {
 		JFrame frame = new JFrame("Election Results");
 		frame.add(scrollPane);
 		frame.pack();
+		
+		frame.setLocationByPlatform(true);
 		frame.setVisible(true);
 	}
 	
