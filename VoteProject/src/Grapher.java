@@ -95,6 +95,7 @@ public class Grapher {
 		// TODO: maybe sync the horizontal scrolling of the two charts also
 		// FIXME: the plot should start at the same zoom as if you jump to the largest
 		//		  county
+		// FIXME: the bottom plot should always have a scrollbar also 
 		JSplitPane splitPane = new JSplitPane();
 
 		ChartPanel sisterPanel = chartPanel(region);
