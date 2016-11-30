@@ -218,10 +218,14 @@ public class Grapher {
 		data.setValue("Democrat", region.getDemVotes());
 		data.setValue("Independent", region.getIndVotes());
 		
-		JFreeChart chart = ChartFactory.createPieChart("Election Results", data,
-				true, true, false);
-		PiePlot plot = (PiePlot) chart.getPlot();
-		plot.setExplodePercent("Independent", 0.10f);
+		ZoomablePiePlot plot = new ZoomablePiePlot();
+		plot.setDataset(data);
+
+		plot.trimSlice("Republican", 0.01);
+		plot.trimSlice("Democrat", 0.01);
+ 
+		JFreeChart chart = new JFreeChart("Election Results", plot);
+	
 
 		ChartPanel chartPanel = new ChartPanel(chart);
 		splitPane.setLeftComponent(chartPanel);
