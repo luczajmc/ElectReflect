@@ -18,6 +18,7 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.urls.StandardCategoryURLGenerator;
@@ -193,6 +194,7 @@ public class Grapher {
 	}
 	
 	static String regionList(Region region) {
+		// TODO: show both subregions _and_ the name of the region
 		String name = region.getName();
 		
 		if (name != null) {
@@ -218,6 +220,8 @@ public class Grapher {
 		
 		JFreeChart chart = ChartFactory.createPieChart("Election Results", data,
 				true, true, false);
+		PiePlot plot = (PiePlot) chart.getPlot();
+		plot.setExplodePercent("Independent", 0.10f);
 
 		ChartPanel chartPanel = new ChartPanel(chart);
 		splitPane.setLeftComponent(chartPanel);
