@@ -3,6 +3,9 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.Map;
 /**
@@ -32,6 +35,12 @@ public class Gui extends JPanel{
 	
 	private JList<Region> regionSelect = new JList<Region>();
 	private JList<Region> selectedValues = new JList<Region>();
+	
+	private JMenuBar menu = new JMenuBar();
+	private JMenu file = new JMenu();
+	private JMenu help = new JMenu();
+	private JMenuItem save = new JMenuItem(); //TODO: save data selected
+	private JMenuItem exit = new JMenuItem();
 	
 	private JTextPane title = new JTextPane();
 	private JScrollPane regionPane = new JScrollPane(regionSelect);
@@ -90,7 +99,7 @@ public class Gui extends JPanel{
 		title.setVisible(true);
 		title.setText("ElectReflect");
 		title.setSize(450,65);
-		title.setLocation(0,0);
+		title.setLocation(0,20);
 		title.setFont(font.deriveFont(attr));
 		title.setBackground(Color.decode("#FE4841"));
 		title.setAlignmentX(JTextPane.CENTER_ALIGNMENT);
@@ -103,41 +112,56 @@ public class Gui extends JPanel{
 		add(allDisplays); // an option to select all three displays
 		allDisplays.setBackground(Color.white);
 		allDisplays.setSize(125,25);
-		allDisplays.setLocation(163, 80);
+		allDisplays.setLocation(163, 90);
 		
 		add(barGraph); // an option to just display the bar graph
 		barGraph.setBackground(Color.white);
 		barGraph.setSize(125, 25);
-		barGraph.setLocation(163, 105);
-		
-		add(allDisplays); // an option to select all three displays
-		allDisplays.setBackground(Color.white);
-		allDisplays.setSize(125,25);
-		allDisplays.setLocation(163, 80);
-		
-		add(barGraph); // an option to just display the bar graph
-		barGraph.setBackground(Color.white);
-		barGraph.setSize(125, 25);
-		barGraph.setLocation(163, 105);
+		barGraph.setLocation(163, 115);
 		
 		add(pieChart); // an option to just display the pie chart
 		pieChart.setBackground(Color.white);
 		pieChart.setSize(125, 25);
-		pieChart.setLocation(163, 130);
+		pieChart.setLocation(163, 140);
 		
 		add(textSum); // an option to just display a text summary
 		textSum.setBackground(Color.white);
 		textSum.setSize(125, 25);
-		textSum.setLocation(163, 155);
+		textSum.setLocation(163, 165);
 		
 		//========================================================================== JTextPanes
 		add(regionPane);
-		regionPane.setLocation(10, 80);
+		regionPane.setLocation(10, 90);
 		regionPane.setSize(125, 100);
 		
 		add(gerrymanderPane);
-		gerrymanderPane.setLocation(300, 80);
+		gerrymanderPane.setLocation(300, 90);
 		gerrymanderPane.setSize(125,100);
+		
+		//========================================================================== Menu Bar
+		
+		add(menu);
+		menu.setSize(window.getWidth(), 20);
+		menu.setLocation(0, 0);
+		menu.setVisible(true);
+		menu.add(file);
+		menu.add(help);
+		
+		file.setText("File");
+		file.add(exit);
+		
+		help.setText("Help");
+		
+		exit.setText("Exit");
+		exit.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+				
+			}
+			
+		});
 		
 		//========================================================================== JButtons
 		/**
@@ -148,7 +172,7 @@ public class Gui extends JPanel{
 		 */
 		add(addRegion);
 		addRegion.setText("Add State");
-		addRegion.setLocation(22,190);
+		addRegion.setLocation(22,195);
 		addRegion.setSize(100,50);
 		addRegion.setToolTipText("<html>" + "Add a text or csv file" + "<br>" + "with voter data." + "<html>");
 		addRegion.setBackground(Color.white);
@@ -182,7 +206,7 @@ public class Gui extends JPanel{
 		add(showData);
 		showData.setText("<html>" + "Show Data" + "<html>");
 		showData.setEnabled(false);
-		showData.setLocation(312,190);
+		showData.setLocation(312,195);
 		showData.setSize(100,50);
 		showData.setBackground(Color.white);
 		showData.setToolTipText("<html>" + "Opens selected displays" + "<br>" + "in a separate window." + "<html>");
@@ -208,12 +232,6 @@ public class Gui extends JPanel{
 				if(pieChart.isSelected()){
 					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
-				if(barGraph.isSelected()){
-					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
-				}
-				if(pieChart.isSelected()){
-					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
-				}
 				if(textSum.isSelected()){
 					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
 				}
@@ -223,7 +241,7 @@ public class Gui extends JPanel{
 		
 		add(addSubregion);
 		addSubregion.setText("<html>" + "Add County" + "<html>");
-		addSubregion.setLocation(153, 190);
+		addSubregion.setLocation(153, 195);
 		addSubregion.setEnabled(false);
 		addSubregion.setSize(125,25);
 		addSubregion.setBackground(Color.white);
@@ -245,7 +263,7 @@ public class Gui extends JPanel{
 		
 		add(removeSubregion);
 		removeSubregion.setText("<html>" + "Remove County" + "<html>");
-		removeSubregion.setLocation(153, 215);
+		removeSubregion.setLocation(153, 220);
 		removeSubregion.setEnabled(false);
 		removeSubregion.setSize(125,25);
 		removeSubregion.setBackground(Color.white);
