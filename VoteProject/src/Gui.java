@@ -161,7 +161,7 @@ public class Gui extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				File userGuide = new File("User Guide.pdf");
+				File userGuide = new File("User_Guide.pdf");
 				try {
 					Desktop.getDesktop().open(userGuide);
 				} catch (IOException e1) {
