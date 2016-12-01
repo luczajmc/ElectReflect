@@ -108,4 +108,31 @@ public class DataHandler {
 	public void addError(int error) {
 		errors.add(error);
 	}
+	
+	private void err(int error, String reference) {
+		String message;
+		switch (error) {
+			case -1: message = "Extraction Error at " + reference ;
+			break;
+			case -2: message = "File not found at " + reference;
+			break;
+			case -3: message = "data format error at " + reference;
+			break;
+			case -4: message = "duplicate region found at " + reference;
+			break;
+			case -5: message = "too many voters found at " + reference;
+			break;
+			case -6: message = "negative voters found at " + reference;
+			break;
+			case -7: message = "missing value at " + reference;
+			break;
+			case -8: message = "extra symbols found at " + reference;
+			break;
+			case -9: message = "data is corrupt at " + reference;
+			break;
+			case -10: message = "data has been tampered with at " + reference;
+			break;
+			default: message = "error not recognized, error number " + Integer.toString(error);
+		}
+	}
 }
