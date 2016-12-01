@@ -6,6 +6,8 @@ import java.awt.font.TextAttribute;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 /**
@@ -41,6 +43,7 @@ public class Gui extends JPanel{
 	private JMenu help = new JMenu();
 	private JMenuItem save = new JMenuItem(); //TODO: save data selected
 	private JMenuItem exit = new JMenuItem();
+	private JMenuItem userGuide = new JMenuItem();
 	
 	private JTextPane title = new JTextPane();
 	private JScrollPane regionPane = new JScrollPane(regionSelect);
@@ -151,6 +154,22 @@ public class Gui extends JPanel{
 		file.add(exit);
 		
 		help.setText("Help");
+		help.add(userGuide);
+		userGuide.setText("User Guide");
+		userGuide.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				File userGuide = new File("User Guide.pdf");
+				try {
+					Desktop.getDesktop().open(userGuide);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		exit.setText("Exit");
 		exit.addActionListener(new ActionListener() {
@@ -249,12 +268,23 @@ public class Gui extends JPanel{
 		addSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
+				ArrayList<Region> oldSelection = new ArrayList<Region>();
 				if(selected == null){
-					selected = new Region[regionSelect.getSelectedValuesList().size()];
+					selected = new Region[regions.length];
+				} else {
+					for(int i = 0; i < oldSelection.size(); i++){
+						while(selected[i] != null)
+						oldSelection.set(i, selected[i]);
+					}
 				}
 				
 				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
 					selected[i] = regionSelect.getSelectedValuesList().get(i);
+					oldSelection.add(regionSelect.getSelectedValuesList().get(i));
+				}
+				
+				for(int i = 0; i <oldSelection.size(); i++){
+					selected[i] = oldSelection.get(i);
 				}
 				
 				selectedValues.setListData(selected);
