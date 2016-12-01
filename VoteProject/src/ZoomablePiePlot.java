@@ -179,9 +179,11 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.RadialGradientPaint;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Arc2D;
@@ -216,6 +218,7 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PiePlotState;
 import org.jfree.chart.plot.PlotRenderingInfo;
+import org.jfree.chart.plot.PlotState;
 import org.jfree.chart.urls.PieURLGenerator;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.ResourceBundleWrapper;
@@ -270,7 +273,7 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 	   	this.setDataset(zoomedDataset);
 
     }
-    
+
     public void zoomSelection(double startAngle, double arcAngle) {
     	double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
     	
@@ -323,18 +326,118 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 		return arcAngleFrom(startAngle, angle) >= arcAngle;
 	}
 	
-	double[] overlapOnto(double pieStart, double pieEnd, double sweepStart, double sweepEnd) {
-		if (contains(pieStart, sweepStart, sweepEnd)) {
-			sweepStart = pieStart;
+	double[] getSlice(Comparable key) {
+    	double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
+    	
+    	double pieStart = this.getStartAngle();
+    	double pieEnd;
+    	
+    	// this.direction must be CLOCKWISE at the current time
+        if (this.getDirection() != Rotation.CLOCKWISE) {
+            throw new IllegalStateException("Rotation type not supported.");
+        }
+        
+        PieDataset dataset = this.getDataset();
+        for (int i=0; i<dataset.getKeys().size(); i++) {
+        	double value = dataset.getValue(i).doubleValue();
+        	pieEnd = pieStart - value / total * 360.0;
+        	
+        	if (key==dataset.getKey(i)) {
+            	double pieStartRadians = Math.toRadians(pieStart);
+            	double pieEndRadians = Math.toRadians(pieEnd);
+            	double pieArc = arcAngleFrom(pieStartRadians, pieEndRadians);
+
+        		double[] arc = {pieStartRadians, pieArc};
+        		return arc;
+        	}
+        	pieStart = pieEnd;
+        }
+		return null;
+	}
+	
+	boolean overlaps(double pieStart, double pieArc, double sweepStart, double sweepArc) {
+		double pieEnd = pieStart+pieArc;
+		double sweepEnd = sweepStart+sweepArc;
+
+		return contains(pieStart, sweepStart, sweepArc) ||
+				contains(pieEnd, sweepStart, sweepArc) ||
+				contains(sweepStart, pieStart, pieArc) ||
+				contains(sweepEnd, pieStart, pieArc);
+	}
+	double[] headOverlapOnto(double pieStart, double pieArc, double sweepStart, double sweepArc) {
+		double pieEnd = pieStart+pieArc;
+		double sweepEnd = sweepStart+sweepArc;
+		
+		if (!overlaps(pieStart, pieArc, sweepStart, sweepArc)) {
+			double[] overlap = {pieStart, 0.0};
+			return overlap;
 		}
-		if (contains(pieEnd, sweepStart, sweepEnd)) {
-			sweepEnd = pieEnd;
-		}
-		if (!contains(sweepStart, pieStart, pieEnd) && !contains(sweepEnd, pieStart, pieEnd)) {
-			sweepEnd = sweepStart;
+		else {
+			if (contains(pieEnd, sweepStart, sweepArc)) {
+				sweepEnd = pieEnd;
+				sweepArc = arcAngleFrom(sweepStart, sweepEnd);
+			}
+			if (contains(pieStart, sweepStart, sweepArc)) {
+				sweepStart = pieStart;
+				sweepArc = arcAngleFrom(sweepStart, sweepEnd);
+			}
+			
+			double[] overlap = {sweepStart, sweepArc};
+			return overlap;
+
 		}
 		
-		double[] overlap = {sweepStart, sweepEnd};
-		return overlap;
+	}
+	
+	double[] tailOverlapOnto(double pieStart, double pieArc, double sweepStart, double sweepArc) {
+		double pieEnd = pieStart+pieArc;
+		double sweepEnd = sweepStart+sweepArc;
+		
+		if (!overlaps(pieStart, pieArc, sweepStart, sweepArc)) {
+			double[] overlap = {pieStart, 0.0};
+			return overlap;
+		}
+		else {
+			if (contains(pieStart, sweepStart, sweepArc)) {
+				sweepStart = pieStart;
+				sweepArc = arcAngleFrom(sweepStart, sweepEnd);
+			}
+			if (contains(pieEnd, sweepStart, sweepArc)) {
+				sweepEnd = pieEnd;
+				sweepArc = arcAngleFrom(sweepStart, sweepEnd);
+			}
+			
+			double[] overlap = {sweepStart, sweepArc};
+			return overlap;
+
+		}
+		
+	}
+
+	double[] overlapOnto(double pieStart, double pieArc, double sweepStart, double sweepArc) {
+		double pieEnd = pieStart+pieArc;
+		double sweepEnd = sweepStart+sweepArc;
+		
+		double overlapStart = sweepStart;
+		double overlapEnd = sweepEnd;
+		
+		if (!overlaps(pieStart, pieArc, sweepStart, sweepArc)) {
+			double[] overlap = {pieStart, 0.0};
+			return overlap;
+		}
+		else {
+			if (contains(pieStart, sweepStart, sweepArc)) {
+				overlapStart = pieStart;
+			}
+			if (contains(pieEnd, sweepStart, sweepArc)) {
+				overlapEnd = pieEnd;
+			}
+			
+			double overlapArc = arcAngleFrom(overlapStart, overlapEnd);
+			double[] overlap = {overlapStart, overlapArc};
+			return overlap;
+
+		}
+		
 	}
 }
