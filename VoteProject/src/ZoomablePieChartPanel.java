@@ -23,6 +23,8 @@ public class ZoomablePieChartPanel extends ChartPanel {
 
 	double startAngle = 0.0f;
 	double endAngle = 0.0f;
+	double arcAngle = 0.0f;
+	Color highlightColor = Color.gray;
 	
     public ZoomablePieChartPanel(JFreeChart chart) {
 		super(chart);
@@ -32,31 +34,60 @@ public class ZoomablePieChartPanel extends ChartPanel {
     @Override
     public void paintComponent(Graphics g) {
 		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
-		PiePlot plot = (PiePlot) this.getChart().getPlot();
+		ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
 		Rectangle2D dataArea = info.getDataArea();
 
     	super.paintComponent(g);
-    	fillArc(g, this.startAngle, this.endAngle-this.startAngle);
+    	this.highlightColor = Color.gray;
+    	if (this.arcAngle<0) { // that is, if you're going a net clockwise
+    		//fillArc(g, this.startAngle, this.arcAngle);
+    	}
+    	
+    	this.highlightColor = Color.red;
+    	double[] repArc = plot.getSlice("Republican");
+    	double[] repOverlap = plot.overlapOnto(repArc[0], repArc[1], this.startAngle, this.arcAngle);
+    	fillArc(g, repOverlap[0], repOverlap[1]);
+    	System.out.println("Republican: "+repOverlap[1]/repArc[1]);
+    
+    	this.highlightColor = Color.blue;
+    	double[] demArc = plot.getSlice("Democrat");
+    	double[] demOverlap = plot.overlapOnto(demArc[0], demArc[1], this.startAngle, this.arcAngle);
+    	fillArc(g, demOverlap[0], demOverlap[1]);
+    	System.out.println("Democrat: "+demOverlap[1]/demArc[1]);
+
+    	this.highlightColor = Color.green;
+    	double[] indArc = plot.getSlice("Independent");
+    	double[] indOverlap = plot.overlapOnto(indArc[0], indArc[1], this.startAngle, this.arcAngle);
+    	fillArc(g, indOverlap[0], indOverlap[1]);
+    	System.out.println("Independent: "+indOverlap[1]/indArc[1]);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
     	this.startAngle = getAngle(e.getPoint());
+    	this.endAngle = this.startAngle;
+    	this.arcAngle = 0.0f;
     }
     @Override
     public void mouseDragged(MouseEvent e) {
+    	// TODO: this should probably not do anything if you're dragging from off of another component
     	double endAngle = getAngle(e.getPoint());
-    	if (endAngle-this.startAngle > 0) {
-    		endAngle -= 2*Math.PI;
-    	}
     	
-    	this.endAngle = endAngle;
+    	boolean isClockwise = isClockwiseFrom(this.endAngle, endAngle); // you're going clockwise
     	
+    	this.arcAngle += normalize(endAngle-this.endAngle);
+    	this.endAngle = endAngle;    
+    	
+    	System.out.println(arcAngle);
+    	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
+    	plot.zoomSelection(this.startAngle, this.arcAngle);
     	this.repaint();
     }
     @Override
     public void mouseReleased(MouseEvent e) {
     	this.endAngle = this.startAngle;
+    	this.arcAngle = 0.0;
+
     	this.repaint();
     }
     
@@ -100,10 +131,37 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		Arc2D.Double arc = new Arc2D.Double(pieArea, startAngleDegrees,
 				arcAngleDegrees, Arc2D.PIE);
 		
-    	g.setXORMode(Color.gray);
+    	g.setXORMode(this.highlightColor);
 		g.fillArc((int) arc.getMinX(), (int) arc.getMinY(), (int) arc.getWidth(), 
 				(int) arc.getHeight(), (int) startAngleDegrees,
 				(int) arcAngleDegrees);
 		g.setPaintMode();
     }
+	
+	double normalize(double angle) {
+		while (angle < -Math.PI) {
+			angle += 2*Math.PI;
+		}
+		while (angle > Math.PI) {
+			angle -= 2*Math.PI;
+		}
+		return angle;
+ 	}
+	
+	boolean isClockwiseFrom(double startAngle, double endAngle) {
+		if (normalize(endAngle-startAngle) <= 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	double arcAngleFrom(double startAngle, double endAngle) {
+		double arcAngle = normalize(endAngle-startAngle);
+		if (arcAngle > 0) {
+			arcAngle -= 2*Math.PI;
+		}
+		return arcAngle;
+	}
 }
