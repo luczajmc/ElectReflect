@@ -3,10 +3,7 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.io.File;
+import java.io.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -150,9 +147,6 @@ public class Gui extends JPanel{
 		menu.add(file);
 		menu.add(help);
 		
-		file.setText("File");
-		file.add(exit);
-		
 		help.setText("Help");
 		help.add(userGuide);
 		userGuide.setText("User Guide");
@@ -166,6 +160,21 @@ public class Gui extends JPanel{
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(null, "File Not Found");
 				}
+			}
+		});
+		
+		file.setText("File");
+		file.add(exit);
+		file.add(save);
+		
+		save.setText("Save");
+		save.setToolTipText("Save current selected data.");
+		save.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO
+				
 			}
 		});
 		
