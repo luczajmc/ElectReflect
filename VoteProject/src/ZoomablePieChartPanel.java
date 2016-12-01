@@ -21,9 +21,9 @@ import org.jfree.chart.plot.PlotRenderingInfo;
  */
 public class ZoomablePieChartPanel extends ChartPanel {
 
-	Point2D start = new Point(0,0);
-	Point2D end = new Point(0,0);
-    
+	double startAngle = 0.0f;
+	double endAngle = 0.0f;
+	
     public ZoomablePieChartPanel(JFreeChart chart) {
 		super(chart);
 		// TODO Auto-generated constructor stub
@@ -36,24 +36,50 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		Rectangle2D dataArea = info.getDataArea();
 
     	super.paintComponent(g);
-    	fillArc(g, this.start, this.end);
+    	fillArc(g, this.startAngle, this.endAngle-this.startAngle);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-    	this.start = e.getPoint();
+    	this.startAngle = getAngle(e.getPoint());
     }
     @Override
     public void mouseDragged(MouseEvent e) {
-    	this.end = e.getPoint();
+    	double endAngle = getAngle(e.getPoint());
+    	if (endAngle-this.startAngle > 0) {
+    		endAngle -= 2*Math.PI;
+    	}
+    	
+    	this.endAngle = endAngle;
+    	
     	this.repaint();
     }
     @Override
     public void mouseReleased(MouseEvent e) {
-    	this.start = this.end;
+    	this.endAngle = this.startAngle;
     	this.repaint();
     }
-	public void fillArc(Graphics g, Point2D start, Point2D end) {
+    
+    double getAngle(Point2D endpoint) {
+		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
+		Rectangle2D dataArea = info.getDataArea();
+
+		double centerX = dataArea.getCenterX();
+		double centerY = dataArea.getCenterY();
+		
+		double endX = endpoint.getX();
+		double endY = endpoint.getY();
+		
+		double xOffset = endX-centerX;
+		double yOffset = -(endY-centerY); // computer coordinates start at the top
+		
+		double angle = Math.atan2(yOffset, xOffset);
+		
+		return angle;
+
+    }
+	public void fillArc(Graphics g, double startAngle, double arcAngle) {
+		// TODO: this should never go counterclockwise
 		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
 		Rectangle2D dataArea = info.getDataArea();
 
@@ -67,29 +93,12 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		double pieOffsetY = centerY-radius;
 		Rectangle2D pieArea = new Rectangle((int) (pieOffsetX), (int) (pieOffsetY),
 				(int) diameter, (int) diameter);
-		
-		double startX = start.getX();
-		double startY = start.getY();
-		
-		double startWidth = startX-centerX;
-		double startHeight = -(startY-centerY); // computer coordinates start at the top
-		
-		double startAngle = Math.atan2(startHeight, startWidth);
-		
-		double endX = end.getX();
-		double endY = end.getY();
-	
-		double endWidth = endX-centerX;
-		double endHeight = -(endY-centerY);
-
-		double endAngle = Math.atan2(endHeight, endWidth);
-		
-		double arcAngle = endAngle-startAngle;
-		
+				
 		double startAngleDegrees = Math.toDegrees(startAngle);
 		double arcAngleDegrees = Math.toDegrees(arcAngle);
 		
-		Arc2D.Double arc = new Arc2D.Double(pieArea, startAngleDegrees, arcAngleDegrees, Arc2D.PIE);
+		Arc2D.Double arc = new Arc2D.Double(pieArea, startAngleDegrees,
+				arcAngleDegrees, Arc2D.PIE);
 		
     	g.setXORMode(Color.gray);
 		g.fillArc((int) arc.getMinX(), (int) arc.getMinY(), (int) arc.getWidth(), 
