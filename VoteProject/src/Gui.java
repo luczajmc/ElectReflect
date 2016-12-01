@@ -4,7 +4,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.io.*;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 /**
@@ -174,10 +178,11 @@ public class Gui extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO
-				File selectedData = new File("Selected Data " + LocalDateTime.now()+".txt");
-				
+				File selectedData = new File("Selected Data " + LocalDate.now()+ 
+						LocalTime.now().getHour() + "-" + LocalTime.now().getMinute()+".txt");
+				PrintWriter out = null;
 				try {
-					PrintWriter out = new PrintWriter(selectedData);
+					out = new PrintWriter(selectedData);
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				}
@@ -185,7 +190,14 @@ public class Gui extends JPanel{
 				for(int i = 0; i < selected.length; i++){
 					if(selected[i] != null){
 						try{
-							System.out.println(selected[i].toString());
+							BufferedWriter writer = new BufferedWriter(new FileWriter(selectedData));
+							
+							writer.write(selected[i].toString());
+							writer.flush();
+							writer.close();
+							
+						} catch (IOException e1) {
+							e1.printStackTrace();
 						} finally{}
 					} else { 
 						return;
