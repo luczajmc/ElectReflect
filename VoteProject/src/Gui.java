@@ -160,13 +160,11 @@ public class Gui extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				File userGuide = new File("User_Guide.pdf");
 				try {
 					Desktop.getDesktop().open(userGuide);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null, "File Not Found");
 				}
 			}
 		});
