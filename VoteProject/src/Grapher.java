@@ -227,7 +227,7 @@ public class Grapher {
 		JFreeChart chart = new JFreeChart("Election Results", plot);
 	
 
-		ChartPanel chartPanel = new ChartPanel(chart);
+		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
 		splitPane.setLeftComponent(chartPanel);
 		
 		JTextArea list = new JTextArea(regionList(region));
