@@ -59,6 +59,8 @@ public class ZoomablePieChartPanel extends ChartPanel {
     	this.endAngle = endAngle;    
     	
     	System.out.println(arcAngle);
+    	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
+    	plot.zoomSelection(this.startAngle, this.arcAngle);
     	this.repaint();
     }
     @Override

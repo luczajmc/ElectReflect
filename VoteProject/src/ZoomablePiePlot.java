@@ -272,5 +272,69 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
     }
     
     public void zoomSelection(double startAngle, double arcAngle) {
+    	double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
+    	
+    	double pieStart = this.getStartAngle();
+    	double pieEnd;
+    	
+    	// this.direction must be CLOCKWISE at the current time
+        if (this.getDirection() != Rotation.CLOCKWISE) {
+            throw new IllegalStateException("Rotation type not supported.");
+        }
+        
+        PieDataset dataset = this.getDataset();
+        System.out.println("===");
+        for (int i=0; i<dataset.getKeys().size(); i++) {
+        	double value = dataset.getValue(i).doubleValue();
+        	pieEnd = pieStart - value / total * 360.0;
+        	
+        	double pieStartRadians = Math.toRadians(pieStart);
+        	if (contains(pieStartRadians, startAngle, arcAngle)) {
+        		System.out.println(dataset.getKey(i));
+        	}
+        	pieStart = pieEnd;
+        }
+
     }
+    
+	
+	double arcAngleFrom(double startAngle, double endAngle) {
+		double arcAngle = normalize(endAngle-startAngle);
+		if (arcAngle > 0) {
+			arcAngle -= 2*Math.PI;
+		}
+		return arcAngle;
+	}
+
+	
+	double normalize(double angle) {
+		while (angle < -Math.PI) {
+			angle += 2*Math.PI;
+		}
+		while (angle > Math.PI) {
+			angle -= 2*Math.PI;
+		}
+		return angle;
+ 	}
+
+	boolean contains(double angle, double startAngle, double arcAngle) {
+		// all arc angles are counterclockwise, so this returns true if you come to
+		// angle within arcAngle of the start angle
+		return arcAngleFrom(startAngle, angle) >= arcAngle;
+	}
+	
+	double[] overlapOnto(double pieStart, double pieEnd, double sweepStart, double sweepEnd) {
+		if (contains(pieStart, sweepStart, sweepEnd)) {
+			sweepStart = pieStart;
+		}
+		if (contains(pieEnd, sweepStart, sweepEnd)) {
+			sweepEnd = pieEnd;
+		}
+		if (!contains(sweepStart, pieStart, pieEnd) && !contains(sweepEnd, pieStart, pieEnd)) {
+			sweepEnd = sweepStart;
+		}
+		
+		double[] overlap = {sweepStart, sweepEnd};
+		return overlap;
+	}
 }
