@@ -3,9 +3,8 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
+import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 /**
@@ -41,6 +40,7 @@ public class Gui extends JPanel{
 	private JMenu help = new JMenu();
 	private JMenuItem save = new JMenuItem(); //TODO: save data selected
 	private JMenuItem exit = new JMenuItem();
+	private JMenuItem userGuide = new JMenuItem();
 	
 	private JTextPane title = new JTextPane();
 	private JScrollPane regionPane = new JScrollPane(regionSelect);
@@ -147,10 +147,52 @@ public class Gui extends JPanel{
 		menu.add(file);
 		menu.add(help);
 		
+		help.setText("Help");
+		help.add(userGuide);
+		userGuide.setText("User Guide");
+		userGuide.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				File userGuide = new File("User_Guide.pdf");
+				try {
+					Desktop.getDesktop().open(userGuide);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "File Not Found");
+				}
+			}
+		});
+		
 		file.setText("File");
 		file.add(exit);
+		file.add(save);
 		
-		help.setText("Help");
+		save.setText("Save");
+		save.setToolTipText("Save current selected data.");
+		save.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO
+				File selectedData = new File("Selected Data " + LocalDateTime.now()+".txt");
+				
+				try {
+					PrintWriter out = new PrintWriter(selectedData);
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				
+				for(int i = 0; i < selected.length; i++){
+					if(selected[i] != null){
+						try{
+							System.out.println(selected[i].toString());
+						} finally{}
+					} else { 
+						return;
+					}
+				}
+			}
+		});
 		
 		exit.setText("Exit");
 		exit.addActionListener(new ActionListener() {
@@ -249,12 +291,23 @@ public class Gui extends JPanel{
 		addSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
+				ArrayList<Region> oldSelection = new ArrayList<Region>();
 				if(selected == null){
-					selected = new Region[regionSelect.getSelectedValuesList().size()];
+					selected = new Region[regions.length];
+				} else {
+					for(int i = 0; i < oldSelection.size(); i++){
+						while(selected[i] != null)
+						oldSelection.set(i, selected[i]);
+					}
 				}
 				
 				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
 					selected[i] = regionSelect.getSelectedValuesList().get(i);
+					oldSelection.add(regionSelect.getSelectedValuesList().get(i));
+				}
+				
+				for(int i = 0; i <oldSelection.size(); i++){
+					selected[i] = oldSelection.get(i);
 				}
 				
 				selectedValues.setListData(selected);

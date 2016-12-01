@@ -74,7 +74,6 @@ public class State extends Region {
 			try {
 				fileIn = new Scanner(filterFile);
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(null, "File Not Found");
 			}
 			String currentCountyName = "";
