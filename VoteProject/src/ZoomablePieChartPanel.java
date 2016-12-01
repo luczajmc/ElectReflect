@@ -31,6 +31,39 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		// TODO Auto-generated constructor stub
 	}
     
+    double clip(double angle) {
+    	if (angle>0) {
+    		angle = 0;
+    	}
+    	if (angle < -2*Math.PI) {
+    		angle = -2*Math.PI;
+    	}
+   	
+    	return angle;
+    }
+    
+    void paintOverlap(Graphics g, Comparable key) {
+    	double arcAngle = this.arcAngle;
+    	arcAngle = clip(arcAngle);
+    	
+    	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
+    	
+    	double[] sector = plot.getSlice(key);
+    	if (plot.wrapsAround(sector[0], sector[1], this.startAngle, arcAngle)) {
+        	double[] headOverlap = plot.headOverlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
+        	fillArc(g, headOverlap[0], headOverlap[1]);
+        	double[] tailOverlap = plot.tailOverlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
+        	fillArc(g, tailOverlap[0], tailOverlap[1]);
+        	System.out.println(key+": "+(headOverlap[1]/sector[1]+tailOverlap[1]/sector[1]));
+    	}
+    	else {
+        	double[] overlap = plot.overlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
+        	fillArc(g, overlap[0], overlap[1]);
+        	System.out.println(key+": "+(overlap[1]/sector[1]));
+    		
+    	}
+
+    }
     @Override
     public void paintComponent(Graphics g) {
 		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
@@ -44,23 +77,14 @@ public class ZoomablePieChartPanel extends ChartPanel {
     	}
     	
     	this.highlightColor = Color.red;
-    	double[] repArc = plot.getSlice("Republican");
-    	double[] repOverlap = plot.overlapOnto(repArc[0], repArc[1], this.startAngle, this.arcAngle);
-    	fillArc(g, repOverlap[0], repOverlap[1]);
-    	System.out.println("Republican: "+repOverlap[1]/repArc[1]);
-    
+    	paintOverlap(g, "Republican");
+    	
     	this.highlightColor = Color.blue;
-    	double[] demArc = plot.getSlice("Democrat");
-    	double[] demOverlap = plot.overlapOnto(demArc[0], demArc[1], this.startAngle, this.arcAngle);
-    	fillArc(g, demOverlap[0], demOverlap[1]);
-    	System.out.println("Democrat: "+demOverlap[1]/demArc[1]);
+    	paintOverlap(g, "Democrat");
 
     	this.highlightColor = Color.green;
-    	double[] indArc = plot.getSlice("Independent");
-    	double[] indOverlap = plot.overlapOnto(indArc[0], indArc[1], this.startAngle, this.arcAngle);
-    	fillArc(g, indOverlap[0], indOverlap[1]);
-    	System.out.println("Independent: "+indOverlap[1]/indArc[1]);
-    }
+    	paintOverlap(g, "Independent");
+   }
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -79,12 +103,19 @@ public class ZoomablePieChartPanel extends ChartPanel {
     	this.endAngle = endAngle;    
     	
     	System.out.println(arcAngle);
-    	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
-    	plot.zoomSelection(this.startAngle, this.arcAngle);
     	this.repaint();
     }
     @Override
     public void mouseReleased(MouseEvent e) {
+    	// TODO: don't zoom if you just click
+    	// TODO: zoom out
+    	double arcAngle = this.arcAngle;
+    	arcAngle = clip(arcAngle);
+    	System.out.println(arcAngle);
+    	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
+    	
+    	plot.zoomSelection(this.startAngle, arcAngle);
+    	
     	this.endAngle = this.startAngle;
     	this.arcAngle = 0.0;
 
