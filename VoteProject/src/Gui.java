@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.io.*;
-import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 /**
@@ -174,7 +174,23 @@ public class Gui extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO
+				File selectedData = new File("Selected Data " + LocalDateTime.now()+".txt");
 				
+				try {
+					PrintWriter out = new PrintWriter(selectedData);
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				
+				for(int i = 0; i < selected.length; i++){
+					if(selected[i] != null){
+						try{
+							System.out.println(selected[i].toString());
+						} finally{}
+					} else { 
+						return;
+					}
+				}
 			}
 		});
 		
