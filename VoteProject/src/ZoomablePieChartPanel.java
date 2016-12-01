@@ -23,6 +23,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
 
 	double startAngle = 0.0f;
 	double endAngle = 0.0f;
+	double arcAngle = 0.0f;
 	
     public ZoomablePieChartPanel(JFreeChart chart) {
 		super(chart);
@@ -36,27 +37,35 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		Rectangle2D dataArea = info.getDataArea();
 
     	super.paintComponent(g);
-    	fillArc(g, this.startAngle, this.endAngle-this.startAngle);
+    	if (this.arcAngle<0) { // that is, if you're going a net clockwise
+    		fillArc(g, this.startAngle, this.arcAngle);
+    	}
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
     	this.startAngle = getAngle(e.getPoint());
+    	this.endAngle = this.startAngle;
+    	this.arcAngle = 0.0f;
     }
     @Override
     public void mouseDragged(MouseEvent e) {
+    	// TODO: this should probably not do anything if you're dragging from off of another component
     	double endAngle = getAngle(e.getPoint());
-    	if (endAngle-this.startAngle > 0) {
-    		endAngle -= 2*Math.PI;
-    	}
     	
-    	this.endAngle = endAngle;
+    	boolean isClockwise = isClockwiseFrom(this.endAngle, endAngle); // you're going clockwise
     	
+    	this.arcAngle += normalize(endAngle-this.endAngle);
+    	this.endAngle = endAngle;    
+    	
+    	System.out.println(arcAngle);
     	this.repaint();
     }
     @Override
     public void mouseReleased(MouseEvent e) {
     	this.endAngle = this.startAngle;
+    	this.arcAngle = 0.0;
+
     	this.repaint();
     }
     
@@ -106,4 +115,31 @@ public class ZoomablePieChartPanel extends ChartPanel {
 				(int) arcAngleDegrees);
 		g.setPaintMode();
     }
+	
+	double normalize(double angle) {
+		while (angle < -Math.PI) {
+			angle += 2*Math.PI;
+		}
+		while (angle > Math.PI) {
+			angle -= 2*Math.PI;
+		}
+		return angle;
+ 	}
+	
+	boolean isClockwiseFrom(double startAngle, double endAngle) {
+		if (normalize(endAngle-startAngle) <= 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	double arcAngleFrom(double startAngle, double endAngle) {
+		double arcAngle = normalize(endAngle-startAngle);
+		if (arcAngle > 0) {
+			arcAngle -= 2*Math.PI;
+		}
+		return arcAngle;
+	}
 }
