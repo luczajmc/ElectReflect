@@ -36,7 +36,7 @@ public class Gui extends JPanel{
 	private static JCheckBox textSum = new JCheckBox("Text Summary");
 	private static JCheckBox allDisplays = new JCheckBox("All Displays");
 	
-	private final JFileChooser fc = new JFileChooser("user.home");
+	private static JFileChooser fc = null;
 	
 	private static JList<Region> regionSelect = new JList<Region>();
 	private static JList<Region> selectedValues = new JList<Region>();
@@ -82,6 +82,8 @@ public class Gui extends JPanel{
 		
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			fc = new JFileChooser("user.home");
+			UIManager.setLookAndFeel(UIManager.getLookAndFeel());
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -182,7 +184,7 @@ public class Gui extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO
+				// TODO change look and feel of file chooser
 				fc.showSaveDialog(Gui.this);
 				File selectedData = new File(fc.getSelectedFile()+".txt");
 				PrintWriter out = null;
