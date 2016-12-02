@@ -26,37 +26,38 @@ public class Gui extends JPanel{
 	private static JFrame frame = new JFrame("Message");
 	private static JPanel blueStripe = new JPanel();
 	
-	private JButton addRegion = new JButton();
-	private JButton showData = new JButton();
-	private JButton addSubregion = new JButton();
-	private JButton removeSubregion = new JButton();
+	private static JButton addRegion = new JButton();
+	private static JButton showData = new JButton();
+	private static JButton addSubregion = new JButton();
+	private static JButton removeSubregion = new JButton();
 	
-	private JCheckBox barGraph = new JCheckBox("Bar Graph");
-	private JCheckBox pieChart = new JCheckBox("Pie Chart");
-	private JCheckBox textSum = new JCheckBox("Text Summary");
-	private JCheckBox allDisplays = new JCheckBox("All Displays");
+	private static JCheckBox barGraph = new JCheckBox("Bar Graph");
+	private static JCheckBox pieChart = new JCheckBox("Pie Chart");
+	private static JCheckBox textSum = new JCheckBox("Text Summary");
+	private static JCheckBox allDisplays = new JCheckBox("All Displays");
 	
 	private final JFileChooser fc = new JFileChooser("user.home");
 	
-	private JList<Region> regionSelect = new JList<Region>();
-	private JList<Region> selectedValues = new JList<Region>();
+	private static JList<Region> regionSelect = new JList<Region>();
+	private static JList<Region> selectedValues = new JList<Region>();
 	
-	private JMenuBar menu = new JMenuBar();
-	private JMenu file = new JMenu();
-	private JMenu help = new JMenu();
-	private JMenuItem save = new JMenuItem(); //TODO: save data selected
-	private JMenuItem exit = new JMenuItem();
-	private JMenuItem userGuide = new JMenuItem();
+	private static JMenuBar menu = new JMenuBar();
+	private static JMenu file = new JMenu();
+	private static JMenu help = new JMenu();
+	private static JMenuItem save = new JMenuItem(); //TODO: save data selected
+	private static JMenuItem exit = new JMenuItem();
+	private static JMenuItem userGuide = new JMenuItem();
 	
-	private JTextPane title = new JTextPane();
-	private JScrollPane regionPane = new JScrollPane(regionSelect);
-	private JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
+	private static JTextPane title = new JTextPane();
+	private static JScrollPane regionPane = new JScrollPane(regionSelect);
+	private static JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
 	
-	private JToolTip addStateTip = new JToolTip();
+	private static JToolTip addStateTip = new JToolTip();
 	
-	public Region[] regions;
-	public Region[] selected;
-	public State state;
+	private static Region[] regions;
+	private static Region[] selected;
+	private static State state;
+	private static ArrayList<Region> oldSelection = new ArrayList<Region>();
 	
 	public int numItems = 0;
 	
@@ -281,19 +282,19 @@ public class Gui extends JPanel{
 //				
 //				selectedValues.setListData(selected);
 				if(allDisplays.isSelected()){
-					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
-					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
-					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.barGraph(new Gerrymander(oldSelection));
+					Grapher.pieChart(new Gerrymander(oldSelection));
+					Grapher.text(new Gerrymander(oldSelection));
 					return; // this prevents the user from selecting all check boxes and having two of each display pop up
 				}
 				if(barGraph.isSelected()){
-					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.barGraph(new Gerrymander(oldSelection));
 				}
 				if(pieChart.isSelected()){
-					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.pieChart(new Gerrymander(oldSelection));
 				}
 				if(textSum.isSelected()){
-					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.text(new Gerrymander(oldSelection));
 				}
 			}
 			
@@ -309,7 +310,6 @@ public class Gui extends JPanel{
 		addSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				ArrayList<Region> oldSelection = new ArrayList<Region>();
 				if(oldSelection.isEmpty()){
 					for(int i = 0; i < oldSelection.size(); i++){
 						while(selected[i] != null){
