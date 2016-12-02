@@ -39,8 +39,16 @@ public class DataHandler {
 	//ints for logging errors
 	//TODO: add more errors
 	private static ArrayList<Integer> errors = new ArrayList<Integer>();
-	private final static int EXTRACT_ERROR = -1;
+	private final static int EXTRACTION = -1;
 	private final static int FILE_NOT_FOUND = -2;
+	private final static int DATA_FORMAT = -3;
+	private final static int DUPLICATE = -4;
+	private final static int TOO_MANY_VOTES = -5;
+	private final static int NEGATIVE_VOTES = -6;
+	private final static int MISSING_VALUE = -7;
+	private final static int EXTRA_SYMBOL = -8;
+	private final static int CORRUPT = -9;
+	private final static int TAMPER = -10;
 	
 	public static void main(String[] args) {
 		getFiles(VOTER_DATA);
@@ -85,19 +93,75 @@ public class DataHandler {
 	//TODO: extract the data to the array
 	private static void extractData(String path, int dataType) {
 		if (dataType == VOTER_DATA) {
-			dataArray = getDistrictData();
+			dataArray = getDistrictData(path);
 		}
 		
 		else if (dataType == REGISTERED_DATA) {
 			registeredCountyVotes = getRegisteredVotes();
 		}
 		
-		else {errors.add(-1);}
+		else {
+			errors.add(EXTRACTION);
+			err(EXTRACTION, "getMessage, inccorect data type given " + Integer.toString(dataType));
+		}
 	}
+	
+	private static ArrayList getDistrictData(String path) {
+		try {
+			//get the file and scanner
+			File file = new File(path);
+			Scanner fileIn = new Scanner(file);
+			
+			//create two temporary arrays to hold county data for checking
+			ArrayList<String> tempArray = new ArrayList<String>();
+			String[] tempData = new String[5];
+			
+			//loop through the lines
+			while (fileIn.hasNextLine()) {
+				String currentLine = fileIn.nextLine();
+				checkFormat(currentLine, VOTER_DATA);
+				tempArray.add(currentLine);
+			}
+		}
+		
+		catch (FileNotFoundException e) {
+			errors.add(FILE_NOT_FOUND);
+			err(FILE_NOT_FOUND, "getDistrictData, no file found at " + path);
+			return null;
+		}
+		return null;
+	}
+	
+	/**
+	 * @param line
+	 * @param dataType
+	 * @return boolean, whether or not a format error was found
+	 */
+	private static boolean checkFormat(String line, int dataType) {
+		if (dataType == VOTER_DATA) {
+			String[] temp = line.split(",");
+			if (temp.length != 5) {
+				errors.add(DATA_FORMAT);
+				err(DATA_FORMAT, "checkFormat, " + line);
+			}
+			
+			try {
+				Integer.parseInt(temp[2]);
+			}
+			catch (NumberFormatException e) {
+				reformat(temp[2]);
+			}
+		}
+	}
+	
+	
 	
 	//TODO: get the county votes data
 	private static void extractData(int dataType) {
-		if (dataType)
+		if (dataType != COUNTY_VOTES) {
+			errors.add(EXTRACTION);
+			err(EXTRACTION, "extractData, incorrect dataType given: " + Integer.toString(dataType));
+		}
 	}
 	
 	private void getDataFromFile() {
@@ -109,30 +173,31 @@ public class DataHandler {
 		errors.add(error);
 	}
 	
-	private void err(int error, String reference) {
+	private static void err(int error, String reference) {
 		String message;
 		switch (error) {
-			case -1: message = "Extraction Error at " + reference ;
+			case EXTRACTION: message = "Extract error at " + reference ;
 			break;
-			case -2: message = "File not found at " + reference;
+			case FILE_NOT_FOUND: message = "File not found at " + reference;
 			break;
-			case -3: message = "data format error at " + reference;
+			case DATA_FORMAT: message = "data format error at " + reference;
 			break;
-			case -4: message = "duplicate region found at " + reference;
+			case DUPLICATE: message = "duplicate region found at " + reference;
 			break;
-			case -5: message = "too many voters found at " + reference;
+			case TOO_MANY_VOTES: message = "too many voters found at " + reference;
 			break;
-			case -6: message = "negative voters found at " + reference;
+			case NEGATIVE_VOTES: message = "negative voters found at " + reference;
 			break;
-			case -7: message = "missing value at " + reference;
+			case MISSING_VALUE: message = "missing value at " + reference;
 			break;
-			case -8: message = "extra symbols found at " + reference;
+			case EXTRA_SYMBOL: message = "extra symbols found at " + reference;
 			break;
-			case -9: message = "data is corrupt at " + reference;
+			case CORRUPT: message = "data is corrupt at " + reference;
 			break;
-			case -10: message = "data has been tampered with at " + reference;
+			case TAMPER: message = "data has been tampered with at " + reference;
 			break;
 			default: message = "error not recognized, error number " + Integer.toString(error);
 		}
+		JOptionPane.showMessageDialog(null, message);
 	}
 }
