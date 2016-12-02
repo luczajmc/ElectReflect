@@ -63,31 +63,32 @@ public class DataHandler {
 		catch (FileNotFoundException e) {
 			System.out.println("Something went wrong");
 		}
-		out.println("-- PrintWriter created, begin logging. --");
+		out.print("-- PrintWriter created, begin logging. --\r\n\r\n");
 		
-		out.println("Prompting for voter files...");
+		out.print("Prompting for voter files...\r\n\r\n");
 		getFiles(VOTER_DATA);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Sorting voter data...");
+		out.print("Sorting voter data...");
 		sort(dataArray);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Prompting for registered voter data...");
+		out.print("Prompting for registered voter data...\r\n\r\n");
 		getFiles(REGISTERED_DATA);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Verifying data integrity...");
+		out.print("Verifying data integrity...");
 		extractData(COUNTY_VOTES);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Sorting county...");
+		out.print("Sorting county...");
 		sort(registeredCountyArray);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Verifying number of voters...");
+		out.print("Verifying number of voters...");
 		verifyVoters();
-		out.print("done.");
+		out.print("done.\r\n\r\n");
+		out.close();
 	}
 	
 	public static State makeState() {
@@ -98,33 +99,34 @@ public class DataHandler {
 		catch (FileNotFoundException e) {
 			System.out.println("Something went wrong");
 		}
-		out.println("-- PrintWriter created, begin logging. --");
+		out.print("-- PrintWriter created, begin logging. --\r\n\r\n");
 		
-		out.println("Prompting for voter files...");
+		out.print("Prompting for voter files...");
 		getFiles(VOTER_DATA);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Sorting voter data...");
+		out.print("Sorting voter data...");
 		sort(dataArray);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Prompting for registered voter data...");
+		out.print("Prompting for registered voter data...");
 		getFiles(REGISTERED_DATA);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Verifying data integrity...");
+		out.print("Verifying data integrity...");
 		extractData(COUNTY_VOTES);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Sorting county...");
+		out.print("Sorting county...");
 		sort(registeredCountyArray);
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Verifying number of voters...");
+		out.print("Verifying number of voters...");
 		verifyVoters();
-		out.print("done.");
+		out.print("done.\r\n\r\n");
 		
-		out.println("Creating State object. ");
+		out.println("Creating State object.");
+		out.close();
 		return new State(dataArray);
 	}
 
@@ -200,11 +202,11 @@ public class DataHandler {
 				String fileName = splitPath[splitPath.length-1];
 				
 				if (fileName.charAt(0) == '.') {
-					System.out.println("Skipping file " + fileName);
+					out.println("Skipping file " + fileName);
 				}
 				
 				else {
-					System.out.println("Getting file from " + filePath);
+					out.println("Getting file from " + filePath);
 					dataArray.addAll(getDistrictData(filePath));
 				}
 			}
@@ -218,15 +220,15 @@ public class DataHandler {
 				String fileName = splitPath[splitPath.length-1];
 				
 				if (fileName.charAt(0) == '.') {
-					System.out.println("Skipping file " + fileName);
+					out.println("Skipping file " + fileName);
 				}
 				
 				else {
-					System.out.println("Getting file from " + filePath);
+					out.println("Getting file from " + filePath);
 					registeredCountyArray.addAll(getRegisterData(filePath));
 				}
 			}
-			System.out.println("first word in registered vote file is " + registeredCountyArray.get(1)[0]);
+			
 			removeRegisterDuplicates();
 		}
 		
@@ -494,7 +496,7 @@ public class DataHandler {
 				if (k == i) {k++;}
 				if (isDistrictEqual(dataArray.get(i), (dataArray.get(k)))) {
 					errors.add(DUPLICATE);
-					err(DUPLICATE, "removeDuplicates, duplicate found at " + dataArray.get(k)[COUNTY_NAME]);
+					err(DUPLICATE, "removeDuplicates, duplicate found at " + dataArray.get(k)[COUNTY_NAME] + ": " + dataArray.get(k)[DISTRICT_NAME]);
 					dataArray.remove(k);
 				}
 			}
@@ -555,6 +557,7 @@ public class DataHandler {
 			default: message = "error not recognized, error number " + Integer.toString(error);
 		}
 		out.write(message);
+		out.println();
 		out.flush();
 	}
 	
