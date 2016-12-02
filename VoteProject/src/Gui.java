@@ -239,7 +239,7 @@ public class Gui extends JPanel{
 		addRegion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {				
-				state = new State();
+				state = DataHandler.makeState();
 				regions = new Region[state.getCounties().size()];
 				System.out.println(state.getCounties().size());
 				
