@@ -341,6 +341,7 @@ public class Gui extends JPanel{
 				for(int i = 0; i < oldSelection.size(); i++){
 					for(int j = 0; j < selectedValues.getSelectedValuesList().size(); j++){
 						if(oldSelection.get(i).equals(selectedValues.getSelectedValuesList().get(j))){
+							selectedValues.getSelectedValuesList().remove(j);
 							oldSelection.remove(i);
 						}
 					}
