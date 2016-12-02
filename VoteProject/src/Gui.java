@@ -321,9 +321,7 @@ public class Gui extends JPanel{
 					if(!oldSelection.contains(regionSelect.getSelectedValuesList().get(i))){
 						oldSelection.add(regionSelect.getSelectedValuesList().get(i));
 					}
-				}
-				selected = new Region[oldSelection.size()];
-					
+				}					
 				update(selected);
 			}
 		});
@@ -367,19 +365,7 @@ public class Gui extends JPanel{
 	//========================================================================== Methods
 	
 	private void update(Region[] r){
-//		ArrayList<Integer> indeces = new ArrayList<Integer>();
-//		for(int i = 0; i <oldSelection.size(); i++){
-//			for(int j = 0; j < oldSelection.size(); j++){
-//				if(oldSelection.get(i).equals(oldSelection.get(j)) && i != j){
-//					indeces.add(i);
-//				}
-//			}
-//		}
-//		
-//		for(int i = 0; i < indeces.size(); i++){
-//			oldSelection.remove(indeces.get(i));
-//		}
-		
+		r = new Region[oldSelection.size()];
 		for(int i = 0; i < oldSelection.size(); i++){
 			r[i] = oldSelection.get(i);
 		}
