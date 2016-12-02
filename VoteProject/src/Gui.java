@@ -193,16 +193,17 @@ public class Gui extends JPanel{
 					e1.printStackTrace();
 				}
 				
-				if(selected == null){
+				if(oldSelection == null){
 					JOptionPane.showMessageDialog(null, "No data selected.");
 					return;
 				}
-				for(int i = 0; i < selected.length; i++){
-					if(selected[i] != null){
+				for(int i = 0; i < oldSelection.size(); i++){
+					if(oldSelection.get(i) != null){
 						try{
-							out.println(selected[i].toString() + "County - Number of Republican votes: " + selected[i].getRepVotes()
-									+ ", Number of Democratic votes: " + selected[i].getDemVotes()+
-									", Number of Independent votes: " + selected[i].getIndVotes());
+							out.println(oldSelection.get(i).toString() + "County - Number of Republican votes: " + 
+									oldSelection.get(i).getRepVotes()
+									+ ", Number of Democratic votes: " + oldSelection.get(i).getDemVotes()+
+									", Number of Independent votes: " + oldSelection.get(i).getIndVotes());
 							
 						} finally{}
 					}
