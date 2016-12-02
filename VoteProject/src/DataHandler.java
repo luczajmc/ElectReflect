@@ -92,10 +92,12 @@ public class DataHandler {
 	public static State makeState() {
 		getFiles(VOTER_DATA);
 		System.out.println("voter data retrieved");
+		sort(dataArray);
 		getFiles(REGISTERED_DATA);
 		System.out.println("registered file data retrieved");
 		extractData(COUNTY_VOTES);
 		System.out.println("county voting data has been extracted");
+		sort(registeredCountyArray);
 		System.out.println("Verifying number of voters");
 		verifyVoters();
 		System.out.println("Verified");
