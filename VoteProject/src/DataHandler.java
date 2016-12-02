@@ -62,10 +62,21 @@ public class DataHandler {
 		System.out.println("Verified");
 	}
 	
+	public State makeState() {
+		getFiles(VOTER_DATA);
+		System.out.println("voter data retrieved");
+		getFiles(REGISTERED_DATA);
+		System.out.println("registered file data retrieved");
+		extractData(COUNTY_VOTES);
+		System.out.println("county voting data has been extracted");
+		System.out.println("Verifying number of voters");
+		verifyVoters();
+		System.out.println("Verified");
+		return null;
+	}
+	
 	private static void verifyVoters() {
 		String[] countyVotes = new String[2];
-		
-		
 		
 	}
 
