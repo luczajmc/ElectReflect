@@ -363,7 +363,7 @@ public class Gui extends JPanel{
 	
 	//========================================================================== Methods
 	
-	private void update(Region[] r){
+	private void update(Region[] r){		
 		for(int i = 0; i < oldSelection.size(); i++){
 			r[i] = oldSelection.get(i);
 		}
