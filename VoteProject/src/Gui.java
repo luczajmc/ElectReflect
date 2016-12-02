@@ -316,23 +316,13 @@ public class Gui extends JPanel{
 							oldSelection.set(i, selected[i]);
 						}
 					}
-					
-					for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
-						oldSelection.add(regionSelect.getSelectedValuesList().get(i));
-					}
-				} else {
-					for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
-						oldSelection.add(regionSelect.getSelectedValuesList().get(i));
-					}
 				}
-				
+				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+					oldSelection.add(regionSelect.getSelectedValuesList().get(i));
+				}
 				selected = new Region[oldSelection.size()];
 					
-				for(int i = 0; i <oldSelection.size(); i++){
-					selected[i] = oldSelection.get(i);
-				}
-				
-				selectedValues.setListData(selected);
+				update(selected);
 			}
 		});
 		
@@ -346,7 +336,14 @@ public class Gui extends JPanel{
 		removeSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				
+				for(int i = 0; i < oldSelection.size(); i++){
+					for(int j = 0; j < selectedValues.getSelectedValuesList().size(); j++){
+						if(oldSelection.get(i).equals(selectedValues.getSelectedValuesList().get(j))){
+							oldSelection.remove(i);
+						}
+					}
+				}
+				update(selected);
 			}
 		});
 		
@@ -362,6 +359,16 @@ public class Gui extends JPanel{
 	 */
 	public static Component getFrame(){
 		return frame;
+	}
+	
+	//========================================================================== Methods
+	
+	private void update(Region[] r){
+		for(int i = 0; i < oldSelection.size(); i++){
+			r[i] = oldSelection.get(i);
+		}
+		
+		selectedValues.setListData(r);
 	}
 	
 	//========================================================================== Main method
