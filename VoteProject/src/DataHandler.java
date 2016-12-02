@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,41 +69,23 @@ public class DataHandler {
 //sorter (I'm sorry)
 //==================================================================================
 	private static void sort(ArrayList<String[]> sortThis) {
-		ArrayList<String[]> sorted = new ArrayList<>();
-		sorted.addAll(dataArray);
-	
-		for (int i = 0; i < sortThis.size(); i++) {
-			for (int k = 0; k < sortThis.size()-1; k++) {
-				if (AisAfterB(sortThis.get(k)[COUNTY_NAME], sortThis.get(k+1)[COUNTY_NAME])) {
-					sorted = swap(sorted, k, k+1);
+		for (int i = 1; i < sortThis.size(); i++) {
+			for (int k = 0; k < sortThis.size()-i; k++) {
+				if (sortThis.get(k)[COUNTY_NAME].compareTo(sortThis.get(k+1)[COUNTY_NAME]) > 0) {
+					//System.out.println("Swapped " + sortThis.get(k)[COUNTY_NAME] + " with " + sortThis.get(k+1)[COUNTY_NAME]);
+					swap(sortThis, k, k+1);
 				}
 			}
 		}
+		
 		//make sure dataArray is sorted
-		dataArray = sorted;
+		printer();
 	}
 	
-	private static boolean AisAfterB(String A, String B) {
-		int length;
-		if (A.length() >= B.length()) {
-			length = B.length();
-		}
-		else {
-			length = A.length();
-		}
-		for (int i = 0; i < length; i++) {
-			if (A.charAt(i) > B.charAt(i)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private static ArrayList<String[]> swap(ArrayList<String[]> sorted, int pos1, int pos2) {
-		String[] temp = sorted.get(pos2);
-		sorted.set(pos2, sorted.get(pos1));
-		sorted.set(pos1, temp);
-		return sorted;
+	private static void swap(ArrayList<String[]> sortThis, int pos1, int pos2) {
+		String[] temp = sortThis.get(pos2);
+		sortThis.set(pos2, sortThis.get(pos1));
+		sortThis.set(pos1, temp);
 	}
 //==================================================================================
     
@@ -529,10 +512,19 @@ public class DataHandler {
 	}
 	
 	private static void printer() {
-		for (String[] array : dataArray) {
-			for (String word : array) {
-				System.out.println(word);
+		try {
+			File file = new File("dataArray");
+			PrintWriter out = new PrintWriter(file);
+			for (String[] array : dataArray) {
+				for (String word : array) {
+					out.print(word + ", ");
+				}
+				out.println();
 			}
+			out.close();
+		}
+		catch (FileNotFoundException e) {
+			System.out.println("OMFG");
 		}
 	}
 }
