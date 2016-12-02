@@ -246,6 +246,12 @@ import org.jfree.util.UnitType;
 
 public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable {
 
+	final PieDataset unzoomedDataset;
+	
+	public void zoomOut() {
+		this.setDataset(unzoomedDataset);
+	}
+	
     public void trimSlices(double[] remainingPercentages) {
     	PieDataset dataset = this.getDataset();
     	DefaultPieDataset zoomedDataset = new DefaultPieDataset(dataset);
@@ -274,7 +280,7 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 
     }
 
-    public void zoomSelection(double startAngle, double arcAngle) {
+    double[] getZoomPercentages(double startAngle, double arcAngle) {
     	double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
     	
     	double pieStart = this.getStartAngle();
@@ -286,18 +292,39 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
         }
         
         PieDataset dataset = this.getDataset();
+        
+        double[] zoomPercentages = new double[dataset.getKeys().size()];
         System.out.println("===");
         for (int i=0; i<dataset.getKeys().size(); i++) {
         	double value = dataset.getValue(i).doubleValue();
         	pieEnd = pieStart - value / total * 360.0;
         	
         	double pieStartRadians = Math.toRadians(pieStart);
-        	if (contains(pieStartRadians, startAngle, arcAngle)) {
-        		System.out.println(dataset.getKey(i));
+        	double pieEndRadians = Math.toRadians(pieEnd);
+        	double pieArc = arcAngleFrom(pieStartRadians, pieEndRadians);
+        	
+        	Comparable key = dataset.getKey(i);
+        	double percentage;
+        	if (wrapsAround(pieStartRadians, pieArc, startAngle, arcAngle)) {
+            	double[] headOverlap = headOverlapOnto(pieStartRadians, pieArc, startAngle, arcAngle);
+            	double[] tailOverlap = tailOverlapOnto(pieStartRadians, pieArc, startAngle, arcAngle);
+            	percentage = (headOverlap[1]/pieArc+tailOverlap[1]/pieArc);
+            	System.out.println(key+": "+percentage);
         	}
+        	else {
+            	double[] overlap = overlapOnto(pieStartRadians, pieArc, startAngle, arcAngle);
+            	percentage = (overlap[1]/pieArc);
+            	System.out.println(key+": "+percentage);
+        		
+        	}
+        	zoomPercentages[i] = percentage;
         	pieStart = pieEnd;
         }
 
+        return zoomPercentages;
+    }
+    public void zoomSelection(double startAngle, double arcAngle) {
+    	trimSlices(getZoomPercentages(startAngle, arcAngle));
     }
     
 	
@@ -364,6 +391,17 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 				contains(sweepStart, pieStart, pieArc) ||
 				contains(sweepEnd, pieStart, pieArc);
 	}
+	
+	boolean wrapsAround(double pieStart, double pieArc, double sweepStart, double sweepArc) {
+		double pieEnd = pieStart+pieArc;
+		double sweepEnd = sweepStart+sweepArc;
+
+		return contains(pieStart, sweepStart, sweepArc) &&
+				contains(pieEnd, sweepStart, sweepArc) &&
+				contains(sweepStart, pieStart, pieArc) &&
+				contains(sweepEnd, pieStart, pieArc);
+	}
+
 	double[] headOverlapOnto(double pieStart, double pieArc, double sweepStart, double sweepArc) {
 		double pieEnd = pieStart+pieArc;
 		double sweepEnd = sweepStart+sweepArc;
@@ -415,29 +453,11 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 	}
 
 	double[] overlapOnto(double pieStart, double pieArc, double sweepStart, double sweepArc) {
-		double pieEnd = pieStart+pieArc;
-		double sweepEnd = sweepStart+sweepArc;
-		
-		double overlapStart = sweepStart;
-		double overlapEnd = sweepEnd;
-		
-		if (!overlaps(pieStart, pieArc, sweepStart, sweepArc)) {
-			double[] overlap = {pieStart, 0.0};
-			return overlap;
-		}
-		else {
-			if (contains(pieStart, sweepStart, sweepArc)) {
-				overlapStart = pieStart;
-			}
-			if (contains(pieEnd, sweepStart, sweepArc)) {
-				overlapEnd = pieEnd;
-			}
-			
-			double overlapArc = arcAngleFrom(overlapStart, overlapEnd);
-			double[] overlap = {overlapStart, overlapArc};
-			return overlap;
-
-		}
-		
+		return tailOverlapOnto(pieStart, pieArc, sweepStart, sweepArc);
+	}
+	
+	public ZoomablePiePlot(PieDataset dataset) {
+		super(dataset);
+		this.unzoomedDataset = dataset;
 	}
 }

@@ -212,8 +212,7 @@ public class Grapher {
 		data.setValue("Democrat", region.getDemVotes());
 		data.setValue("Independent", region.getIndVotes());
 		
-		ZoomablePiePlot plot = new ZoomablePiePlot();
-		plot.setDataset(data);
+		ZoomablePiePlot plot = new ZoomablePiePlot(data);
 
 		plot.trimSlice("Republican", 0.01);
 		plot.trimSlice("Democrat", 0.01);
