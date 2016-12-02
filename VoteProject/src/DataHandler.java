@@ -78,6 +78,8 @@ public class DataHandler {
 				}
 			}
 		}
+		//make sure dataArray is sorted
+		dataArray = sorted;
 	}
 	
 	private static boolean AisAfterB(String A, String B) {
