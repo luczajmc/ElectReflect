@@ -30,6 +30,7 @@ public class DataHandler {
 	private final static int IND_VOTES = 4;
 	private final static int VOTE_COUNT = 1;
 	private final static int ERROR = 5;
+	private final static int REG_ERROR = 2;
 	
 	//ints for extracting data
 	private final static int VOTER_DATA = 1;
@@ -37,7 +38,6 @@ public class DataHandler {
 	private final static int REGISTERED_DATA =3;
 	
 	//ints for logging errors
-	//TODO: add more errors
 	private static ArrayList<Integer> errors = new ArrayList<Integer>();
 	private final static int EXTRACTION = -1;
 	private final static int FILE_NOT_FOUND = -2;
@@ -52,10 +52,23 @@ public class DataHandler {
 	
 	public static void main(String[] args) {
 		getFiles(VOTER_DATA);
+		System.out.println("voter data retrieved");
 		getFiles(REGISTERED_DATA);
-		//extractData(COUNTY_VOTES);
+		System.out.println("registered file data retrieved");
+		extractData(COUNTY_VOTES);
+		System.out.println("county voting data has been extracted");
+		System.out.println("Verifying number of voters");
+		verifyVoters();
+		System.out.println("Verified");
 	}
 	
+	private static void verifyVoters() {
+		String[] countyVotes = new String[2];
+		
+		
+		
+	}
+
 	private static void getFiles(int dataType) {
 		
 		String message = getMessage(dataType);
@@ -129,6 +142,7 @@ public class DataHandler {
 					registeredCountyArray.addAll(getRegisterData(filePath));
 				}
 			}
+			System.out.println("first word in registered vote file is " + registeredCountyArray.get(1)[0]);
 			removeRegisterDuplicates();
 		}
 		
@@ -141,14 +155,68 @@ public class DataHandler {
 		
 	}
 	
+	/**
+	 * removes any duplicates the dataArray list
+	 */
 	private static void removeRegisterDuplicates() {
-		// TODO Auto-generated method stub
-		
+		for (int i = 0; i < registeredCountyArray.size()-1; i++) {
+			for (int k = 0; k < registeredCountyArray.size(); k++) {
+				if (k == i) {k++;}
+				if (isRegEqual(registeredCountyArray.get(i), registeredCountyArray.get(k))) {
+					errors.add(DUPLICATE);
+					//err(DUPLICATE, "removeDuplicates, duplicate found at " + dataArray.get(k)[COUNTY_NAME]);
+					registeredCountyArray.remove(k);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * takes 2 registered data arrays and returns whether they are equal or not
+	 * @return boolean
+	 */
+	private static boolean isRegEqual(String[] s1, String[] s2) {
+		int matchCount = 0;
+		for (int i = 0; i < 2; i++) {
+			System.out.println("Comparing " + s1[i] + " to " + s2[i]);
+			if (s1[i].equals(s2[i])) {matchCount++;}
+		}
+		if (matchCount == 2) {
+			return true;
+		}
+		return false;
 	}
 
-	private static Collection<? extends String[]> getRegisterData(String filePath) {
-		// TODO Auto-generated method stub
-		return null;
+	private static ArrayList<String[]> getRegisterData(String filePath) {
+		try {
+			//get the file and scanner
+			File file = new File(filePath);
+			Scanner fileIn = new Scanner(file);
+			
+			//make a temporary array
+			ArrayList<String[]> tempList = new ArrayList<String[]>();
+			
+			//loop through the lines
+			while (fileIn.hasNextLine()) {
+				String currentLine = fileIn.nextLine();
+				String[] fixedLine = formatError(currentLine, REGISTERED_DATA);
+				
+				if (fixedLine[REG_ERROR].equals("true")) {
+					break;
+				}
+				
+				tempList.add(fixedLine);
+			}
+			fileIn.close();
+			return tempList;
+		}
+		
+		catch (FileNotFoundException e) {
+			errors.add(FILE_NOT_FOUND);
+			err(FILE_NOT_FOUND, "getRegisterData, no file found at " + filePath);
+			ArrayList<String[]> result = new ArrayList<String[]>();
+			return result;
+		}
 	}
 
 	/**
@@ -215,7 +283,7 @@ public class DataHandler {
 				if (temp[i].length() == 0) {
 					errors.add(MISSING_VALUE);
 					err(MISSING_VALUE, "formatError, missing value at " + line);
-					result[5] = "true";
+					result[ERROR] = "true";
 					return result;
 				}
 			}
@@ -256,9 +324,12 @@ public class DataHandler {
 		//registered data format checker
 		else if (dataType == REGISTERED_DATA) {
 			String[] temp = line.split(",");
+			result[REG_ERROR] = "false";
+			
 			if (temp.length != 2) {
 				errors.add(DATA_FORMAT);
 				err(DATA_FORMAT, "checkFormat" + line);
+				result[REG_ERROR] = "true";
 				return result;
 			}
 			
@@ -266,18 +337,36 @@ public class DataHandler {
 				if (temp[i].length() == 0) {
 					errors.add(MISSING_VALUE);
 					err(MISSING_VALUE, "formatError, missing value at " + line);
+					result[REG_ERROR] = "true";
 					return result;
 				}
 			}
 			
+			//add county name to array
+			result[COUNTY_NAME] = temp[COUNTY_NAME];
+			
 			try {
-				Integer.parseInt(temp[1]);
-			}
-			catch (NumberFormatException e) {
-				String fixed = reformat(temp[1]);
-				if (fixed.equals("-1")) {
+				int check = Integer.parseInt(temp[VOTE_COUNT]);
+				//check if there is a positive number of votes
+				if (check >= 0 ) {
+					result[VOTE_COUNT] = temp[VOTE_COUNT];
+				}
+				
+				else {
+					errors.add(NEGATIVE_VOTES);
+					err(NEGATIVE_VOTES, "formatError, negative number of votes in " + temp[COUNTY_NAME]);
+					result[REG_ERROR] = "true";
 					return result;
 				}
+			}
+				
+			catch (NumberFormatException e) {
+				String fixed = reformat(temp[VOTE_COUNT]);
+				if (fixed.equals("-1")) {
+					result[REG_ERROR] = "true";
+					return result;
+				}
+				else result[VOTE_COUNT] = fixed;
 			}
 			return result;
 		}
@@ -344,8 +433,6 @@ public class DataHandler {
 		return false;
 	}
 	
-	private static void getRegisteredVotes
-	
 	//TODO: get the county votes data
 	private static void extractData(int dataType) {
 		if (dataType != COUNTY_VOTES) {
@@ -353,12 +440,7 @@ public class DataHandler {
 			err(EXTRACTION, "extractData, incorrect dataType given: " + Integer.toString(dataType));
 		}
 	}
-	
-	private void getDataFromFile() {
-		//create a scanner that reads in the voter data from the voter data file
-		
-	}
-	
+
 	public void addError(int error) {
 		errors.add(error);
 	}
