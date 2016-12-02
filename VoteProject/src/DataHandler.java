@@ -72,7 +72,7 @@ public class DataHandler {
 		System.out.println("Verifying number of voters");
 		verifyVoters();
 		System.out.println("Verified");
-		return null;
+		return new State(dataArray);
 	}
 	
 	private static void verifyVoters() {
