@@ -4,7 +4,7 @@ import javax.swing.JFileChooser;
 public class Tester {
 
 	public static void main(String[] args) {
-		State Ohio = new State();
+		State Ohio = DataHandler.makeState();
 		System.out.println(Ohio.getDemPercent());
 		System.out.println(Ohio.getRepPercent());
 		System.out.println(Ohio.getIndPercent());

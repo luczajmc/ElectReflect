@@ -6,7 +6,7 @@ import javax.swing.event.ListSelectionListener;
 
 public class MergeFrameDemo {
 	public static void main(String[] args) {
-		State panOhio = new State();
+		State panOhio = DataHandler.makeState();
 
 		JFrame mergeFrame = new JFrame("Merge");
 		mergeFrame.getContentPane().setLayout(new BoxLayout(mergeFrame.getContentPane(), BoxLayout.LINE_AXIS));
