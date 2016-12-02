@@ -61,6 +61,11 @@ public class State extends Region {
 	}
 	
 	public State(ArrayList<String[]> data) {
+		//initialize needed variables
+		this.counties = new ArrayList<County>();
+		this.currentCounty = "";
+		this.newCounty = new County("");
+		
 		String currentCountyName = "";
 		for (String[] currentDistrict : data) {
 			currentCountyName = currentDistrict[COUNTY_NAME]; // set the current county name as the name of the county in the line
