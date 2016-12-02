@@ -21,6 +21,7 @@ public class DataHandler {
 	private static ArrayList<String[]> dataArray = new ArrayList<String[]>(); //holds the districtData array
 	private static ArrayList<String[]> countyArray = new ArrayList<String[]>(); //holds countyVotes array
 	private static ArrayList<String[]> registeredCountyArray = new ArrayList<String[]>(); //holds the registeredCountyVotes array
+	private static ArrayList<String> counties = new ArrayList<String>(); //holds a list of counties
 	
 	//final ints for accessing data in the arrays
 	private final static int COUNTY_NAME = 0;
@@ -53,15 +54,56 @@ public class DataHandler {
 	public static void main(String[] args) {
 		getFiles(VOTER_DATA);
 		System.out.println("voter data retrieved");
+		sort(dataArray);
 		getFiles(REGISTERED_DATA);
 		System.out.println("registered file data retrieved");
 		extractData(COUNTY_VOTES);
 		System.out.println("county voting data has been extracted");
+		sort(registeredCountyArray);
 		System.out.println("Verifying number of voters");
 		verifyVoters();
 		System.out.println("Verified");
 	}
+
+//sorter (I'm sorry)
+//==================================================================================
+	private static void sort(ArrayList<String[]> sortThis) {
+		ArrayList<String[]> sorted = new ArrayList<>();
+		sorted.addAll(dataArray);
 	
+		for (int i = 0; i < sortThis.size(); i++) {
+			for (int k = 0; k < sortThis.size()-1; k++) {
+				if (AisAfterB(sortThis.get(k)[COUNTY_NAME], sortThis.get(k+1)[COUNTY_NAME])) {
+					sorted = swap(sorted, k, k+1);
+				}
+			}
+		}
+	}
+	
+	private static boolean AisAfterB(String A, String B) {
+		int length;
+		if (A.length() >= B.length()) {
+			length = B.length();
+		}
+		else {
+			length = A.length();
+		}
+		for (int i = 0; i < length; i++) {
+			if (A.charAt(i) > B.charAt(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static ArrayList<String[]> swap(ArrayList<String[]> sorted, int pos1, int pos2) {
+		String[] temp = sorted.get(pos2);
+		sorted.set(pos2, sorted.get(pos1));
+		sorted.set(pos1, temp);
+		return sorted;
+	}
+//==================================================================================
+    
 	public static State makeState() {
 		getFiles(VOTER_DATA);
 		System.out.println("voter data retrieved");
@@ -189,7 +231,7 @@ public class DataHandler {
 	private static boolean isRegEqual(String[] s1, String[] s2) {
 		int matchCount = 0;
 		for (int i = 0; i < 2; i++) {
-			System.out.println("Comparing " + s1[i] + " to " + s2[i]);
+			//System.out.println("Comparing " + s1[i] + " to " + s2[i]);
 			if (s1[i].equals(s2[i])) {matchCount++;}
 		}
 		if (matchCount == 2) {
