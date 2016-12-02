@@ -36,6 +36,8 @@ public class Gui extends JPanel{
 	private JCheckBox textSum = new JCheckBox("Text Summary");
 	private JCheckBox allDisplays = new JCheckBox("All Displays");
 	
+	private final JFileChooser fc = new JFileChooser();
+	
 	private JList<Region> regionSelect = new JList<Region>();
 	private JList<Region> selectedValues = new JList<Region>();
 	
@@ -144,6 +146,12 @@ public class Gui extends JPanel{
 		
 		//========================================================================== Menu Bar
 		
+		add(fc);
+		fc.approveSelection();
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		
+		
+		
 		add(menu);
 		menu.setSize(window.getWidth(), 20);
 		menu.setLocation(0, 0);
@@ -168,8 +176,8 @@ public class Gui extends JPanel{
 		});
 		
 		file.setText("File");
-		file.add(exit);
 		file.add(save);
+		file.add(exit);
 		
 		save.setText("Save");
 		save.setToolTipText("Save current selected data.");
@@ -181,28 +189,33 @@ public class Gui extends JPanel{
 				File selectedData = new File("Selected Data " + LocalDate.now()+ 
 						LocalTime.now().getHour() + "-" + LocalTime.now().getMinute()+".txt");
 				PrintWriter out = null;
+				
 				try {
 					out = new PrintWriter(selectedData);
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				}
 				
+				if(selected == null){
+					JOptionPane.showMessageDialog(null, "No data selected.");
+					return;
+				}
 				for(int i = 0; i < selected.length; i++){
 					if(selected[i] != null){
 						try{
-							BufferedWriter writer = new BufferedWriter(new FileWriter(selectedData));
+							out.write(selected[i].toString());
 							
-							writer.write(selected[i].toString());
-							writer.flush();
-							writer.close();
-							
-						} catch (IOException e1) {
-							e1.printStackTrace();
 						} finally{}
-					} else { 
-						return;
 					}
+					out.flush();
 				}
+				out.close();
+				int result = fc.showSaveDialog(frame);
+				
+//				if (result == JFileChooser.APPROVE_OPTION) {
+//					fc.setSelectedFile(selectedData);
+//				}
+				
 			}
 		});
 		
