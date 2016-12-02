@@ -109,13 +109,20 @@ public class ZoomablePieChartPanel extends ChartPanel {
     public void mouseReleased(MouseEvent e) {
     	// TODO: don't zoom if you just click
     	// TODO: zoom out
-    	double arcAngle = this.arcAngle;
-    	arcAngle = clip(arcAngle);
-    	System.out.println(arcAngle);
     	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
+    	double arcAngle = this.arcAngle;
     	
-    	plot.zoomSelection(this.startAngle, arcAngle);
-    	
+    	if (arcAngle>0) { // you dragged counterclockwise
+    		plot.zoomOut();
+    	}
+    	else {
+        	arcAngle = clip(arcAngle);
+        	System.out.println(arcAngle);
+        	
+        	plot.zoomSelection(this.startAngle, arcAngle);
+        	
+    	}
+
     	this.endAngle = this.startAngle;
     	this.arcAngle = 0.0;
 

@@ -246,6 +246,12 @@ import org.jfree.util.UnitType;
 
 public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable {
 
+	final PieDataset unzoomedDataset;
+	
+	public void zoomOut() {
+		this.setDataset(unzoomedDataset);
+	}
+	
     public void trimSlices(double[] remainingPercentages) {
     	PieDataset dataset = this.getDataset();
     	DefaultPieDataset zoomedDataset = new DefaultPieDataset(dataset);
@@ -448,5 +454,10 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 
 	double[] overlapOnto(double pieStart, double pieArc, double sweepStart, double sweepArc) {
 		return tailOverlapOnto(pieStart, pieArc, sweepStart, sweepArc);
+	}
+	
+	public ZoomablePiePlot(PieDataset dataset) {
+		super(dataset);
+		this.unzoomedDataset = dataset;
 	}
 }
