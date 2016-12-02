@@ -62,7 +62,7 @@ public class DataHandler {
 		System.out.println("Verified");
 	}
 	
-	public State makeState() {
+	public static State makeState() {
 		getFiles(VOTER_DATA);
 		System.out.println("voter data retrieved");
 		getFiles(REGISTERED_DATA);
