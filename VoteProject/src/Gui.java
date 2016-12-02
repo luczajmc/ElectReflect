@@ -36,7 +36,7 @@ public class Gui extends JPanel{
 	private JCheckBox textSum = new JCheckBox("Text Summary");
 	private JCheckBox allDisplays = new JCheckBox("All Displays");
 	
-	private final JFileChooser fc = new JFileChooser();
+	private final JFileChooser fc = new JFileChooser("user.home");
 	
 	private JList<Region> regionSelect = new JList<Region>();
 	private JList<Region> selectedValues = new JList<Region>();
@@ -147,11 +147,7 @@ public class Gui extends JPanel{
 		//========================================================================== Menu Bar
 		
 		add(fc);
-		fc.approveSelection();
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		
-		
-		
+
 		add(menu);
 		menu.setSize(window.getWidth(), 20);
 		menu.setLocation(0, 0);
@@ -186,8 +182,8 @@ public class Gui extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO
-				File selectedData = new File("Selected Data " + LocalDate.now()+ 
-						LocalTime.now().getHour() + "-" + LocalTime.now().getMinute()+".txt");
+				fc.showSaveDialog(Gui.this);
+				File selectedData = new File(fc.getSelectedFile()+".txt");
 				PrintWriter out = null;
 				
 				try {
@@ -203,19 +199,16 @@ public class Gui extends JPanel{
 				for(int i = 0; i < selected.length; i++){
 					if(selected[i] != null){
 						try{
-							out.write(selected[i].toString());
+							out.println(selected[i].toString() + "County - Number of Republican votes: " + selected[i].getRepVotes()
+									+ ", Number of Democratic votes: " + selected[i].getDemVotes()+
+									", Number of Independent votes: " + selected[i].getIndVotes());
 							
 						} finally{}
 					}
-					out.flush();
 				}
 				out.close();
-				int result = fc.showSaveDialog(frame);
 				
-//				if (result == JFileChooser.APPROVE_OPTION) {
-//					fc.setSelectedFile(selectedData);
-//				}
-				
+				save.setEnabled(true);
 			}
 		});
 		
