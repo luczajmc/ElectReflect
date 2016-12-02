@@ -318,7 +318,9 @@ public class Gui extends JPanel{
 					}
 				}
 				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
-					oldSelection.add(regionSelect.getSelectedValuesList().get(i));
+					if(!oldSelection.contains(regionSelect.getSelectedValuesList().get(i))){
+						oldSelection.add(regionSelect.getSelectedValuesList().get(i));
+					}
 				}
 				selected = new Region[oldSelection.size()];
 					
@@ -364,13 +366,19 @@ public class Gui extends JPanel{
 	//========================================================================== Methods
 	
 	private void update(Region[] r){
-		for(int i = 0; i <oldSelection.size(); i++){
-			for(int j = 0; j <oldSelection.size(); j++){
-				if(oldSelection.get(i).equals(oldSelection.get(j)) && i !=j){
-					oldSelection.remove(i);
-				}
-			}
-		}
+//		ArrayList<Integer> indeces = new ArrayList<Integer>();
+//		for(int i = 0; i <oldSelection.size(); i++){
+//			for(int j = 0; j < oldSelection.size(); j++){
+//				if(oldSelection.get(i).equals(oldSelection.get(j)) && i != j){
+//					indeces.add(i);
+//				}
+//			}
+//		}
+//		
+//		for(int i = 0; i < indeces.size(); i++){
+//			oldSelection.remove(indeces.get(i));
+//		}
+		
 		for(int i = 0; i < oldSelection.size(); i++){
 			r[i] = oldSelection.get(i);
 		}
