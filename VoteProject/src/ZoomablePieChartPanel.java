@@ -107,15 +107,15 @@ public class ZoomablePieChartPanel extends ChartPanel {
     }
     @Override
     public void mouseReleased(MouseEvent e) {
-    	// TODO: don't zoom if you just click
-    	// TODO: zoom out
+    	// FIXME: it's possible to zoom so far in, still, that your data goes away
     	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
     	double arcAngle = this.arcAngle;
     	
+    	double minimumSweep = -Math.PI/100; // clockwise
     	if (arcAngle>0) { // you dragged counterclockwise
     		plot.zoomOut();
     	}
-    	else {
+    	else if (arcAngle < minimumSweep) {
         	arcAngle = clip(arcAngle);
         	System.out.println(arcAngle);
         	
