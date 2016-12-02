@@ -310,21 +310,28 @@ public class Gui extends JPanel{
 			
 			public void actionPerformed(ActionEvent arg0) {
 				ArrayList<Region> oldSelection = new ArrayList<Region>();
-				for(int i = 0; i < oldSelection.size(); i++){
-					while(selected[i] != null){
-						oldSelection.set(i, selected[i]);
+				if(oldSelection.isEmpty()){
+					for(int i = 0; i < oldSelection.size(); i++){
+						while(selected[i] != null){
+							oldSelection.set(i, selected[i]);
+						}
+					}
+					
+					for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+						oldSelection.add(regionSelect.getSelectedValuesList().get(i));
+					}
+				} else {
+					for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
+						oldSelection.add(regionSelect.getSelectedValuesList().get(i));
 					}
 				}
 				
-				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
-					oldSelection.add(regionSelect.getSelectedValuesList().get(i));
-				}
-				
 				selected = new Region[oldSelection.size()];
-				
+					
 				for(int i = 0; i <oldSelection.size(); i++){
 					selected[i] = oldSelection.get(i);
 				}
+				
 				selectedValues.setListData(selected);
 			}
 		});
