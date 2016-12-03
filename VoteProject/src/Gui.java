@@ -26,37 +26,38 @@ public class Gui extends JPanel{
 	private static JFrame frame = new JFrame("Message");
 	private static JPanel blueStripe = new JPanel();
 	
-	private JButton addRegion = new JButton();
-	private JButton showData = new JButton();
-	private JButton addSubregion = new JButton();
-	private JButton removeSubregion = new JButton();
+	private static JButton addRegion = new JButton();
+	private static JButton showData = new JButton();
+	private static JButton addSubregion = new JButton();
+	private static JButton removeSubregion = new JButton();
 	
-	private JCheckBox barGraph = new JCheckBox("Bar Graph");
-	private JCheckBox pieChart = new JCheckBox("Pie Chart");
-	private JCheckBox textSum = new JCheckBox("Text Summary");
-	private JCheckBox allDisplays = new JCheckBox("All Displays");
+	private static JCheckBox barGraph = new JCheckBox("Bar Graph");
+	private static JCheckBox pieChart = new JCheckBox("Pie Chart");
+	private static JCheckBox textSum = new JCheckBox("Text Summary");
+	private static JCheckBox allDisplays = new JCheckBox("All Displays");
 	
-	private final JFileChooser fc = new JFileChooser();
+	private static JFileChooser fc = null;
 	
-	private JList<Region> regionSelect = new JList<Region>();
-	private JList<Region> selectedValues = new JList<Region>();
+	private static JList<Region> regionSelect = new JList<Region>();
+	private static JList<Region> selectedValues = new JList<Region>();
 	
-	private JMenuBar menu = new JMenuBar();
-	private JMenu file = new JMenu();
-	private JMenu help = new JMenu();
-	private JMenuItem save = new JMenuItem(); //TODO: save data selected
-	private JMenuItem exit = new JMenuItem();
-	private JMenuItem userGuide = new JMenuItem();
+	private static JMenuBar menu = new JMenuBar();
+	private static JMenu file = new JMenu();
+	private static JMenu help = new JMenu();
+	private static JMenuItem save = new JMenuItem(); //TODO: save data selected
+	private static JMenuItem exit = new JMenuItem();
+	private static JMenuItem userGuide = new JMenuItem();
 	
-	private JTextPane title = new JTextPane();
-	private JScrollPane regionPane = new JScrollPane(regionSelect);
-	private JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
+	private static JTextPane title = new JTextPane();
+	private static JScrollPane regionPane = new JScrollPane(regionSelect);
+	private static JScrollPane gerrymanderPane = new JScrollPane(selectedValues);
 	
-	private JToolTip addStateTip = new JToolTip();
+	private static JToolTip addStateTip = new JToolTip();
 	
-	public Region[] regions;
-	public Region[] selected;
-	public State state;
+	private static Region[] regions;
+	private static Region[] selected;
+	private static State state;
+	private static ArrayList<Region> oldSelection = new ArrayList<Region>();
 	
 	public int numItems = 0;
 	
@@ -81,6 +82,8 @@ public class Gui extends JPanel{
 		
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			fc = new JFileChooser("user.home");
+			UIManager.setLookAndFeel(UIManager.getLookAndFeel());
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -147,11 +150,7 @@ public class Gui extends JPanel{
 		//========================================================================== Menu Bar
 		
 		add(fc);
-		fc.approveSelection();
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		
-		
-		
+
 		add(menu);
 		menu.setSize(window.getWidth(), 20);
 		menu.setLocation(0, 0);
@@ -185,9 +184,9 @@ public class Gui extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO
-				File selectedData = new File("Selected Data " + LocalDate.now()+ 
-						LocalTime.now().getHour() + "-" + LocalTime.now().getMinute()+".txt");
+				// TODO change look and feel of file chooser
+				fc.showSaveDialog(Gui.this);
+				File selectedData = new File(fc.getSelectedFile()+".txt");
 				PrintWriter out = null;
 				
 				try {
@@ -196,26 +195,24 @@ public class Gui extends JPanel{
 					e1.printStackTrace();
 				}
 				
-				if(selected == null){
+				if(oldSelection == null){
 					JOptionPane.showMessageDialog(null, "No data selected.");
 					return;
 				}
-				for(int i = 0; i < selected.length; i++){
-					if(selected[i] != null){
+				for(int i = 0; i < oldSelection.size(); i++){
+					if(oldSelection.get(i) != null){
 						try{
-							out.write(selected[i].toString());
+							out.println(oldSelection.get(i).toString() + "County - Number of Republican votes: " + 
+									oldSelection.get(i).getRepVotes()
+									+ ", Number of Democratic votes: " + oldSelection.get(i).getDemVotes()+
+									", Number of Independent votes: " + oldSelection.get(i).getIndVotes());
 							
 						} finally{}
 					}
-					out.flush();
 				}
 				out.close();
-				int result = fc.showSaveDialog(frame);
 				
-//				if (result == JFileChooser.APPROVE_OPTION) {
-//					fc.setSelectedFile(selectedData);
-//				}
-				
+				save.setEnabled(true);
 			}
 		});
 		
@@ -246,7 +243,7 @@ public class Gui extends JPanel{
 		addRegion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {				
-				state = new State();
+				state = DataHandler.makeState();
 				regions = new Region[state.getCounties().size()];
 				System.out.println(state.getCounties().size());
 				
@@ -288,19 +285,19 @@ public class Gui extends JPanel{
 //				
 //				selectedValues.setListData(selected);
 				if(allDisplays.isSelected()){
-					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
-					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
-					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.barGraph(new Gerrymander(oldSelection));
+					Grapher.pieChart(new Gerrymander(oldSelection));
+					Grapher.text(new Gerrymander(oldSelection));
 					return; // this prevents the user from selecting all check boxes and having two of each display pop up
 				}
 				if(barGraph.isSelected()){
-					Grapher.barGraph(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.barGraph(new Gerrymander(oldSelection));
 				}
 				if(pieChart.isSelected()){
-					Grapher.pieChart(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.pieChart(new Gerrymander(oldSelection));
 				}
 				if(textSum.isSelected()){
-					Grapher.text(new Gerrymander(regionSelect.getSelectedValuesList()));
+					Grapher.text(new Gerrymander(oldSelection));
 				}
 			}
 			
@@ -316,26 +313,19 @@ public class Gui extends JPanel{
 		addSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				ArrayList<Region> oldSelection = new ArrayList<Region>();
-				if(selected == null){
-					selected = new Region[regions.length];
-				} else {
+				if(oldSelection.isEmpty()){
 					for(int i = 0; i < oldSelection.size(); i++){
-						while(selected[i] != null)
-						oldSelection.set(i, selected[i]);
+						while(selected[i] != null){
+							oldSelection.set(i, selected[i]);
+						}
 					}
 				}
-				
 				for(int i = 0; i < regionSelect.getSelectedValuesList().size(); i++){
-					selected[i] = regionSelect.getSelectedValuesList().get(i);
-					oldSelection.add(regionSelect.getSelectedValuesList().get(i));
-				}
-				
-				for(int i = 0; i <oldSelection.size(); i++){
-					selected[i] = oldSelection.get(i);
-				}
-				
-				selectedValues.setListData(selected);
+					if(!oldSelection.contains(regionSelect.getSelectedValuesList().get(i))){
+						oldSelection.add(regionSelect.getSelectedValuesList().get(i));
+					}
+				}					
+				update(selected);
 			}
 		});
 		
@@ -349,7 +339,15 @@ public class Gui extends JPanel{
 		removeSubregion.addActionListener(new ActionListener(){
 			
 			public void actionPerformed(ActionEvent arg0) {
-				
+				for(int i = 0; i < oldSelection.size(); i++){
+					for(int j = 0; j < selectedValues.getSelectedValuesList().size(); j++){
+						if(oldSelection.get(i).equals(selectedValues.getSelectedValuesList().get(j))){
+							selectedValues.getSelectedValuesList().remove(j);
+							oldSelection.remove(i);
+						}
+					}
+				}
+				update(selected);
 			}
 		});
 		
@@ -365,6 +363,17 @@ public class Gui extends JPanel{
 	 */
 	public static Component getFrame(){
 		return frame;
+	}
+	
+	//========================================================================== Methods
+	
+	private void update(Region[] r){
+		r = new Region[oldSelection.size()];
+		for(int i = 0; i < oldSelection.size(); i++){
+			r[i] = oldSelection.get(i);
+		}
+		
+		selectedValues.setListData(r);
 	}
 	
 	//========================================================================== Main method

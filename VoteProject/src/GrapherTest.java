@@ -1,14 +1,7 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Comparator;
-
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 public class GrapherTest {
 	static String name(int i) {
@@ -37,7 +30,7 @@ public class GrapherTest {
 		JFrame frame = new JFrame("Sort");
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.LINE_AXIS));
 
-		State panOhio = new State("../Data/Ohio.csv");
+		State panOhio = DataHandler.makeState();
 		JList countyList = new JList(panOhio.getCounties().toArray());
 		frame.add(countyList);
 		
@@ -53,17 +46,17 @@ public class GrapherTest {
 		System.out.println(f.exists());
 
 		
-		State ohio = new State("../Data/ExampleData.txt");
+		State ohio = DataHandler.makeState();
 		Grapher.barGraphState(ohio);
 		Grapher.textState(ohio);
 		Grapher.pieChartState(ohio);
 		
-		panOhio = new State("../Data/Ohio.csv");
+		panOhio = DataHandler.makeState();
 		Grapher.barGraphState(panOhio);
 		Grapher.textState(panOhio);
 		Grapher.pieChartState(panOhio);
 		
-		State state = new State(20, 39, 48);
+		State state = DataHandler.makeState();
 		Grapher.pieChartState(state);
 		
 		District district = new District("Oxford", 30, 28, 306);
