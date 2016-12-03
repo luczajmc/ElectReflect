@@ -12,6 +12,8 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.labels.StandardPieToolTipGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.StandardBarPainter;
@@ -19,6 +21,8 @@ import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
+import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
 public class Grapher {
@@ -213,16 +217,30 @@ public class Grapher {
 		data.setValue("Independent", region.getIndVotes());
 		
 		ZoomablePiePlot plot = new ZoomablePiePlot(data);
+		
+        plot.setLabelGenerator(new StandardPieSectionLabelGenerator() {
+        	final PieDataset dataset = data;
+        	
+            @Override
+            public String generateSectionLabel(PieDataset dataset, Comparable key) {
+            	double value = dataset.getValue(key).doubleValue();
+            	double total = this.dataset.getValue(key).doubleValue();
+            	double percentage = value/total * 100.0;
+                return String.format("%1$s (%2$.2f%% shown)",
+                		super.generateSectionLabel(dataset, key), percentage);
+            }
 
-		plot.trimSlice("Republican", 0.01);
-		plot.trimSlice("Democrat", 0.01);
+        	
+        });
+        plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
+        plot.setToolTipGenerator(new StandardPieToolTipGenerator());
+        
  
 		JFreeChart chart = new JFreeChart("Election Results", plot);
 	
 
 		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
 		splitPane.setLeftComponent(chartPanel);
-		
 		JTextArea list = new JTextArea(regionList(region));
 		list.setEditable(false);
 		JScrollPane scrollableList = new JScrollPane(list);
