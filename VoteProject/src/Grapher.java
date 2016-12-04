@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieToolTipGenerator;
-import org.jfree.chart.plot.MultiplePiePlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.StandardBarPainter;
@@ -52,8 +50,6 @@ public class Grapher {
         SyncedCategoryPlot plot = new SyncedCategoryPlot(dataset, categoryAxis, valueAxis,
                 renderer);
         plot.setOrientation(PlotOrientation.HORIZONTAL);
-        
-        plot.setBackgroundPaint(Color.white);
         
         return plot;
     }
@@ -215,30 +211,36 @@ public class Grapher {
 	public static void pieChart(Region region) {
 		JSplitPane splitPane = new JSplitPane();
 
-		DefaultCategoryDataset data = new DefaultCategoryDataset();
+		DefaultPieDataset data = new DefaultPieDataset();
+		data.setValue("Republican", region.getRepVotes());
+		data.setValue("Democrat", region.getDemVotes());
+		data.setValue("Independent", region.getIndVotes());
 		
-		for (Region subregion : region.getSubregions()) {
-			data.setValue(subregion.getRepVotes(), "Republican", subregion.getName());
-			data.setValue(region.getDemVotes(), "Democrat", subregion.getName());
-			data.setValue(region.getIndVotes(), "Independent", subregion.getName());
-			
-		}
+		ZoomablePiePlot plot = new ZoomablePiePlot(data);
 		
-		ScrollablePiePlot plot = new ScrollablePiePlot(data);
+        plot.setLabelGenerator(new StandardPieSectionLabelGenerator() {
+        	final PieDataset dataset = data;
+        	
+            @Override
+            public String generateSectionLabel(PieDataset dataset, Comparable key) {
+            	double value = dataset.getValue(key).doubleValue();
+            	double total = this.dataset.getValue(key).doubleValue();
+            	double percentage = value/total * 100.0;
+                return String.format("%1$s (%2$.2f%% shown)",
+                		super.generateSectionLabel(dataset, key), percentage);
+            }
+
+        	
+        });
+        plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
+        plot.setToolTipGenerator(new StandardPieToolTipGenerator());
         
  
 		JFreeChart chart = new JFreeChart("Election Results", plot);
+	
 
-		ChartPanel chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, 200*data.getColumnKeys().size()));
-		chartPanel.setMaximumDrawHeight(ChartPanel.DEFAULT_HEIGHT+200*data.getColumnKeys().size());
-
-		JViewport port = new JViewport();
-		port.add(chartPanel);
-		
-		JScrollPane scrollPane = new JScrollPane(port);
-
-		splitPane.setLeftComponent(scrollPane);
+		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
+		splitPane.setLeftComponent(chartPanel);
 		JTextArea list = new JTextArea(regionList(region));
 		list.setEditable(false);
 		JScrollPane scrollableList = new JScrollPane(list);
