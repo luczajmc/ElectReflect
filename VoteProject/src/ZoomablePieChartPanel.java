@@ -147,10 +147,8 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		return angle;
 
     }
-	public void fillArc(Graphics g, double startAngle, double arcAngle) {
-		// TODO: this should never go counterclockwise
-		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
-		Rectangle2D dataArea = info.getDataArea();
+    
+    public void fillArc(Graphics g, Rectangle2D dataArea, double startAngle, double arcAngle) {
 
 		double diameter = Math.min(dataArea.getWidth(), dataArea.getHeight());
 		double radius = diameter/2;
@@ -174,6 +172,14 @@ public class ZoomablePieChartPanel extends ChartPanel {
 				(int) arc.getHeight(), (int) startAngleDegrees,
 				(int) arcAngleDegrees);
 		g.setPaintMode();
+	
+    }
+    
+	public void fillArc(Graphics g, double startAngle, double arcAngle) {
+		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
+		Rectangle2D dataArea = info.getDataArea();
+		
+		fillArc(g, dataArea, startAngle, arcAngle);
     }
 	
 	double normalize(double angle) {

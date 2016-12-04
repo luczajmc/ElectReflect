@@ -1,5 +1,6 @@
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -17,6 +18,17 @@ import org.jfree.ui.RectangleInsets;
 import org.jfree.util.TableOrder;
 
 public class ScrollablePiePlot extends MultiplePiePlot {
+	public int getPieNumber(int yOffset, Rectangle2D dataArea) {
+		int xOffset = (int) dataArea.getCenterX();
+		for (int i=0; i<getPieCount(); i++) {
+			Rectangle2D pieArea = getPieArea(i, dataArea);
+			if (pieArea.contains(new Point(xOffset, yOffset))) {
+				return i;
+			}
+		}
+		
+		return -1;
+	}
 	public Rectangle2D getPieArea(int pieNumber, Rectangle2D dataArea) {
         int displayCols = 1;
         int displayRows = getPieCount();
@@ -56,6 +68,19 @@ public class ScrollablePiePlot extends MultiplePiePlot {
         return totalArea;
 	}
 	
+	public String getPieTitle(int pieIndex) {
+        
+        String title;
+        if (this.getDataExtractOrder() == TableOrder.BY_ROW) {
+            title = this.getDataset().getRowKey(pieIndex).toString();
+        }
+        else {
+            title = this.getDataset().getColumnKey(pieIndex).toString();
+        }
+
+        return title;
+	}
+	
     @Override
     public void draw(Graphics2D g2, Rectangle2D area, Point2D anchor,
             PlotState parentState, PlotRenderingInfo info) {
@@ -79,14 +104,8 @@ public class ScrollablePiePlot extends MultiplePiePlot {
 
         for (int pieIndex = 0; pieIndex < pieCount; pieIndex++) {
             Rectangle2D rect = getPieArea(pieIndex, area);
-            
-            String title;
-            if (this.getDataExtractOrder() == TableOrder.BY_ROW) {
-                title = this.getDataset().getRowKey(pieIndex).toString();
-            }
-            else {
-                title = this.getDataset().getColumnKey(pieIndex).toString();
-            }
+
+            String title = getPieTitle(pieIndex);
             this.getPieChart().setTitle(title);
 
             PieDataset piedataset;
