@@ -56,42 +56,15 @@ public class DataHandler {
 	private static PrintWriter out;
 	
 	public static void main(String[] args) {
-		System.out.println("Preparing printwriter");
-		try {
-			out = new PrintWriter(errorLog);
-		}
-		catch (FileNotFoundException e) {
-			System.out.println("Something went wrong");
-		}
-		out.print("-- PrintWriter created, begin logging. --\r\n\r\n");
-		
-		out.print("Prompting for voter files...\r\n\r\n");
-		getFiles(VOTER_DATA);
-		out.print("done.\r\n\r\n");
-		
-		out.print("Sorting voter data...");
-		sort(dataArray);
-		out.print("done.\r\n\r\n");
-		
-		out.print("Prompting for registered voter data...\r\n\r\n");
-		getFiles(REGISTERED_DATA);
-		out.print("done.\r\n\r\n");
-		
-		out.print("Verifying data integrity...");
-		extractData(COUNTY_VOTES);
-		out.print("done.\r\n\r\n");
-		
-		out.print("Sorting county...");
-		sort(registeredCountyArray);
-		out.print("done.\r\n\r\n");
-		
-		out.print("Verifying number of voters...");
-		verifyVoters();
-		out.print("done.\r\n\r\n");
-		out.close();
+		makeState();
 	}
 	
-	public static State makeState() {
+	public static State makeState(String directory) {
+		return makeState(directory, directory);
+	}
+	
+	public static State makeState(String resultsDirectory,
+			String registeredVotersDirectory) {
 		System.out.println("Preparing printwriter");
 		try {
 			out = new PrintWriter(errorLog);
@@ -102,7 +75,7 @@ public class DataHandler {
 		out.print("-- PrintWriter created, begin logging. --\r\n\r\n");
 		
 		out.print("Prompting for voter files...");
-		getFiles(VOTER_DATA);
+		extractData(resultsDirectory, VOTER_DATA);
 		out.print("done.\r\n\r\n");
 		
 		out.print("Sorting voter data...");
@@ -110,7 +83,7 @@ public class DataHandler {
 		out.print("done.\r\n\r\n");
 		
 		out.print("Prompting for registered voter data...");
-		getFiles(REGISTERED_DATA);
+		extractData(registeredVotersDirectory, REGISTERED_DATA);
 		out.print("done.\r\n\r\n");
 		
 		out.print("Verifying data integrity...");
@@ -128,6 +101,37 @@ public class DataHandler {
 		out.println("Creating State object.");
 		out.close();
 		return new State(dataArray);
+	}
+	
+	static String chooseDirectory(String message) {
+        //show input dialog
+        JOptionPane.showMessageDialog(null, message);
+
+		//filechooser
+        // FIXME: the title bar should say Choose a folder, but it says Open
+		JFrame fileFrame = new JFrame("Choose a folder");
+		fileFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// TODO: windo
+		//show the filechooser
+		JFileChooser fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fc.setCurrentDirectory(new File(System.getProperty("user.home")));
+		int result = fc.showOpenDialog(fileFrame);
+		
+		//extract the data depending on the type
+		if (result == JFileChooser.APPROVE_OPTION) {
+			String path = fc.getSelectedFile().getAbsolutePath().toString(); //returns a string of the directory
+			return path;
+		}
+		
+		return null;
+
+	}
+	
+	public static State makeState() {
+		return makeState(chooseDirectory(getMessage(VOTER_DATA)),
+				chooseDirectory(getMessage(REGISTERED_DATA)));
 	}
 
 //sorter (I'm sorry)
