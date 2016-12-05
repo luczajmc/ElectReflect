@@ -183,13 +183,28 @@ public class Grapher {
 		frame.add(splitPane);
 		frame.pack();
 		
+		clipFrame(frame);
+		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
 		double frameWidth = frame.getPreferredSize().getWidth();
 		frame.setLocation(new Point((int) (screenWidth-frameWidth), 0));
 		frame.setVisible(true);
 	}
-	
+
+	static void clipFrame(JFrame frame) {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenWidth = screenSize.getWidth();
+		double frameWidth = frame.getPreferredSize().getWidth();
+		double screenHeight = screenSize.getHeight();
+		double frameHeight = frame.getPreferredSize().getHeight();
+		
+		double width = Math.min(screenWidth, frameWidth);
+		double height = Math.min(screenHeight, frameHeight);
+		frame.setPreferredSize(new Dimension((int) width, (int) height));
+		frame.setVisible(true);
+
+	}
 	public static void barGraphState(State state) {
 		barGraph(state);
 	}
@@ -277,6 +292,8 @@ public class Grapher {
 		frame.add(splitPane);
 		frame.pack();
 		
+		clipFrame(frame);
+
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
 		double frameWidth = frame.getPreferredSize().getWidth();
@@ -335,6 +352,9 @@ public class Grapher {
 		frame.add(scrollPane);
 		frame.pack();
 		
+		// TODO: leave 450 pixels for the main GUI
+		clipFrame(frame);
+
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenHeight = screenSize.getHeight();
 		double frameHeight = frame.getPreferredSize().getHeight();
