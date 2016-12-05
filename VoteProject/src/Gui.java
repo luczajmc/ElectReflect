@@ -350,44 +350,47 @@ public class Gui extends JPanel{
 		File selectedData = new File(fc.getSelectedFile()+".txt");
 		PrintWriter out = null;
 		
-		confirm(selectedData);
+		if(confirm(selectedData)){
 		
-		try {
-			out = new PrintWriter(selectedData);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		
-		if(oldSelection == null){
-			JOptionPane.showMessageDialog(null, "No data selected.");
-			return;
-		}
-		for(int i = 0; i < oldSelection.size(); i++){
-			if(oldSelection.get(i) != null){
-				try{
-					out.println(oldSelection.get(i).toString() + "County - Number of Republican votes: " + 
-							oldSelection.get(i).getRepVotes()
-							+ ", Number of Democratic votes: " + oldSelection.get(i).getDemVotes()+
-							", Number of Independent votes: " + oldSelection.get(i).getIndVotes());
-					
-				} finally{}
+			try {
+				out = new PrintWriter(selectedData);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
 			}
+			
+			if(oldSelection == null){
+				JOptionPane.showMessageDialog(null, "No data selected.");
+				return;
+			}
+			for(int i = 0; i < oldSelection.size(); i++){
+				if(oldSelection.get(i) != null){
+					try{
+						out.println(oldSelection.get(i).toString() + "County - Number of Republican votes: " + 
+								oldSelection.get(i).getRepVotes()
+								+ ", Number of Democratic votes: " + oldSelection.get(i).getDemVotes()+
+								", Number of Independent votes: " + oldSelection.get(i).getIndVotes());
+						
+					} finally{}
+				}
+			}
+			out.close();
 		}
-		out.close();
 	}
 	
-	private void confirm(File f){
+	private boolean confirm(File f){
 		for(int i = 0; i < fc.getCurrentDirectory().listFiles().length; i++){
 			if(fc.getCurrentDirectory().listFiles()[i].getName().equals(f.getName())){
 				int result = JOptionPane.showConfirmDialog(null, "File already exists. Overwrite?");
 				if(result == JOptionPane.NO_OPTION){
 					save();
+					return false;
 				} else if(result == JOptionPane.YES_OPTION){
-					return;
+					return true;
 				}
 			}
 				
 		}
+		return true;
 	}
 	
 	//========================================================================== Main method
