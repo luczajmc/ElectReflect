@@ -132,6 +132,8 @@ public class Grapher {
 		JViewport axisPort = new JViewport();
 		axisPort.add(sisterScrollPane);
 		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, headerSize));
+		axisPort.setMinimumSize(axisPort.getPreferredSize());
+		axisPort.setMaximumSize(axisPort.getPreferredSize());
 		
 		ChartPanel chartPanel = chartPanel(region);
 		SyncedCategoryPlot plot = (SyncedCategoryPlot) chartPanel.getChart().getPlot();
@@ -143,7 +145,6 @@ public class Grapher {
 		JScrollPane scrollPane = new JScrollPane(port);
 		int scrollBarSize = 30;
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT-headerSize));
-		scrollPane.setMinimumSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT-headerSize));
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JSplitPane chartPane = new JSplitPane();
@@ -169,10 +170,16 @@ public class Grapher {
 		scrollPane.getViewport().setViewPosition(new Point(0, headerSize));
 		
 		navigationPanel.add(scrollableList);
-		
+		navigationPanel.setMinimumSize(navigationPanel.getPreferredSize());
+		navigationPanel.setMaximumSize(navigationPanel.getPreferredSize());
+
 		splitPane.setRightComponent(navigationPanel);
 	
 		JFrame frame = new JFrame("Election Results");
+		
+		splitPane.setEnabled(false);
+		splitPane.setDividerSize(0);
+
 		frame.add(splitPane);
 		frame.pack();
 		
@@ -214,6 +221,9 @@ public class Grapher {
 	
 	public static void pieChart(Region region) {
 		JSplitPane splitPane = new JSplitPane();
+		splitPane.setEnabled(false);
+		splitPane.setDividerSize(0);
+
 
 		DefaultPieDataset data = new DefaultPieDataset();
 		data.setValue("Republican", region.getRepVotes());
@@ -244,11 +254,23 @@ public class Grapher {
 	
 
 		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
+		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT));
+		chartPanel.setMinimumSize(chartPanel.getPreferredSize());
+		chartPanel.setMaximumSize(chartPanel.getPreferredSize());
+		
 		splitPane.setLeftComponent(chartPanel);
 		JTextArea list = new JTextArea(regionList(region));
 		list.setEditable(false);
-		JScrollPane scrollableList = new JScrollPane(list);
+		
+		list.setMinimumSize(list.getPreferredSize());
+		list.setMaximumSize(list.getPreferredSize());
+		
+		JViewport listPort = new JViewport();
+		listPort.add(list);
+
+		JScrollPane scrollableList = new JScrollPane(listPort);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
 		splitPane.setRightComponent(scrollableList);
 		
 		JFrame frame = new JFrame("Election Results");
