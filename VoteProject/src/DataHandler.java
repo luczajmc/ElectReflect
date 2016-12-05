@@ -167,6 +167,58 @@ public class DataHandler {
 //==================================================================================
 	private static void verifyVoters() {
 		String[] countyVotes = new String[2];
+		int total = 0;
+		String currentCounty = dataArray.get(0)[COUNTY_NAME];
+		
+		for (int i = 0; i < dataArray.size(); i++) {
+			String county = dataArray.get(i)[COUNTY_NAME];
+			
+			if (!currentCounty.equals("county")) {
+				countyArray.add(countyVotes);
+				countyVotes[COUNTY_NAME] = county;
+				currentCounty = county;
+				countyVotes[VOTE_COUNT] = "0";
+			}
+			
+			int repVotes = Integer.parseInt(dataArray.get(i)[REP_VOTES]);
+			int demVotes = Integer.parseInt(dataArray.get(i)[DEM_VOTES]);
+			int indVotes = Integer.parseInt(dataArray.get(i)[IND_VOTES]);
+			
+			countyVotes[VOTE_COUNT] = (total + repVotes + demVotes + indVotes) + "";
+		}
+		
+		boolean found = false;
+		boolean overVoteCount = false;
+		ArrayList<Integer> remove = new ArrayList<Integer>();
+		
+		for (int i = 0; i < dataArray.size(); i++) {
+			for (int k = 0; k < registeredCountyArray.size(); k++) {
+				if (countyArray.get(i)[COUNTY_NAME].equals(registeredCountyArray.get(k)[COUNTY_NAME])) {
+					found = true;
+					if (Integer.parseInt(countyArray.get(i)[VOTE_COUNT]) > Integer.parseInt((registeredCountyArray.get(k)[VOTE_COUNT]))) {
+						overVoteCount = true;
+					}
+				}
+			}
+			
+			if (!found) {
+				out.println("removing " + dataArray.get(i) + ". Not found in registered counties file.");
+				remove.add(i);
+			}
+			
+			if (overVoteCount) {
+				out.println("removing " + dataArray.get(i) + ". Vote count was " + countyArray.get(i)[VOTE_COUNT] + ", should have been " + registeredCountyArray.get(i)[VOTE_COUNT]);
+				remove.add(i);
+			}
+			
+			if (found) {
+				found = !found;
+			}
+		}
+		
+		for (int badData : remove) {
+			dataArray.remove(badData);
+		}
 		
 	}
 
