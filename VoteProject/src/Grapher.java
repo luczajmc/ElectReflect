@@ -132,6 +132,8 @@ public class Grapher {
 		JViewport axisPort = new JViewport();
 		axisPort.add(sisterScrollPane);
 		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, headerSize));
+		axisPort.setMinimumSize(axisPort.getPreferredSize());
+		axisPort.setMaximumSize(axisPort.getPreferredSize());
 		
 		ChartPanel chartPanel = chartPanel(region);
 		SyncedCategoryPlot plot = (SyncedCategoryPlot) chartPanel.getChart().getPlot();
@@ -143,7 +145,6 @@ public class Grapher {
 		JScrollPane scrollPane = new JScrollPane(port);
 		int scrollBarSize = 30;
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT-headerSize));
-		scrollPane.setMinimumSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT-headerSize));
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JSplitPane chartPane = new JSplitPane();
@@ -169,20 +170,35 @@ public class Grapher {
 		scrollPane.getViewport().setViewPosition(new Point(0, headerSize));
 		
 		navigationPanel.add(scrollableList);
-		
+		navigationPanel.setMinimumSize(navigationPanel.getPreferredSize());
+		navigationPanel.setMaximumSize(navigationPanel.getPreferredSize());
+
 		splitPane.setRightComponent(navigationPanel);
 	
 		JFrame frame = new JFrame("Election Results");
 		frame.add(splitPane);
 		frame.pack();
 		
+		clipFrame(frame);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
-		double frameWidth = frame.getPreferredSize().getWidth();
+		double frameWidth = frame.getSize().getWidth();
+
 		frame.setLocation(new Point((int) (screenWidth-frameWidth), 0));
 		frame.setVisible(true);
 	}
 	
+	static void clipFrame(JFrame frame) {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenWidth = screenSize.getWidth();
+		double frameWidth = frame.getPreferredSize().getWidth();
+		double screenHeight = screenSize.getHeight();
+		double frameHeight = frame.getPreferredSize().getHeight();
+		
+		double width = Math.min(screenWidth/2, frameWidth);
+		double height = Math.min(screenHeight/2, frameHeight);
+		frame.setSize(new Dimension((int) width, (int) height));
+	}
 	public static void barGraphState(State state) {
 		barGraph(state);
 	}
@@ -255,13 +271,16 @@ public class Grapher {
 		frame.add(splitPane);
 		frame.pack();
 		
+		clipFrame(frame);
+
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
-		double frameWidth = frame.getPreferredSize().getWidth();
+		double frameWidth = frame.getSize().getWidth();
 		double screenHeight = screenSize.getHeight();
-		double frameHeight = frame.getPreferredSize().getHeight();
+		double frameHeight = frame.getSize().getHeight();
 		frame.setLocation(new Point((int) (screenWidth-frameWidth),
 				(int) (screenHeight-frameHeight)));
+		
 		frame.setVisible(true);
 	}
 	public static void pieChartState(State state) {
@@ -313,11 +332,14 @@ public class Grapher {
 		frame.add(scrollPane);
 		frame.pack();
 		
+		clipFrame(frame);
+
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenHeight = screenSize.getHeight();
-		double frameHeight = frame.getPreferredSize().getHeight();
+		double frameHeight = frame.getSize().getHeight();
 		frame.setLocation(new Point(0,
 				(int) (screenHeight-frameHeight)));
+		
 		frame.setVisible(true);
 	}
 	
