@@ -22,13 +22,6 @@ import javax.swing.JOptionPane;
  *	2. Imports verification files
  *	3. Verifies the data
  *	4. Saves the data
- *	
- *	fix log file format (line numbers)
- *	Change messages to select a folder
- *	pop up error message at end to let user 
- *	read in the entire file
- *	read file for even one line of data
- *	change to "skipping file" if no data matches format
  */
 public class DataHandler {
 	//the arrays for saving the data
