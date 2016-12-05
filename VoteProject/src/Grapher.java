@@ -1,5 +1,6 @@
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import javax.swing.*;
 import org.jfree.chart.ChartFactory;
@@ -175,7 +176,10 @@ public class Grapher {
 		frame.add(splitPane);
 		frame.pack();
 		
-		frame.setLocationByPlatform(true);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenWidth = screenSize.getWidth();
+		double frameWidth = frame.getPreferredSize().getWidth();
+		frame.setLocation(new Point((int) (screenWidth-frameWidth), 0));
 		frame.setVisible(true);
 	}
 	
@@ -251,7 +255,13 @@ public class Grapher {
 		frame.add(splitPane);
 		frame.pack();
 		
-		frame.setLocationByPlatform(true);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenWidth = screenSize.getWidth();
+		double frameWidth = frame.getPreferredSize().getWidth();
+		double screenHeight = screenSize.getHeight();
+		double frameHeight = frame.getPreferredSize().getHeight();
+		frame.setLocation(new Point((int) (screenWidth-frameWidth),
+				(int) (screenHeight-frameHeight)));
 		frame.setVisible(true);
 	}
 	public static void pieChartState(State state) {
@@ -284,6 +294,7 @@ public class Grapher {
 	
 	public static void text(Region region) {
 		// TODO: maybe don't show a total if there's only one county?
+		// TODO: add a save function
 		String displayText = "";
 		
 		for (Region subregion : region.getSubregions()) {
@@ -302,7 +313,11 @@ public class Grapher {
 		frame.add(scrollPane);
 		frame.pack();
 		
-		frame.setLocationByPlatform(true);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenHeight = screenSize.getHeight();
+		double frameHeight = frame.getPreferredSize().getHeight();
+		frame.setLocation(new Point(0,
+				(int) (screenHeight-frameHeight)));
 		frame.setVisible(true);
 	}
 	
