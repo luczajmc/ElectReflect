@@ -23,7 +23,6 @@ import javax.swing.JOptionPane;
  *	3. Verifies the data
  *	4. Saves the data
  *	
- *	change log name to date and time
  *	fix log file format (line numbers)
  *	Change messages to select a folder
  *	pop up error message at end to let user 
@@ -104,6 +103,11 @@ public class DataHandler {
 		verifyVoters();
 		out.print("done.\r\n\r\n");
 		out.close();
+		
+		if (errors.size() > 0) {
+			JOptionPane.showMessageDialog(null, "Erros were found, the log file has been placed in the folder with the program");
+		}
+		
 		System.out.println("Done.");
 	}
 	
@@ -136,6 +140,10 @@ public class DataHandler {
 		out.print("Verifying number of voters...");
 		verifyVoters();
 		out.print("done.\r\n\r\n");
+		
+		if (errors.size() > 0) {
+			JOptionPane.showConfirmDialog(null, "Erros were found, the log file has been placed in the file with the program");
+		}
 		
 		out.println("Creating State object.");
 		out.close();
@@ -221,7 +229,7 @@ public class DataHandler {
 				dataArray.remove(badData);
 			}
 			catch(IndexOutOfBoundsException e) {
-				out.println("Tried to remove bad data, but no data was found!");
+				System.out.println("Tried to remove bad data, but no data was found!");
 			}
 		}
 		
