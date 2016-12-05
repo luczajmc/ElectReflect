@@ -186,42 +186,7 @@ public class Gui extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO add confirmation dialogue
-				fc.showSaveDialog(Gui.this);
-				File selectedData = new File(fc.getSelectedFile()+".txt");
-				PrintWriter out = null;
-				
-				for(int i = 0; i < fc.getCurrentDirectory().listFiles().length; i++){
-					if(fc.getCurrentDirectory().listFiles()[i].getName().equals(selectedData.getName())){
-						int result = JOptionPane.showConfirmDialog(null, "File already exists. Overwrite?");
-						if(result == JOptionPane.NO_OPTION){
-							save.doClick();
-						}
-					}
-						
-				}
-				
-				try {
-					out = new PrintWriter(selectedData);
-				} catch (FileNotFoundException e1) {
-					e1.printStackTrace();
-				}
-				
-				if(oldSelection == null){
-					JOptionPane.showMessageDialog(null, "No data selected.");
-					return;
-				}
-				for(int i = 0; i < oldSelection.size(); i++){
-					if(oldSelection.get(i) != null){
-						try{
-							out.println(oldSelection.get(i).toString() + "County - Number of Republican votes: " + 
-									oldSelection.get(i).getRepVotes()
-									+ ", Number of Democratic votes: " + oldSelection.get(i).getDemVotes()+
-									", Number of Independent votes: " + oldSelection.get(i).getIndVotes());
-							
-						} finally{}
-					}
-				}
-				out.close();
+				save();
 				
 				save.setEnabled(true);
 			}
@@ -378,6 +343,51 @@ public class Gui extends JPanel{
 		}
 		
 		selectedValues.setListData(r);
+	}
+	
+	private void save(){
+		fc.showSaveDialog(Gui.this);
+		File selectedData = new File(fc.getSelectedFile()+".txt");
+		PrintWriter out = null;
+		
+		confirm(selectedData);
+		
+		try {
+			out = new PrintWriter(selectedData);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		
+		if(oldSelection == null){
+			JOptionPane.showMessageDialog(null, "No data selected.");
+			return;
+		}
+		for(int i = 0; i < oldSelection.size(); i++){
+			if(oldSelection.get(i) != null){
+				try{
+					out.println(oldSelection.get(i).toString() + "County - Number of Republican votes: " + 
+							oldSelection.get(i).getRepVotes()
+							+ ", Number of Democratic votes: " + oldSelection.get(i).getDemVotes()+
+							", Number of Independent votes: " + oldSelection.get(i).getIndVotes());
+					
+				} finally{}
+			}
+		}
+		out.close();
+	}
+	
+	private void confirm(File f){
+		for(int i = 0; i < fc.getCurrentDirectory().listFiles().length; i++){
+			if(fc.getCurrentDirectory().listFiles()[i].getName().equals(f.getName())){
+				int result = JOptionPane.showConfirmDialog(null, "File already exists. Overwrite?");
+				if(result == JOptionPane.NO_OPTION){
+					save();
+				} else if(result == JOptionPane.YES_OPTION){
+					return;
+				}
+			}
+				
+		}
 	}
 	
 	//========================================================================== Main method
