@@ -48,21 +48,59 @@ public class TexturePaintPatternerFactory {
 	}
 	static TexturePaintPatterner indPatterner = new TexturePaintPatterner() {
 		@Override
+        public BufferedImage getPattern(int size) {
+            BufferedImage swatch = swatch(size);
+            Graphics2D big = swatch.createGraphics();
+            
+            Color baseColor = Color.green;
+            
+            big.setColor(desaturated(baseColor));
+            big.fillRect(0, 0, size, size);
+        
+	        double scale = 1.0/2.0;
+	        int[] trapezoidX = {0, 0, (int) (scale*swatch.getWidth()), swatch.getWidth()};
+	        int[] trapezoidY = {0, (int) ((1-scale)*swatch.getHeight()), swatch.getHeight(), swatch.getHeight()};
+	
+	        big.setColor(dark(baseColor));
+	            big.fill(new Polygon(trapezoidX, trapezoidY, 4));
+	
+	            return swatch;
+	    }
+	};
+
+	static TexturePaintPatterner zigzag = new TexturePaintPatterner() {
+		@Override
 		public BufferedImage getPattern(int size) {
 			BufferedImage swatch = swatch(size);
 			Graphics2D big = swatch.createGraphics();
 			
-			Color baseColor = Color.green;
+			Color baseColor = Color.yellow;
 			
 			big.setColor(desaturated(baseColor));
-			big.fillRect(0, 0, size, size);
-		    
-		    double scale = 1.0/2.0;
-		    int[] trapezoidX = {0, 0, (int) (scale*swatch.getWidth()), swatch.getWidth()};
-		    int[] trapezoidY = {0, (int) ((1-scale)*swatch.getHeight()), swatch.getHeight(), swatch.getHeight()};
+			big.fillRect(0, 0, size, size/2);
 
+			big.setColor(dark(baseColor));
+			big.fillRect(0, size/2, size, size/2);
+			
+			double scale = 1.0/2.0;
+			int[] topRhombusX = {0, (int) (scale*swatch.getWidth()),
+					(int) ((scale+scale/2)*swatch.getWidth()),
+					(int) ((scale/2)*swatch.getWidth())
+			};
+			int[] topRhombusY = {0, 0, (int) (scale*swatch.getHeight()),
+					(int) (scale*swatch.getHeight())};
+			
 		    big.setColor(dark(baseColor));
-			big.fill(new Polygon(trapezoidX, trapezoidY, 4));
+			big.fill(new Polygon(topRhombusX, topRhombusY, 4));
+
+		    int[] bottomRhombusX = topRhombusX;
+		    int[] bottomRhombusY = {(int) (scale*swatch.getHeight()),
+		    		(int) (scale*swatch.getHeight()),
+		    		(int) ((2*scale)*swatch.getHeight()),
+		    		(int) ((2*scale)*swatch.getHeight())};
+
+		    big.setColor(desaturated(baseColor));
+			big.fill(new Polygon(bottomRhombusX, bottomRhombusY, 4));
 
 			return swatch;
 		}
