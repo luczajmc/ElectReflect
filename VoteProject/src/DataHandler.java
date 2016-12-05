@@ -66,7 +66,7 @@ public class DataHandler {
 	private final static int TAMPER = -10;
 	
 	//file for logging errors
-	static String name = "console_log_" + LocalDate.now() + "_" + LocalTime.now().getHour() + ":" + LocalTime.now().getMinute() + ".txt";
+	static String name = "console_log_" + LocalDate.now() + "_" + LocalTime.now().getHour() + "_" + LocalTime.now().getMinute() + ".txt";
 	private static File errorLog = new File(name);
 	private static PrintWriter out;
 
@@ -202,12 +202,12 @@ public class DataHandler {
 			}
 			
 			if (!found) {
-				out.println("removing " + dataArray.get(i) + ". Not found in registered counties file.");
+				out.println("removing " + Arrays.toString(dataArray.get(i)) + ". Not found in registered counties file.");
 				remove.add(i);
 			}
 			
 			if (overVoteCount) {
-				out.println("removing " + dataArray.get(i) + ". Vote count was " + countyArray.get(i)[VOTE_COUNT] + ", should have been " + registeredCountyArray.get(i)[VOTE_COUNT]);
+				out.println("removing " + Arrays.toString(dataArray.get(i)) + ". Vote count was " + countyArray.get(i)[VOTE_COUNT] + ", should have been " + registeredCountyArray.get(i)[VOTE_COUNT]);
 				remove.add(i);
 			}
 			
@@ -217,7 +217,12 @@ public class DataHandler {
 		}
 		
 		for (int badData : remove) {
-			dataArray.remove(badData);
+			try {
+				dataArray.remove(badData);
+			}
+			catch(IndexOutOfBoundsException e) {
+				out.println("Tried to remove bad data, but no data was found!");
+			}
 		}
 		
 	}
