@@ -30,6 +30,7 @@ public class Gui extends JPanel{
 	private static JButton showData = new JButton();
 	private static JButton addSubregion = new JButton();
 	private static JButton removeSubregion = new JButton();
+	private static JButton clear = new JButton();
 	
 	private static JCheckBox barGraph = new JCheckBox("Bar Graph");
 	private static JCheckBox pieChart = new JCheckBox("Pie Chart");
@@ -221,7 +222,8 @@ public class Gui extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {				
 				state = DataHandler.makeState();
 				regions = new Region[state.getCounties().size()];
-				System.out.println(state.getCounties().size());
+				
+				clear();
 				
 				for(int i = 0; i < regions.length; i++){
 					regions[i] = state.getCounties().get(i);
@@ -233,9 +235,9 @@ public class Gui extends JPanel{
 					showData.setEnabled(true);
 					addSubregion.setEnabled(true);
 					removeSubregion.setEnabled(true);
+					clear.setEnabled(true);
 				}
-			}
-			
+			}			
 		});
 		
 		/**
@@ -300,7 +302,7 @@ public class Gui extends JPanel{
 		
 		add(removeSubregion);
 		removeSubregion.setText("<html>" + "Remove County" + "<html>");
-		removeSubregion.setLocation(WIDTH/5 + 30, HEIGHT/2 + 50);
+		removeSubregion.setLocation(WIDTH/5 + 30, HEIGHT/2 + 35);
 		removeSubregion.setEnabled(false);
 		removeSubregion.setSize(125,25);
 		removeSubregion.setBackground(Color.white);
@@ -321,7 +323,25 @@ public class Gui extends JPanel{
 		});
 		
 		window.repaint();
+		
+		add(clear);
+		clear.setText("<html>" + "Clear Selection" + "<html>");
+		clear.setLocation(WIDTH/5 + 30, HEIGHT/2 + 70);
+		clear.setSize(125,25);
+		clear.setBackground(Color.white);
+		clear.setEnabled(false);
+		clear.setToolTipText("Clear the selected data.");
+		clear.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clear();
+			}
+		});
 	}
+	
+	
+	
 	
 	//========================================================================== Getters
 	/**
@@ -391,6 +411,12 @@ public class Gui extends JPanel{
 				
 		}
 		return true;
+	}
+	
+	private void clear(){
+		selected = new Region[0];
+		oldSelection = new ArrayList<Region>();
+		update(selected);
 	}
 	
 	//========================================================================== Main method
