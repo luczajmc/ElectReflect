@@ -176,29 +176,20 @@ public class Grapher {
 		splitPane.setRightComponent(navigationPanel);
 	
 		JFrame frame = new JFrame("Election Results");
+		
+		splitPane.setEnabled(false);
+		splitPane.setDividerSize(0);
+
 		frame.add(splitPane);
 		frame.pack();
 		
-		clipFrame(frame);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
-		double frameWidth = frame.getSize().getWidth();
-
+		double frameWidth = frame.getPreferredSize().getWidth();
 		frame.setLocation(new Point((int) (screenWidth-frameWidth), 0));
 		frame.setVisible(true);
 	}
 	
-	static void clipFrame(JFrame frame) {
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		double screenWidth = screenSize.getWidth();
-		double frameWidth = frame.getPreferredSize().getWidth();
-		double screenHeight = screenSize.getHeight();
-		double frameHeight = frame.getPreferredSize().getHeight();
-		
-		double width = Math.min(screenWidth/2, frameWidth);
-		double height = Math.min(screenHeight/2, frameHeight);
-		frame.setSize(new Dimension((int) width, (int) height));
-	}
 	public static void barGraphState(State state) {
 		barGraph(state);
 	}
@@ -230,6 +221,9 @@ public class Grapher {
 	
 	public static void pieChart(Region region) {
 		JSplitPane splitPane = new JSplitPane();
+		splitPane.setEnabled(false);
+		splitPane.setDividerSize(0);
+
 
 		DefaultPieDataset data = new DefaultPieDataset();
 		data.setValue("Republican", region.getRepVotes());
@@ -260,27 +254,36 @@ public class Grapher {
 	
 
 		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
+		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT));
+		chartPanel.setMinimumSize(chartPanel.getPreferredSize());
+		chartPanel.setMaximumSize(chartPanel.getPreferredSize());
+		
 		splitPane.setLeftComponent(chartPanel);
 		JTextArea list = new JTextArea(regionList(region));
 		list.setEditable(false);
-		JScrollPane scrollableList = new JScrollPane(list);
+		
+		list.setMinimumSize(list.getPreferredSize());
+		list.setMaximumSize(list.getPreferredSize());
+		
+		JViewport listPort = new JViewport();
+		listPort.add(list);
+
+		JScrollPane scrollableList = new JScrollPane(listPort);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
 		splitPane.setRightComponent(scrollableList);
 		
 		JFrame frame = new JFrame("Election Results");
 		frame.add(splitPane);
 		frame.pack();
 		
-		clipFrame(frame);
-
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
-		double frameWidth = frame.getSize().getWidth();
+		double frameWidth = frame.getPreferredSize().getWidth();
 		double screenHeight = screenSize.getHeight();
-		double frameHeight = frame.getSize().getHeight();
+		double frameHeight = frame.getPreferredSize().getHeight();
 		frame.setLocation(new Point((int) (screenWidth-frameWidth),
 				(int) (screenHeight-frameHeight)));
-		
 		frame.setVisible(true);
 	}
 	public static void pieChartState(State state) {
@@ -332,14 +335,11 @@ public class Grapher {
 		frame.add(scrollPane);
 		frame.pack();
 		
-		clipFrame(frame);
-
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenHeight = screenSize.getHeight();
-		double frameHeight = frame.getSize().getHeight();
+		double frameHeight = frame.getPreferredSize().getHeight();
 		frame.setLocation(new Point(0,
 				(int) (screenHeight-frameHeight)));
-		
 		frame.setVisible(true);
 	}
 	
