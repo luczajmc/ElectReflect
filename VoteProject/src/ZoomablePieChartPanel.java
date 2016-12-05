@@ -88,6 +88,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
 
     @Override
     public void mousePressed(MouseEvent e) {
+    	super.mousePressed(e);
     	this.startAngle = getAngle(e.getPoint());
     	this.endAngle = this.startAngle;
     	this.arcAngle = 0.0f;
