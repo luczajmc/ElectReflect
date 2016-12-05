@@ -135,7 +135,7 @@ public class DataHandler {
 		out.print("done.\r\n\r\n");
 		
 		if (errors.size() > 0) {
-			JOptionPane.showConfirmDialog(null, "Erros were found, the log file has been placed in the file with the program");
+			JOptionPane.showMessageDialog(null, "Erros were found, the log file has been placed in the file with the program");
 		}
 		
 		out.println("Creating State object.");
