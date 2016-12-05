@@ -31,6 +31,7 @@ public class Gui extends JPanel{
 	private static JButton showData = new JButton();
 	private static JButton addSubregion = new JButton();
 	private static JButton removeSubregion = new JButton();
+	private static JButton clear = new JButton();
 	
 	private static JCheckBox barGraph = new JCheckBox("Bar Graph");
 	private static JCheckBox pieChart = new JCheckBox("Pie Chart");
@@ -238,7 +239,8 @@ public class Gui extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {				
 				state = DataHandler.makeState();
 				regions = new Region[state.getCounties().size()];
-				System.out.println(state.getCounties().size());
+				
+				clear();
 				
 				for(int i = 0; i < regions.length; i++){
 					regions[i] = state.getCounties().get(i);
@@ -250,9 +252,9 @@ public class Gui extends JPanel{
 					showData.setEnabled(true);
 					addSubregion.setEnabled(true);
 					removeSubregion.setEnabled(true);
+					clear.setEnabled(true);
 				}
-			}
-			
+			}			
 		});
 		
 		/**
@@ -317,7 +319,7 @@ public class Gui extends JPanel{
 		
 		add(removeSubregion);
 		removeSubregion.setText("<html>" + "Remove County" + "<html>");
-		removeSubregion.setLocation(WIDTH/5 + 30, HEIGHT/2 + 50);
+		removeSubregion.setLocation(WIDTH/5 + 30, HEIGHT/2 + 35);
 		removeSubregion.setEnabled(false);
 		removeSubregion.setSize(125,25);
 		removeSubregion.setBackground(Color.white);
@@ -338,7 +340,25 @@ public class Gui extends JPanel{
 		});
 		
 		window.repaint();
+		
+		add(clear);
+		clear.setText("<html>" + "Clear Selection" + "<html>");
+		clear.setLocation(WIDTH/5 + 30, HEIGHT/2 + 70);
+		clear.setSize(125,25);
+		clear.setBackground(Color.white);
+		clear.setEnabled(false);
+		clear.setToolTipText("Clear the selected data.");
+		clear.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clear();
+			}
+		});
 	}
+	
+	
+	
 	
 	//========================================================================== Getters
 	/**
@@ -367,44 +387,53 @@ public class Gui extends JPanel{
 		File selectedData = new File(fc.getSelectedFile()+".txt");
 		PrintWriter out = null;
 		
-		confirm(selectedData);
+		if(confirm(selectedData)){
 		
-		try {
-			out = new PrintWriter(selectedData);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		
-		if(oldSelection == null){
-			JOptionPane.showMessageDialog(null, "No data selected.");
-			return;
-		}
-		for(int i = 0; i < oldSelection.size(); i++){
-			if(oldSelection.get(i) != null){
-				try{
-					out.println(oldSelection.get(i).toString() + "County - Number of Republican votes: " + 
-							oldSelection.get(i).getRepVotes()
-							+ ", Number of Democratic votes: " + oldSelection.get(i).getDemVotes()+
-							", Number of Independent votes: " + oldSelection.get(i).getIndVotes());
-					
-				} finally{}
+			try {
+				out = new PrintWriter(selectedData);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
 			}
+			
+			if(oldSelection == null){
+				JOptionPane.showMessageDialog(null, "No data selected.");
+				return;
+			}
+			for(int i = 0; i < oldSelection.size(); i++){
+				if(oldSelection.get(i) != null){
+					try{
+						out.println(oldSelection.get(i).toString() + "County - Number of Republican votes: " + 
+								oldSelection.get(i).getRepVotes()
+								+ ", Number of Democratic votes: " + oldSelection.get(i).getDemVotes()+
+								", Number of Independent votes: " + oldSelection.get(i).getIndVotes());
+						
+					} finally{}
+				}
+			}
+			out.close();
 		}
-		out.close();
 	}
 	
-	private void confirm(File f){
+	private boolean confirm(File f){
 		for(int i = 0; i < fc.getCurrentDirectory().listFiles().length; i++){
 			if(fc.getCurrentDirectory().listFiles()[i].getName().equals(f.getName())){
 				int result = JOptionPane.showConfirmDialog(null, "File already exists. Overwrite?");
 				if(result == JOptionPane.NO_OPTION){
 					save();
+					return false;
 				} else if(result == JOptionPane.YES_OPTION){
-					return;
+					return true;
 				}
 			}
 				
 		}
+		return true;
+	}
+	
+	private void clear(){
+		selected = new Region[0];
+		oldSelection = new ArrayList<Region>();
+		update(selected);
 	}
 	
 	//========================================================================== Main method
