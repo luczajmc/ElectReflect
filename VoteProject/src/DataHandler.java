@@ -1,9 +1,15 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -16,6 +22,14 @@ import javax.swing.JOptionPane;
  *	2. Imports verification files
  *	3. Verifies the data
  *	4. Saves the data
+ *	
+ *	change log name to date and time
+ *	fix log file format (line numbers)
+ *	Change messages to select a folder
+ *	pop up error message at end to let user 
+ *	read in the entire file
+ *	read file for even one line of data
+ *	change to "skipping file" if no data matches format
  */
 public class DataHandler {
 	//the arrays for saving the data
@@ -52,8 +66,12 @@ public class DataHandler {
 	private final static int TAMPER = -10;
 	
 	//file for logging errors
-	private static File errorLog = new File( "console_log_" + LocalDate.now() + ".txt");
+	static String name = "console_log_" + LocalDate.now() + "_" + LocalTime.now().getHour() + ":" + LocalTime.now().getMinute() + ".txt";
+	private static File errorLog = new File(name);
 	private static PrintWriter out;
+
+//Main and makeState methods: runs the data handler
+//==================================================================================
 	
 	public static void main(String[] args) {
 		System.out.println("Preparing printwriter");
@@ -61,20 +79,17 @@ public class DataHandler {
 			out = new PrintWriter(errorLog);
 		}
 		catch (FileNotFoundException e) {
+			System.out.println("File name is " + errorLog.getName());
 			System.out.println("Something went wrong");
 		}
 		out.print("-- PrintWriter created, begin logging. --\r\n\r\n");
 		
 		out.print("Prompting for voter files...\r\n\r\n");
-		getFiles(VOTER_DATA);
+		getFiles();
 		out.print("done.\r\n\r\n");
 		
 		out.print("Sorting voter data...");
 		sort(dataArray);
-		out.print("done.\r\n\r\n");
-		
-		out.print("Prompting for registered voter data...\r\n\r\n");
-		getFiles(REGISTERED_DATA);
 		out.print("done.\r\n\r\n");
 		
 		out.print("Verifying data integrity...");
@@ -89,6 +104,7 @@ public class DataHandler {
 		verifyVoters();
 		out.print("done.\r\n\r\n");
 		out.close();
+		System.out.println("Done.");
 	}
 	
 	public static State makeState() {
@@ -99,18 +115,14 @@ public class DataHandler {
 		catch (FileNotFoundException e) {
 			System.out.println("Something went wrong");
 		}
-		out.print("-- PrintWriter created, begin logging. --\r\n\r\n");
+		out.print("-- Begin Logging. --\r\n\r\n");
 		
-		out.print("Prompting for voter files...");
-		getFiles(VOTER_DATA);
+		out.print("Prompting for directory...");
+		getFiles();
 		out.print("done.\r\n\r\n");
 		
 		out.print("Sorting voter data...");
 		sort(dataArray);
-		out.print("done.\r\n\r\n");
-		
-		out.print("Prompting for registered voter data...");
-		getFiles(REGISTERED_DATA);
 		out.print("done.\r\n\r\n");
 		
 		out.print("Verifying data integrity...");
@@ -129,14 +141,15 @@ public class DataHandler {
 		out.close();
 		return new State(dataArray);
 	}
+	
+//==================================================================================
 
-//sorter (I'm sorry)
+//sorter
 //==================================================================================
 	private static void sort(ArrayList<String[]> sortThis) {
 		for (int i = 1; i < sortThis.size(); i++) {
 			for (int k = 0; k < sortThis.size()-i; k++) {
 				if (sortThis.get(k)[COUNTY_NAME].compareTo(sortThis.get(k+1)[COUNTY_NAME]) > 0) {
-					//System.out.println("Swapped " + sortThis.get(k)[COUNTY_NAME] + " with " + sortThis.get(k+1)[COUNTY_NAME]);
 					swap(sortThis, k, k+1);
 				}
 			}
@@ -149,15 +162,22 @@ public class DataHandler {
 		sortThis.set(pos1, temp);
 	}
 //==================================================================================
-	
+
+//Verify Voter Data
+//==================================================================================
 	private static void verifyVoters() {
 		String[] countyVotes = new String[2];
 		
 	}
 
-	private static void getFiles(int dataType) {
+//Get data of a specified type
+//==================================================================================
+	/**
+	 * @param dataType
+	 */
+	private static void getFiles() {
 		
-		String message = getMessage(dataType);
+		String message = "Select the folder containing your data.";
 		
 		//show input dialog
 		JOptionPane.showMessageDialog(null, message);
@@ -175,17 +195,8 @@ public class DataHandler {
 		//extract the data depending on the type
 		if (result == JFileChooser.APPROVE_OPTION) {
 			String path = fc.getSelectedFile().getAbsolutePath().toString(); //returns a string of the directory
-			extractData(path, dataType);
-		}
-	}
-	
-	private static String getMessage(int dataType) {
-		if (dataType == VOTER_DATA) {
-			return "Select the file with voting data";
-		}
-		
-		else {
-			return "Select the file with the registered voters";
+			extractData(path, VOTER_DATA);
+			extractData(path, REGISTERED_DATA);
 		}
 	}
 	
@@ -277,25 +288,51 @@ public class DataHandler {
 		try {
 			//get the file and scanner
 			File file = new File(filePath);
-			Scanner fileIn = new Scanner(file);
+			Scanner checkIn = new Scanner(file);
+			Scanner readIn = new Scanner(file);
 			
 			//make a temporary array
 			ArrayList<String[]> tempList = new ArrayList<String[]>();
 			
-			//loop through the lines
-			while (fileIn.hasNextLine()) {
-				String currentLine = fileIn.nextLine();
-				String[] fixedLine = formatError(currentLine, REGISTERED_DATA);
+			//initialize the hasData variable
+			boolean hasData = false;
+			
+			//check if the file has viable data
+			while (checkIn.hasNextLine()) {
+				String currentLine = checkIn.nextLine();
+				String[] fixedLine = currentLine.split(",");
 				
-				if (fixedLine[REG_ERROR].equals("true")) {
+				if (fixedLine.length == 2 && fixedLine[1].matches("\\d+")) {
+					System.out.println(Arrays.toString(fixedLine));
+					hasData = true;
 					break;
 				}
-				
-				tempList.add(fixedLine);
 			}
-			fileIn.close();
+			checkIn.close();
+			
+			//loop through the lines
+			out.println("");
+			out.println("The file at path: " + filePath + " has data: " + hasData);
+			out.println("");
+			while (readIn.hasNextLine() && hasData) {
+				String currentLine = readIn.nextLine();
+				String[] fixedLine = formatError(currentLine, REGISTERED_DATA);
+				
+				if (!fixedLine[REG_ERROR].equals("true")) {
+					tempList.add(fixedLine);
+				}
+			}
+			
+			//log skipped files
+			if (!hasData) {
+				out.println("Skipping file " + filePath);
+			}
+			
+			readIn.close();
 			return tempList;
 		}
+		
+		
 		
 		catch (FileNotFoundException e) {
 			errors.add(FILE_NOT_FOUND);
@@ -313,23 +350,46 @@ public class DataHandler {
 		try {
 			//get the file and scanner
 			File file = new File(path);
-			Scanner fileIn = new Scanner(file);
+			Scanner checkIn = new Scanner(file);
+			Scanner readIn = new Scanner(file);
 			
 			//make a temporary array
 			ArrayList<String[]> tempList = new ArrayList<String[]>();
 			
-			//loop through the lines
-			while (fileIn.hasNextLine()) {
-				String currentLine = fileIn.nextLine();
-				String[] fixedLine = formatError(currentLine, VOTER_DATA);
+			//initialize the hasData variable
+			boolean hasData = false;
+			
+			//check if the file has viable data
+			while (checkIn.hasNextLine()) {
+				String currentLine = checkIn.nextLine();
+				String[] fixedLine = currentLine.split(",");
 				
-				if (fixedLine[ERROR].equals("true")) {
+				if (fixedLine.length == 5 && fixedLine[2].matches("\\d+") && fixedLine[3].matches("\\d+") && fixedLine[4].matches("\\d+")) {
+					System.out.println(Arrays.toString(fixedLine));
+					hasData = true;
 					break;
 				}
-				
-				tempList.add(fixedLine);
 			}
-			fileIn.close();
+			checkIn.close();
+			
+			//loop through the lines
+			out.println("");
+			out.println("The file at path: " + path + " has data: " + hasData);
+			out.println("");
+			while (readIn.hasNextLine() && hasData) {
+				String currentLine = readIn.nextLine();
+				String[] fixedLine = formatError(currentLine, VOTER_DATA);
+				
+				if (!fixedLine[ERROR].equals("true")) {
+					tempList.add(fixedLine);
+				}
+			}
+			
+			if (!hasData) {
+				out.println("Skipping file " + path);
+			}
+			
+			readIn.close();
 			return tempList;
 		}
 		
@@ -559,22 +619,5 @@ public class DataHandler {
 		out.write(message);
 		out.println();
 		out.flush();
-	}
-	
-	private static void printer() {
-		try {
-			File file = new File("dataArray");
-			PrintWriter out = new PrintWriter(file);
-			for (String[] array : dataArray) {
-				for (String word : array) {
-					out.print(word + ", ");
-				}
-				out.println();
-			}
-			out.close();
-		}
-		catch (FileNotFoundException e) {
-			System.out.println("OMFG");
-		}
 	}
 }

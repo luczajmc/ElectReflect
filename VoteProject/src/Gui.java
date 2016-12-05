@@ -190,6 +190,13 @@ public class Gui extends JPanel{
 				File selectedData = new File(fc.getSelectedFile()+".txt");
 				PrintWriter out = null;
 				
+				for(int i = 0; i < fc.getCurrentDirectory().length(); i++){
+					if(fc.getCurrentDirectory().listFiles()[i].getName().equals(selectedData.getName())){
+						JOptionPane.showConfirmDialog(null, "File already exists. Overwrite?");
+					}
+						
+				}
+				
 				try {
 					out = new PrintWriter(selectedData);
 				} catch (FileNotFoundException e1) {
