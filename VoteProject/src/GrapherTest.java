@@ -26,47 +26,15 @@ public class GrapherTest {
 		return frame;
 	}
 	public static void main(String[] args) {
-
-		JFrame frame = new JFrame("Sort");
-		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.LINE_AXIS));
-
-		State panOhio = DataHandler.makeState();
-		JList countyList = new JList(panOhio.getCounties().toArray());
-		frame.add(countyList);
 		
-		SortMenu sortMenu = new SortMenu(RegionSorter.getOrderings().toArray(), countyList);
-		frame.add(sortMenu);
-		
-		frame.pack();
-		frame.setVisible(true);
-
-
-		File f = new File("../Data/ExampleData.txt");
-		System.out.println(f.getAbsolutePath());
-		System.out.println(f.exists());
-
-		
-		State ohio = DataHandler.makeState();
+		State ohio = DataHandler.makeState("../Data/");
 		Grapher.barGraphState(ohio);
 		Grapher.textState(ohio);
 		Grapher.pieChartState(ohio);
-		
-		panOhio = DataHandler.makeState();
-		Grapher.barGraphState(panOhio);
-		Grapher.textState(panOhio);
-		Grapher.pieChartState(panOhio);
-		
-		State state = DataHandler.makeState();
-		Grapher.pieChartState(state);
-		
-		District district = new District("Oxford", 30, 28, 306);
-		Grapher.pieChartDistrict(district);
-		
-		County county = new County("Butler", 38, 20, 94);
-		Grapher.pieChartCounty(county);
-		
+
 		Region g = gerrymander();
 		Grapher.barGraph(g);
 		Grapher.text(g);
+		Grapher.pieChart(g);
 	}
 }

@@ -252,6 +252,55 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 		this.setDataset(unzoomedDataset);
 	}
 	
+	double[] getStartAngles() {
+
+    	double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
+    	
+    	double pieStart = this.getStartAngle();
+    	double pieEnd;
+    	
+    	// this.direction must be CLOCKWISE at the current time
+        if (this.getDirection() != Rotation.CLOCKWISE) {
+            throw new IllegalStateException("Rotation type not supported.");
+        }
+        
+        PieDataset dataset = this.getDataset();
+        
+        double[] startAngles = new double[dataset.getKeys().size()];
+        for (int i=0; i<dataset.getKeys().size(); i++) {
+        	double value = dataset.getValue(i).doubleValue();
+        	pieEnd = pieStart - value / total * 360.0;
+        	
+        	double pieStartRadians = Math.toRadians(pieStart);
+
+        	startAngles[i] = pieStartRadians;
+        	
+        	pieStart = pieEnd;
+        }
+
+        return startAngles;
+	}
+    public void stretchArc(double startAngle, double arcAngle) {
+    	/*
+    	double[] zoomPercentages = getZoomPercentages(startAngle, arcAngle);
+    	int slice = firstSlice(startAngle);
+    	double[] startAngles = getStartAngles();
+    	
+    	PieDataset dataset = this.getDataset();
+    	DefaultPieDataset zoomedDataset = new DefaultPieDataset(dataset);
+    	
+    	for (int i=0; i<dataset.length; i++) {
+    		Comparable key = dataset.getKey(i);
+    		Number value = dataset.getValue(key);
+    		double doubleValue = value.doubleValue();
+    		doubleValue *= remainingPercentages[i];
+    		zoomedDataset.setValue(key, doubleValue);
+    	}
+    	
+    	this.setDataset(zoomedDataset);
+    	*/
+    }
+
     public void trimSlices(double[] remainingPercentages) {
     	PieDataset dataset = this.getDataset();
     	DefaultPieDataset zoomedDataset = new DefaultPieDataset(dataset);
@@ -279,6 +328,41 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 	   	this.setDataset(zoomedDataset);
 
     }
+    
+    int firstSlice(double startAngle) {
+    	double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
+    	
+    	double pieStart = this.getStartAngle();
+    	double pieEnd;
+    	
+    	// this.direction must be CLOCKWISE at the current time
+        if (this.getDirection() != Rotation.CLOCKWISE) {
+            throw new IllegalStateException("Rotation type not supported.");
+        }
+        
+        PieDataset dataset = this.getDataset();
+        
+        double minimumAngle = -2*Math.PI; // the furthest you can go clockwise
+        int slice = -1;
+        for (int i=0; i<dataset.getKeys().size(); i++) {
+        	double value = dataset.getValue(i).doubleValue();
+        	pieEnd = pieStart - value / total * 360.0;
+        	
+        	double pieStartRadians = Math.toRadians(pieStart);
+        	double pieEndRadians = Math.toRadians(pieEnd);
+        	double pieArc = arcAngleFrom(pieStartRadians, pieEndRadians);
+        	
+        	// if you swept over this pie slice earlier
+        	if (pieEndRadians > minimumAngle) {
+        		minimumAngle = pieEndRadians;
+        		slice = i;
+        	}
+        	pieStart = pieEnd;
+        }
+        System.out.println("First slice: "+dataset.getKey(slice));
+        return slice;
+    }
+
 
     double[] getZoomPercentages(double startAngle, double arcAngle) {
     	double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
@@ -324,6 +408,10 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
         return zoomPercentages;
     }
     public void zoomSelection(double startAngle, double arcAngle) {
+    	// TODO: this should rotate startAngle to be the angle where you started the
+    	//		 sweep (it's easier to tell that the region is zooming in that way)
+    	// TODO: this should round the data to the nearest whole person and it should
+    	//		 prevent you from zooming everything down to 0
     	trimSlices(getZoomPercentages(startAngle, arcAngle));
     }
     

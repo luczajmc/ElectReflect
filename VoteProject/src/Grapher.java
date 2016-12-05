@@ -1,5 +1,6 @@
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import javax.swing.*;
 import org.jfree.chart.ChartFactory;
@@ -12,6 +13,8 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.labels.StandardPieToolTipGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.StandardBarPainter;
@@ -19,6 +22,8 @@ import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
+import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
 public class Grapher {
@@ -127,6 +132,8 @@ public class Grapher {
 		JViewport axisPort = new JViewport();
 		axisPort.add(sisterScrollPane);
 		axisPort.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, headerSize));
+		axisPort.setMinimumSize(axisPort.getPreferredSize());
+		axisPort.setMaximumSize(axisPort.getPreferredSize());
 		
 		ChartPanel chartPanel = chartPanel(region);
 		SyncedCategoryPlot plot = (SyncedCategoryPlot) chartPanel.getChart().getPlot();
@@ -138,7 +145,6 @@ public class Grapher {
 		JScrollPane scrollPane = new JScrollPane(port);
 		int scrollBarSize = 30;
 		scrollPane.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT-headerSize));
-		scrollPane.setMinimumSize(new Dimension(ChartPanel.DEFAULT_WIDTH+scrollBarSize, ChartPanel.DEFAULT_HEIGHT-headerSize));
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JSplitPane chartPane = new JSplitPane();
@@ -164,14 +170,23 @@ public class Grapher {
 		scrollPane.getViewport().setViewPosition(new Point(0, headerSize));
 		
 		navigationPanel.add(scrollableList);
-		
+		navigationPanel.setMinimumSize(navigationPanel.getPreferredSize());
+		navigationPanel.setMaximumSize(navigationPanel.getPreferredSize());
+
 		splitPane.setRightComponent(navigationPanel);
 	
 		JFrame frame = new JFrame("Election Results");
+		
+		splitPane.setEnabled(false);
+		splitPane.setDividerSize(0);
+
 		frame.add(splitPane);
 		frame.pack();
 		
-		frame.setLocationByPlatform(true);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenWidth = screenSize.getWidth();
+		double frameWidth = frame.getPreferredSize().getWidth();
+		frame.setLocation(new Point((int) (screenWidth-frameWidth), 0));
 		frame.setVisible(true);
 	}
 	
@@ -206,6 +221,9 @@ public class Grapher {
 	
 	public static void pieChart(Region region) {
 		JSplitPane splitPane = new JSplitPane();
+		splitPane.setEnabled(false);
+		splitPane.setDividerSize(0);
+
 
 		DefaultPieDataset data = new DefaultPieDataset();
 		data.setValue("Republican", region.getRepVotes());
@@ -213,27 +231,59 @@ public class Grapher {
 		data.setValue("Independent", region.getIndVotes());
 		
 		ZoomablePiePlot plot = new ZoomablePiePlot(data);
+		
+        plot.setLabelGenerator(new StandardPieSectionLabelGenerator() {
+        	final PieDataset dataset = data;
+        	
+            @Override
+            public String generateSectionLabel(PieDataset dataset, Comparable key) {
+            	double value = dataset.getValue(key).doubleValue();
+            	double total = this.dataset.getValue(key).doubleValue();
+            	double percentage = value/total * 100.0;
+                return String.format("%1$s (%2$.2f%% shown)",
+                		super.generateSectionLabel(dataset, key), percentage);
+            }
 
-		plot.trimSlice("Republican", 0.01);
-		plot.trimSlice("Democrat", 0.01);
+        	
+        });
+        plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
+        plot.setToolTipGenerator(new StandardPieToolTipGenerator());
+        
  
 		JFreeChart chart = new JFreeChart("Election Results", plot);
 	
 
 		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
-		splitPane.setLeftComponent(chartPanel);
+		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT));
+		chartPanel.setMinimumSize(chartPanel.getPreferredSize());
+		chartPanel.setMaximumSize(chartPanel.getPreferredSize());
 		
+		splitPane.setLeftComponent(chartPanel);
 		JTextArea list = new JTextArea(regionList(region));
 		list.setEditable(false);
-		JScrollPane scrollableList = new JScrollPane(list);
+		
+		list.setMinimumSize(list.getPreferredSize());
+		list.setMaximumSize(list.getPreferredSize());
+		
+		JViewport listPort = new JViewport();
+		listPort.add(list);
+
+		JScrollPane scrollableList = new JScrollPane(listPort);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
 		splitPane.setRightComponent(scrollableList);
 		
 		JFrame frame = new JFrame("Election Results");
 		frame.add(splitPane);
 		frame.pack();
 		
-		frame.setLocationByPlatform(true);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenWidth = screenSize.getWidth();
+		double frameWidth = frame.getPreferredSize().getWidth();
+		double screenHeight = screenSize.getHeight();
+		double frameHeight = frame.getPreferredSize().getHeight();
+		frame.setLocation(new Point((int) (screenWidth-frameWidth),
+				(int) (screenHeight-frameHeight)));
 		frame.setVisible(true);
 	}
 	public static void pieChartState(State state) {
@@ -266,6 +316,7 @@ public class Grapher {
 	
 	public static void text(Region region) {
 		// TODO: maybe don't show a total if there's only one county?
+		// TODO: add a save function
 		String displayText = "";
 		
 		for (Region subregion : region.getSubregions()) {
@@ -284,7 +335,11 @@ public class Grapher {
 		frame.add(scrollPane);
 		frame.pack();
 		
-		frame.setLocationByPlatform(true);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenHeight = screenSize.getHeight();
+		double frameHeight = frame.getPreferredSize().getHeight();
+		frame.setLocation(new Point(0,
+				(int) (screenHeight-frameHeight)));
 		frame.setVisible(true);
 	}
 	
