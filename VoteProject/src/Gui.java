@@ -355,7 +355,12 @@ public class Gui extends JPanel{
 	}
 	
 	//========================================================================== Methods
-	
+	/**
+	 * This method updates the running list of selected counties
+	 * and applies that to the JList of selected counties.
+	 * 
+	 * @param Region r
+	 */
 	private void update(Region[] r){
 		r = new Region[oldSelection.size()];
 		for(int i = 0; i < oldSelection.size(); i++){
@@ -365,6 +370,10 @@ public class Gui extends JPanel{
 		selectedValues.setListData(r);
 	}
 	
+	/**
+	 * This is the save function for the save button in the menu bar.
+	 * It checks confirm() to see if it can save the file or not.
+	 */
 	private void save(){
 		fc.showSaveDialog(Gui.this);
 		File selectedData = new File(fc.getSelectedFile()+".txt");
@@ -396,7 +405,14 @@ public class Gui extends JPanel{
 			out.close();
 		}
 	}
-	
+	/**
+	 * This method takes in a file, searches the current directory
+	 * if a file with that name already exists, and then prompts
+	 * a confirm dialogue option pane.
+	 * 
+	 * @param File f
+	 * @return boolean
+	 */
 	private boolean confirm(File f){
 		for(int i = 0; i < fc.getCurrentDirectory().listFiles().length; i++){
 			if(fc.getCurrentDirectory().listFiles()[i].getName().equals(f.getName())){
@@ -412,7 +428,9 @@ public class Gui extends JPanel{
 		}
 		return true;
 	}
-	
+	/**
+	 * This clears the JList with the selected counties.
+	 */
 	private void clear(){
 		selected = new Region[0];
 		oldSelection = new ArrayList<Region>();
