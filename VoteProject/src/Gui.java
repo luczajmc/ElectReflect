@@ -170,6 +170,8 @@ public class Gui extends JPanel{
 				File userGuide = new File("User_Guide.pdf");
 				try {
 					Desktop.getDesktop().open(userGuide);
+				} catch (IllegalArgumentException e1) {
+					JOptionPane.showMessageDialog(null, "File Not Found");
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(null, "File Not Found");
 				}
