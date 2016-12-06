@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -6,6 +7,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
+import javax.swing.Scrollable;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -42,48 +45,17 @@ public class ZoomablePieChartPanel extends ChartPanel {
     	return angle;
     }
     
-    void paintOverlap(Graphics g, Comparable key) {
-    	double arcAngle = this.arcAngle;
-    	arcAngle = clip(arcAngle);
-    	
-    	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
-    	
-    	double[] sector = plot.getSlice(key);
-    	if (plot.wrapsAround(sector[0], sector[1], this.startAngle, arcAngle)) {
-        	double[] headOverlap = plot.headOverlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
-        	fillArc(g, headOverlap[0], headOverlap[1]);
-        	double[] tailOverlap = plot.tailOverlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
-        	fillArc(g, tailOverlap[0], tailOverlap[1]);
-        	System.out.println(key+": "+(headOverlap[1]/sector[1]+tailOverlap[1]/sector[1]));
-    	}
-    	else {
-        	double[] overlap = plot.overlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
-        	fillArc(g, overlap[0], overlap[1]);
-        	System.out.println(key+": "+(overlap[1]/sector[1]));
-    		
-    	}
-
-    }
     @Override
     public void paintComponent(Graphics g) {
 		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
-		ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
+		ZoomablePie plot = (ZoomablePie) this.getChart().getPlot();
 		Rectangle2D dataArea = info.getDataArea();
 
     	super.paintComponent(g);
     	this.highlightColor = Color.gray;
-    	if (this.arcAngle<0) { // that is, if you're going a net clockwise
-    		//fillArc(g, this.startAngle, this.arcAngle);
-    	}
-    	
-    	this.highlightColor = Color.red;
-    	paintOverlap(g, "Republican");
-    	
-    	this.highlightColor = Color.blue;
-    	paintOverlap(g, "Democrat");
-
-    	this.highlightColor = Color.green;
-    	paintOverlap(g, "Independent");
+    	double arcAngle = this.arcAngle;
+    	arcAngle = clip(arcAngle);
+    	fillArc(g, this.startAngle, arcAngle);
    }
 
     @Override
@@ -109,7 +81,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
     @Override
     public void mouseReleased(MouseEvent e) {
     	// FIXME: it's possible to zoom so far in, still, that your data goes away
-    	ZoomablePiePlot plot = (ZoomablePiePlot) this.getChart().getPlot();
+    	ZoomablePie plot = (ZoomablePie) this.getChart().getPlot();
     	double arcAngle = this.arcAngle;
     	
     	double minimumSweep = -Math.PI/100; // clockwise

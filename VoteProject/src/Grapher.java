@@ -247,20 +247,6 @@ public class Grapher {
 		
 		ZoomablePiePlot plot = new ZoomablePiePlot(data);
 		
-        plot.setLabelGenerator(new StandardPieSectionLabelGenerator() {
-        	final PieDataset dataset = data;
-        	
-            @Override
-            public String generateSectionLabel(PieDataset dataset, Comparable key) {
-            	double value = dataset.getValue(key).doubleValue();
-            	double total = this.dataset.getValue(key).doubleValue();
-            	double percentage = value/total * 100.0;
-                return String.format("%1$s (%2$.2f%% shown)",
-                		super.generateSectionLabel(dataset, key), percentage);
-            }
-
-        	
-        });
         plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
         plot.setToolTipGenerator(new StandardPieToolTipGenerator());
         

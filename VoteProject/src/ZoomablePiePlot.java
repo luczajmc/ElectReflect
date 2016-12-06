@@ -244,12 +244,14 @@ import org.jfree.util.Rotation;
 import org.jfree.util.ShapeUtilities;
 import org.jfree.util.UnitType;
 
-public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable {
+public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable, ZoomablePie {
 
-	final PieDataset unzoomedDataset;
+	private PieDataset unzoomedDataset;
 	
 	public void zoomOut() {
-		this.setDataset(unzoomedDataset);
+		// just change the dataset that's used for the slices; keep this one as it is
+		// so that you can use it later
+		super.setDataset(new DefaultPieDataset(unzoomedDataset));
 	}
 	
 	double[] getStartAngles() {
@@ -313,7 +315,7 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
     		zoomedDataset.setValue(key, doubleValue);
     	}
     	
-    	this.setDataset(zoomedDataset);
+    	super.setDataset(zoomedDataset);
     }
     
     public void trimSlice(Comparable key, double remainingPercentage) {
@@ -325,7 +327,8 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 		doubleValue *= remainingPercentage;
 		zoomedDataset.setValue(key, doubleValue);
     	
-	   	this.setDataset(zoomedDataset);
+		// this.setDataset changes the unzoomed dataset, too, which we don't want
+	   	super.setDataset(zoomedDataset);
 
     }
     
@@ -546,6 +549,29 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable 
 	
 	public ZoomablePiePlot(PieDataset dataset) {
 		super(dataset);
-		this.unzoomedDataset = dataset;
+		setDataset(dataset);
+	}
+	
+	// TODO: redo the labels each time
+	@Override
+	public void setDataset(PieDataset dataset) {
+		super.setDataset(dataset);
+		
+		// unzoomedDataset shouldn't ever be modified except when you're completely
+		// replacing the data, as in this function: so it gets its own dataset
+		this.unzoomedDataset = new DefaultPieDataset(dataset);
+		this.setLabelGenerator(new StandardPieSectionLabelGenerator() {
+			final PieDataset unzoomedData = unzoomedDataset;
+        	
+			@Override
+            public String generateSectionLabel(PieDataset dataset, Comparable key) {
+            	double value = dataset.getValue(key).doubleValue();
+            	double total = this.unzoomedData.getValue(key).doubleValue();
+            	double percentage = value/total * 100.0;
+            	return String.format("%1$s (%2$.2f%% shown)",
+                		super.generateSectionLabel(dataset, key), percentage);
+			}
+		});
+
 	}
 }
