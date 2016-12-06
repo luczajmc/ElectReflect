@@ -56,6 +56,7 @@ public class County extends Region {
 	 * gets the total number of democratic votes for a county
 	 */
 	private void calcDemVotes() {
+		this.demVotes = 0;
 		for (int i = 0; i < this.districts.size(); i++) {
 			this.demVotes = this.demVotes + this.districts.get(i).getDemVotes();
 		}
@@ -65,6 +66,7 @@ public class County extends Region {
 	 * gets the total number of republican votes for a county
 	 */
 	private void calcRepVotes() {
+		this.repVotes = 0;
 		for (int i = 0; i < this.districts.size(); i++) {
 			this.repVotes = this.repVotes + this.districts.get(i).getRepVotes();
 		}
@@ -74,6 +76,7 @@ public class County extends Region {
 	 * gets the number of independent votes for a county
 	 */
 	private void calcIndVotes() {
+		this.indVotes = 0;
 		for (int i = 0; i < this.districts.size(); i++) {
 			this.indVotes = this.indVotes + this.districts.get(i).getIndVotes();
 		}
@@ -83,7 +86,10 @@ public class County extends Region {
 	 * gets the total number of votes for a county
 	 */
 	private void calcTotalVotes() {
-		this.totalVotes = this.demVotes + this.repVotes + this.indVotes;
+		this.totalVotes = 0;
+		for (int i = 0; i < this.districts.size(); i++) {
+			this.totalVotes = this.totalVotes + this.districts.get(i).getTotalVotes();
+		}
 	}
 
 	/**

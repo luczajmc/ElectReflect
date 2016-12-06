@@ -43,6 +43,7 @@ public class State extends Region {
 			// TODO: this needs to handle duplicate items that aren't right next to each other
 			if (!this.currentCounty.equals(currentCountyName)) { //checks if the name of the current county == the name 
 																 //of the county in the previous line
+				System.out.println(this.newCounty.getName() + " " + this.newCounty.getTotalVotes());
 				this.currentCounty = currentCountyName; //sets the current county name to the new county name
 				this.newCounty = new County(currentCountyName); //creates a new county with name currentCountyName
 				this.counties.add(this.newCounty); //adds the new county to the ArrayList of counties contained within the state
@@ -52,6 +53,9 @@ public class State extends Region {
 			District newDistrict = new District(currentDistrict[DISTRICT_NAME], Integer.parseInt(currentDistrict[REP_VOTES]),
 					Integer.parseInt(currentDistrict[DEM_VOTES]), Integer.parseInt(currentDistrict[IND_VOTES]));
 			this.newCounty.addDistrict(newDistrict);//finally we add the new district to the county we are working in
+			
+			System.out.println(newDistrict.getName() + " " + newDistrict.getTotalVotes());
+			System.out.println(newCounty.getName() + " " + newCounty.getTotalVotes());
 		}
 	}
 	
