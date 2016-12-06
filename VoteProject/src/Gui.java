@@ -186,16 +186,11 @@ public class Gui extends JPanel{
 					guideOutput.close();
 					
 					Desktop.getDesktop().open(userGuide);
-<<<<<<< HEAD
+					
 				} catch (IllegalArgumentException e1) {
 					JOptionPane.showMessageDialog(null, "File Not Found");
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(null, "File Not Found");
-=======
-				} catch (IOException e2) {
-					// TODO Auto-generated catch block
-					JOptionPane.showMessageDialog(null, "Error showing user guide");
->>>>>>> d8ea3fdad4f0e7484f011eeb6568493f6e641068
 				}
 			}
 		});
