@@ -101,6 +101,10 @@ public class DataHandler {
 			JOptionPane.showMessageDialog(null, "Erros were found, the log file has been placed in the folder with the program");
 		}
 		
+		for (String[] District : dataArray) {
+			System.out.println(Arrays.toString(District));
+		}
+		
 		System.out.println("Done.");
 	}
 	
@@ -222,7 +226,7 @@ public class DataHandler {
 				dataArray.remove(badData);
 			}
 			catch(IndexOutOfBoundsException e) {
-				System.out.println("Tried to remove bad data, but no data was found!");
+				System.out.println("");
 			}
 		}
 		
