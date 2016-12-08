@@ -28,6 +28,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
 	double endAngle = 0.0f;
 	double arcAngle = 0.0f;
 	Color highlightColor = Color.gray;
+	int plotIndex = -1;
 	
     public ZoomablePieChartPanel(JFreeChart chart) {
 		super(chart);
@@ -45,12 +46,24 @@ public class ZoomablePieChartPanel extends ChartPanel {
     	return angle;
     }
     
+    Rectangle2D getCurrentDataArea() {
+    	PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
+
+    	if (this.plotIndex==-1) {
+    		return info.getDataArea();
+    	}
+    	else {
+    		return info.getSubplotInfo(this.plotIndex).getDataArea();
+    	}
+    }
+    int getSubplotIndex(Point p) {
+    	PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
+    	
+    	return info.getSubplotIndex(p);
+    }
+    
     @Override
     public void paintComponent(Graphics g) {
-		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
-		ZoomablePie plot = (ZoomablePie) this.getChart().getPlot();
-		Rectangle2D dataArea = info.getDataArea();
-
     	super.paintComponent(g);
     	this.highlightColor = Color.gray;
     	double arcAngle = this.arcAngle;
@@ -64,6 +77,8 @@ public class ZoomablePieChartPanel extends ChartPanel {
     	this.startAngle = getAngle(e.getPoint());
     	this.endAngle = this.startAngle;
     	this.arcAngle = 0.0f;
+    	
+    	this.plotIndex = getSubplotIndex(e.getPoint());
     }
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -89,6 +104,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
     		plot.zoomOut();
     	}
     	else if (arcAngle < minimumSweep) {
+    		// you dragged farther than minimumSweep clockwise
         	arcAngle = clip(arcAngle);
         	System.out.println(arcAngle);
         	
@@ -103,8 +119,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
     }
     
     double getAngle(Point2D endpoint) {
-		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
-		Rectangle2D dataArea = info.getDataArea();
+		Rectangle2D dataArea = getCurrentDataArea();
 
 		double centerX = dataArea.getCenterX();
 		double centerY = dataArea.getCenterY();
@@ -149,8 +164,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
     }
     
 	public void fillArc(Graphics g, double startAngle, double arcAngle) {
-		PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
-		Rectangle2D dataArea = info.getDataArea();
+		Rectangle2D dataArea = getCurrentDataArea();
 		
 		fillArc(g, dataArea, startAngle, arcAngle);
     }
