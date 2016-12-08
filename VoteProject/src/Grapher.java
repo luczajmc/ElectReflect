@@ -1,6 +1,7 @@
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.*;
 import org.jfree.chart.ChartFactory;
@@ -15,8 +16,10 @@ import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieToolTipGenerator;
+import org.jfree.chart.plot.MultiplePiePlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.data.category.CategoryDataset;
@@ -57,18 +60,8 @@ public class Grapher {
 
 	static JFreeChart chart(Region region) {
 		// TODO: label the axes
-		DefaultCategoryDataset data = new DefaultCategoryDataset();
-		ArrayList<Region> subregions = region.getSubregions();
 		
-		subregions.sort(RegionSorter.reverse(RegionSorter.byPopulation()));
-		for (Region r : subregions) {
-			data.setValue(r.getRepVotes(), "Republican", r.getName());
-			data.setValue(r.getDemVotes(), "Democrat", r.getName());
-			data.setValue(r.getIndVotes(), "Independent", r.getName());
-			
-		}
-		
-		SyncedCategoryPlot plot = createPlot("", "", data);
+		SyncedCategoryPlot plot = createPlot("", "", categoryDataset(region));
 		
         JFreeChart chart = new JFreeChart("Election Results", plot);
         
@@ -234,6 +227,21 @@ public class Grapher {
 		
 	}
 	
+	static CategoryDataset categoryDataset(Region region) {
+		DefaultCategoryDataset data = new DefaultCategoryDataset();
+		ArrayList<Region> subregions = region.getSubregions();
+		
+		subregions.sort(RegionSorter.reverse(RegionSorter.byPopulation()));
+		for (Region r : subregions) {
+			data.setValue(r.getRepVotes(), "Republican", r.getName());
+			data.setValue(r.getDemVotes(), "Democrat", r.getName());
+			data.setValue(r.getIndVotes(), "Independent", r.getName());
+			
+		}
+
+		return data;
+	}
+	
 	public static void pieChart(Region region) {
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setEnabled(false);
@@ -245,16 +253,34 @@ public class Grapher {
 		data.setValue("Democrat", region.getDemVotes());
 		data.setValue("Independent", region.getIndVotes());
 		
-		ZoomablePiePlot plot = new ZoomablePiePlot(data);
+		ZoomableMultiplePiePlot plot = new ZoomableMultiplePiePlot(
+				categoryDataset(region));
 		
         plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
-        plot.setToolTipGenerator(new StandardPieToolTipGenerator());
-        
+        PiePlot subPlot = (PiePlot) plot.getPieChart().getPlot();
+        subPlot.setToolTipGenerator(new StandardPieToolTipGenerator());
  
+//		ZoomablePiePlot plot = new ZoomablePiePlot(
+//				data);
+//		
+//        plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
+//        plot.setToolTipGenerator(new StandardPieToolTipGenerator());
+
 		JFreeChart chart = new JFreeChart("Election Results", plot);
 	
 
-		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
+		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart) {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				PlotRenderingInfo info =  this.getChartRenderingInfo().getPlotInfo();
+				System.out.println(info.getSubplotCount());
+				int subplotIndex = info.getSubplotIndex(e.getPoint());
+				System.out.println(subplotIndex);
+				System.out.println(info.getSubplotInfo(subplotIndex));
+				System.out.println(info.getSubplotInfo(subplotIndex).getDataArea());
+
+			}
+		};
 		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT));
 		chartPanel.setMinimumSize(chartPanel.getPreferredSize());
 		chartPanel.setMaximumSize(chartPanel.getPreferredSize());
