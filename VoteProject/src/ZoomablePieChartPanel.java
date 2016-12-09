@@ -12,7 +12,9 @@ import javax.swing.Scrollable;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.MultiplePiePlot;
 import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotRenderingInfo;
 
 /**
@@ -56,6 +58,16 @@ public class ZoomablePieChartPanel extends ChartPanel {
     		return info.getSubplotInfo(this.plotIndex).getDataArea();
     	}
     }
+    
+    ZoomablePiePlot getZoomablePiePlot() {
+    	Plot plot = this.getChart().getPlot();
+    	if (plot instanceof MultiplePiePlot) {
+    		return (ZoomablePiePlot) (((MultiplePiePlot) plot).getPieChart().getPlot());
+    	}
+    	else {
+    		return (ZoomablePiePlot) plot;
+    	}
+    }
     int getSubplotIndex(Point p) {
     	PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
     	
@@ -96,7 +108,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
     @Override
     public void mouseReleased(MouseEvent e) {
     	// FIXME: it's possible to zoom so far in, still, that your data goes away
-    	ZoomablePie plot = (ZoomablePie) this.getChart().getPlot();
+    	ZoomablePie plot = this.getZoomablePiePlot();
     	double arcAngle = this.arcAngle;
     	
     	double minimumSweep = -Math.PI/100; // clockwise
