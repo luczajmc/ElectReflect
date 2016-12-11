@@ -4,6 +4,9 @@ import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -243,41 +246,98 @@ public class Grapher {
 	}
 	
 	public static void pieChart(Region region) {
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setEnabled(false);
-		splitPane.setDividerSize(0);
-
-
-		DefaultPieDataset data = new DefaultPieDataset();
-		data.setValue("Republican", region.getRepVotes());
-		data.setValue("Democrat", region.getDemVotes());
-		data.setValue("Independent", region.getIndVotes());
 		
+
+		// if it's a multiple-pie plot, it has one plot for each subregion
 		ZoomableMultiplePiePlot plot = new ZoomableMultiplePiePlot(
 				categoryDataset(region));
 		
+		// do some setup the Factory would normally do
         plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
+
+        // in a multiple-pie plot, the subplot gets tooltips instead
         PiePlot subPlot = (PiePlot) plot.getPieChart().getPlot();
         subPlot.setToolTipGenerator(new StandardPieToolTipGenerator());
- 
+
+//        // if it's a single-pie plot, it uses the total cumulative votes from
+//        // across the whole region
+//		DefaultPieDataset data = new DefaultPieDataset();
+//		data.setValue("Republican", region.getRepVotes());
+//		data.setValue("Democrat", region.getDemVotes());
+//		data.setValue("Independent", region.getIndVotes());
+//
+//        // make a normal single-pie plot
 //		ZoomablePiePlot plot = new ZoomablePiePlot(
 //				data);
-//		
+
+//        // do some setup the Factory would normally do
 //        plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
 //        plot.setToolTipGenerator(new StandardPieToolTipGenerator());
 
 		JFreeChart chart = new JFreeChart("Election Results", plot);
 	
-
 		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
-		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT));
+
+		// leave enough room in the chart panel for you to see the _whole_ chart
+		int pieCount = plot.getPieCount();
+		int scrollableHeight = ChartPanel.DEFAULT_HEIGHT*pieCount;
+		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH,
+				scrollableHeight));
+
+		// the chart should also tend to keep its original size when you resize
+		// the window
 		chartPanel.setMinimumSize(chartPanel.getPreferredSize());
 		chartPanel.setMaximumSize(chartPanel.getPreferredSize());
 		
-		splitPane.setLeftComponent(chartPanel);
+		// one chart's worth of buffer seems adequate; also, it handles the case
+		// where there are no subplots
+		chartPanel.setMaximumDrawHeight(scrollableHeight+ChartPanel.DEFAULT_HEIGHT);
+		
+		// the window onto the chart should be the same size as a regular chart
+		JViewport port = new JViewport();
+		port.add(chartPanel);
+		port.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH,
+				ChartPanel.DEFAULT_HEIGHT));
+		port.setMinimumSize(port.getPreferredSize());
+		port.setMaximumSize(port.getPreferredSize());
+		
+		JScrollPane pane = new JScrollPane(port);
+		
+		// this was back when I thought resizing the plot was enough to make it
+		// reflow its charts more how I wanted
+		JPanel reflowingPanel = new JPanel();
+		reflowingPanel.setLayout(new BoxLayout(reflowingPanel, BoxLayout.PAGE_AXIS));
+		reflowingPanel.add(pane);
+		JSlider reflowingSlider = new JSlider(1, 100, 100);
+		reflowingSlider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				JSlider source = (JSlider) e.getSource();
+				double percentage = ((double) source.getValue()) /
+						((double) source.getExtent());
+				chartPanel.reflow(percentage);
+			}
+			
+		});
+		reflowingPanel.add(reflowingSlider);
+
+		// just split the window into left and right halves; don't let the user adjust
+		// the size of those halves
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setEnabled(false);
+		splitPane.setDividerSize(0);
+
+		
+		// the chart goes on the left
+		splitPane.setLeftComponent(reflowingPanel);
+		
 		JTextArea list = new JTextArea(regionList(region));
 		list.setEditable(false);
 		
+		// when you resize the window, both these panes should tend to want to
+		// keep their original height
 		list.setMinimumSize(list.getPreferredSize());
 		list.setMaximumSize(list.getPreferredSize());
 		
@@ -287,14 +347,17 @@ public class Grapher {
 		JScrollPane scrollableList = new JScrollPane(listPort);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
+		// scrollable list of counties goes on the right
 		splitPane.setRightComponent(scrollableList);
 		
 		JFrame frame = new JFrame("Election Results");
 		frame.add(splitPane);
 		frame.pack();
 		
+		// frame can't be taller than the amount of space you have on your monitor
 		clipFrame(frame);
 
+		// frame goes at the lower right corner
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
 		double frameWidth = frame.getPreferredSize().getWidth();
@@ -302,6 +365,7 @@ public class Grapher {
 		double frameHeight = frame.getPreferredSize().getHeight();
 		frame.setLocation(new Point((int) (screenWidth-frameWidth),
 				(int) (screenHeight-frameHeight)));
+		
 		frame.setVisible(true);
 	}
 	public static void pieChartState(State state) {

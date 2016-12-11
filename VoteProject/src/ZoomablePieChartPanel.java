@@ -245,4 +245,18 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		}
 		return arcAngle;
 	}
+	
+    
+    public void reflow(double heightZoomPercentage) {
+    	ZoomableMultiplePiePlot plot = (ZoomableMultiplePiePlot) this.getChart().getPlot();
+    	double maximumHeight = plot.getPieCount()*ChartPanel.DEFAULT_HEIGHT;
+		this.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH,
+				(int) (heightZoomPercentage*maximumHeight)));
+		this.setMinimumSize(this.getPreferredSize());
+		this.setMaximumSize(this.getPreferredSize());
+
+		this.getChart().setNotify(true);
+		this.repaint();
+    }
+
 }

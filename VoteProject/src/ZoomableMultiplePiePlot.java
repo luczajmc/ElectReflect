@@ -131,13 +131,7 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
             return;
         }
 
-        int pieCount;
-        if (this.getDataExtractOrder() == TableOrder.BY_ROW) {
-            pieCount = this.getDataset().getRowCount();
-        }
-        else {
-            pieCount = this.getDataset().getColumnCount();
-        }
+        int pieCount = this.getPieCount();
 
         // the columns variable is always >= rows
         int displayCols = (int) Math.ceil(Math.sqrt(pieCount));
@@ -216,6 +210,16 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
             info.getOwner().getEntityCollection().addAll(
                     subinfo.getEntityCollection());
             info.addSubplotInfo(subinfo.getPlotInfo());
+        }
+
+    }
+    
+    public int getPieCount() {
+        if (this.getDataExtractOrder() == TableOrder.BY_ROW) {
+            return this.getDataset().getRowCount();
+        }
+        else {
+            return this.getDataset().getColumnCount();
         }
 
     }
