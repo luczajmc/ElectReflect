@@ -133,8 +133,7 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
 
         int pieCount = this.getPieCount();
 
-        // the columns variable is always >= rows
-        int displayCols = (int) Math.ceil(Math.sqrt(pieCount));
+        int displayCols = 1;
         int displayRows
             = (int) Math.ceil((double) pieCount / (double) displayCols);
 
