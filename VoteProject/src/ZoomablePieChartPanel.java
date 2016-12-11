@@ -113,8 +113,6 @@ public class ZoomablePieChartPanel extends ChartPanel {
 
     @Override
     public void mousePressed(MouseEvent e) {
-    	// FIXME: the first time you try to sweep on a given pie (in a multiple-pie plot?),
-    	//		  this can return a wrong angle
     	super.mousePressed(e);
     	this.plotIndex = getSubplotIndex(e.getPoint());
 
@@ -125,7 +123,11 @@ public class ZoomablePieChartPanel extends ChartPanel {
     }
     @Override
     public void mouseDragged(MouseEvent e) {
-    	// TODO: this should probably not do anything if you're dragging from off of another component
+    	// FIXME: zooming in isn't cumulative
+    	// FIXME: OK, so these angles aren't quite right for the multiple-pie plot
+    	//		  (maybe?)
+    	// TODO: this should probably not do anything if you're dragging from off of
+    	//		 another component
     	double endAngle = getAngle(e.getPoint());
     	
     	boolean isClockwise = isClockwiseFrom(this.endAngle, endAngle); // you're going clockwise
@@ -246,17 +248,4 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		return arcAngle;
 	}
 	
-    
-    public void reflow(double heightZoomPercentage) {
-    	ZoomableMultiplePiePlot plot = (ZoomableMultiplePiePlot) this.getChart().getPlot();
-    	double maximumHeight = plot.getPieCount()*ChartPanel.DEFAULT_HEIGHT;
-		this.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH,
-				(int) (heightZoomPercentage*maximumHeight)));
-		this.setMinimumSize(this.getPreferredSize());
-		this.setMaximumSize(this.getPreferredSize());
-
-		this.getChart().setNotify(true);
-		this.repaint();
-    }
-
 }

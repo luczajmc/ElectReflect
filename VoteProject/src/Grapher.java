@@ -292,37 +292,26 @@ public class Grapher {
 		// one chart's worth of buffer seems adequate; also, it handles the case
 		// where there are no subplots
 		chartPanel.setMaximumDrawHeight(scrollableHeight+ChartPanel.DEFAULT_HEIGHT);
-		
-		// the window onto the chart should be the same size as a regular chart
+
+		// hopefully this is faster (no, it's slower)
 		JViewport port = new JViewport();
+		port.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+
 		port.add(chartPanel);
-		port.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH,
+		
+		// FIXME: this should make the viewport the same size as a regular chart
+		JPanel panel = new JPanel();
+		panel.add(port);
+		panel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH,
 				ChartPanel.DEFAULT_HEIGHT));
-		port.setMinimumSize(port.getPreferredSize());
-		port.setMaximumSize(port.getPreferredSize());
+		panel.setMinimumSize(panel.getPreferredSize());
+		panel.setMaximumSize(panel.getPreferredSize());
 		
-		JScrollPane pane = new JScrollPane(port);
+		// FIXME: this scroll pane scrolls abysmally slowly
+		JScrollPane scrollPane = new JScrollPane(port);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
 		
-		// this was back when I thought resizing the plot was enough to make it
-		// reflow its charts more how I wanted
-		JPanel reflowingPanel = new JPanel();
-		reflowingPanel.setLayout(new BoxLayout(reflowingPanel, BoxLayout.PAGE_AXIS));
-		reflowingPanel.add(pane);
-		JSlider reflowingSlider = new JSlider(1, 100, 100);
-		reflowingSlider.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
-				JSlider source = (JSlider) e.getSource();
-				double percentage = ((double) source.getValue()) /
-						((double) source.getExtent());
-				chartPanel.reflow(percentage);
-			}
-			
-		});
-		reflowingPanel.add(reflowingSlider);
-
 		// just split the window into left and right halves; don't let the user adjust
 		// the size of those halves
 		JSplitPane splitPane = new JSplitPane();
@@ -331,7 +320,7 @@ public class Grapher {
 
 		
 		// the chart goes on the left
-		splitPane.setLeftComponent(reflowingPanel);
+		splitPane.setLeftComponent(scrollPane);
 		
 		JTextArea list = new JTextArea(regionList(region));
 		list.setEditable(false);
