@@ -269,18 +269,7 @@ public class Grapher {
 		JFreeChart chart = new JFreeChart("Election Results", plot);
 	
 
-		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart) {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				PlotRenderingInfo info =  this.getChartRenderingInfo().getPlotInfo();
-				System.out.println(info.getSubplotCount());
-				int subplotIndex = info.getSubplotIndex(e.getPoint());
-				System.out.println(subplotIndex);
-				System.out.println(info.getSubplotInfo(subplotIndex));
-				System.out.println(info.getSubplotInfo(subplotIndex).getDataArea());
-
-			}
-		};
+		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
 		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT));
 		chartPanel.setMinimumSize(chartPanel.getPreferredSize());
 		chartPanel.setMaximumSize(chartPanel.getPreferredSize());

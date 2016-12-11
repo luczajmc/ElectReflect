@@ -33,6 +33,7 @@ import org.jfree.util.TableOrder;
 public class ZoomableMultiplePiePlot extends MultiplePiePlot implements ZoomablePie {
 
 	private CategoryDataset unzoomedDataset;
+	double[] zoomPercentages;
 	
     /**
      * Creates a new plot with no data.
@@ -64,32 +65,27 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
         this.setPieChart(pieChart);
 
     	this.unzoomedDataset = dataset;
+    	resetZoomPercentages(); // make sure the plot starts out zoomed correctly
     }
 	
+    void resetZoomPercentages() {
+		int parties = unzoomedDataset.getRowCount();
+		this.zoomPercentages = new double[parties];
+		for (int i=0; i<this.zoomPercentages.length; i++) {
+			this.zoomPercentages[i] = 1.0;
+		}
+    }
 	public void zoomOut() {
 		this.setDataset(unzoomedDataset);
+		resetZoomPercentages();
 	}
 	
 	void trimPies(double[] zoomPercentages) {
-		// TODO: this should update the tooltips on the pie charts also
-		DefaultCategoryDataset zoomedDataset = new DefaultCategoryDataset();
-		CategoryDataset dataset = this.getDataset();
-		System.out.println(dataset.getRowCount()+","+dataset.getColumnCount());
-		List regions = dataset.getColumnKeys();
-		List parties = dataset.getRowKeys();
-		for (int region=0; region<regions.size(); region++) {
-			for (int party=0; party<parties.size(); party++) {
-				Comparable partyName = dataset.getRowKey(party);
-				Comparable regionName = dataset.getColumnKey(region);
-				double zoom = zoomPercentages[party];
-				double voteCount = dataset.getValue(party, region).doubleValue();
-				System.out.println(String.format("%s, %s: %.0f*%.2f=%.0f", partyName.toString(), regionName.toString(), voteCount, zoom,
-						zoom*voteCount));
-				zoomedDataset.addValue(zoom*voteCount, partyName, regionName);
-			}
-		}
-
-		super.setDataset(zoomedDataset);
+		this.zoomPercentages = zoomPercentages;
+        for (int i=0; i<this.zoomPercentages.length; i++) {
+        	System.out.print(this.zoomPercentages[i]+",");
+        }
+        System.out.println("===");
 	}
 	
     public void zoomSelection(double startAngle, double arcAngle) {
@@ -103,8 +99,124 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
     
     @Override
     public void setDataset(CategoryDataset dataset) {
+    	// TODO: make sure this behaves appropriately
     	super.setDataset(dataset);
     	this.unzoomedDataset = dataset;
+    	this.resetZoomPercentages();
     }
     
+    /**
+     * Draws the plot on a Java 2D graphics device (such as the screen or a
+     * printer).
+     *
+     * @param g2  the graphics device.
+     * @param area  the area within which the plot should be drawn.
+     * @param anchor  the anchor point ({@code null} permitted).
+     * @param parentState  the state from the parent plot, if there is one.
+     * @param info  collects info about the drawing.
+     */
+    @Override
+    public void draw(Graphics2D g2, Rectangle2D area, Point2D anchor,
+            PlotState parentState, PlotRenderingInfo info) {
+
+        // adjust the drawing area for the plot insets (if any)...
+        RectangleInsets insets = getInsets();
+        insets.trim(area);
+        drawBackground(g2, area);
+        drawOutline(g2, area);
+
+        // check that there is some data to display...
+        if (DatasetUtilities.isEmptyOrNull(this.getDataset())) {
+            drawNoDataMessage(g2, area);
+            return;
+        }
+
+        int pieCount;
+        if (this.getDataExtractOrder() == TableOrder.BY_ROW) {
+            pieCount = this.getDataset().getRowCount();
+        }
+        else {
+            pieCount = this.getDataset().getColumnCount();
+        }
+
+        // the columns variable is always >= rows
+        int displayCols = (int) Math.ceil(Math.sqrt(pieCount));
+        int displayRows
+            = (int) Math.ceil((double) pieCount / (double) displayCols);
+
+        // swap rows and columns to match plotArea shape
+        if (displayCols > displayRows && area.getWidth() < area.getHeight()) {
+            int temp = displayCols;
+            displayCols = displayRows;
+            displayRows = temp;
+        }
+
+        int x = (int) area.getX();
+        int y = (int) area.getY();
+        int width = ((int) area.getWidth()) / displayCols;
+        int height = ((int) area.getHeight()) / displayRows;
+        int row = 0;
+        int column = 0;
+        int diff = (displayRows * displayCols) - pieCount;
+        int xoffset = 0;
+        Rectangle rect = new Rectangle();
+
+        for (int pieIndex = 0; pieIndex < pieCount; pieIndex++) {
+            rect.setBounds(x + xoffset + (width * column), y + (height * row),
+                    width, height);
+
+            drawPie(pieIndex, g2, rect, info);
+            
+            ++column;
+            if (column == displayCols) {
+                column = 0;
+                ++row;
+
+                if (row == displayRows - 1 && diff != 0) {
+                    xoffset = (diff * width) / 2;
+                }
+            }
+        }
+
+    }
+
+    void drawPie(int pieIndex, Graphics2D g2, Rectangle2D rect, PlotRenderingInfo info) {
+        String title;
+        if (this.getDataExtractOrder() == TableOrder.BY_ROW) {
+            title = this.getDataset().getRowKey(pieIndex).toString();
+        }
+        else {
+            title = this.getDataset().getColumnKey(pieIndex).toString();
+        }
+        this.getPieChart().setTitle(title);
+
+        PieDataset piedataset;
+        PieDataset dd = new CategoryToPieDataset(this.unzoomedDataset,
+                this.getDataExtractOrder(), pieIndex);
+        if (this.getLimit() > 0.0) {
+            piedataset = DatasetUtilities.createConsolidatedPieDataset(
+                    dd, this.getAggregatedItemsKey(), this.getLimit());
+        }
+        else {
+            piedataset = dd;
+        }
+        ZoomablePiePlot piePlot = (ZoomablePiePlot) this.getPieChart().getPlot();
+        piePlot.setDataset(piedataset);
+        piePlot.setPieIndex(pieIndex);
+        piePlot.trimSlices(this.zoomPercentages);
+
+
+        ChartRenderingInfo subinfo = null;
+        if (info != null) {
+            subinfo = new ChartRenderingInfo();
+        }
+        this.getPieChart().draw(g2, rect, subinfo);
+        if (info != null) {
+            assert subinfo != null;
+            info.getOwner().getEntityCollection().addAll(
+                    subinfo.getEntityCollection());
+            info.addSubplotInfo(subinfo.getPlotInfo());
+        }
+
+    }
 }

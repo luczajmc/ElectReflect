@@ -110,7 +110,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
     }
     @Override
     public void mouseReleased(MouseEvent e) {
-    	// FIXME: it's possible to zoom so far in, still, that your data goes away
+    	// FIXME: it's still possible to zoom so far in that your data goes away
     	ZoomablePie plot = (ZoomablePie) this.getChart().getPlot();
     	double arcAngle = this.arcAngle;
     	
@@ -124,12 +124,19 @@ public class ZoomablePieChartPanel extends ChartPanel {
         	System.out.println(arcAngle);
         	
         	plot.zoomSelection(this.startAngle, arcAngle);
-        	
+        	ZoomableMultiplePiePlot multiplePlot = (ZoomableMultiplePiePlot) plot;
+        	System.out.println(multiplePlot.zoomPercentages);
+            for (int i=0; i<multiplePlot.zoomPercentages.length; i++) {
+            	System.out.print(multiplePlot.zoomPercentages[i]+",");
+            }
+            System.out.println("~~~");
+
     	}
 
     	this.endAngle = this.startAngle;
     	this.arcAngle = 0.0;
 
+        this.getChart().setNotify(true);  // force the chart to redraw also
     	this.repaint();
     }
     
