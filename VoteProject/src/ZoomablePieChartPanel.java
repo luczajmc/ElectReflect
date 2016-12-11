@@ -85,12 +85,15 @@ public class ZoomablePieChartPanel extends ChartPanel {
 
     @Override
     public void mousePressed(MouseEvent e) {
+    	// FIXME: the first time you try to sweep on a given pie (in a multiple-pie plot?),
+    	//		  this can return a wrong angle
     	super.mousePressed(e);
+    	this.plotIndex = getSubplotIndex(e.getPoint());
+
     	this.startAngle = getAngle(e.getPoint());
     	this.endAngle = this.startAngle;
     	this.arcAngle = 0.0f;
     	
-    	this.plotIndex = getSubplotIndex(e.getPoint());
     }
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -108,7 +111,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
     @Override
     public void mouseReleased(MouseEvent e) {
     	// FIXME: it's possible to zoom so far in, still, that your data goes away
-    	ZoomablePie plot = this.getZoomablePiePlot();
+    	ZoomablePie plot = (ZoomablePie) this.getChart().getPlot();
     	double arcAngle = this.arcAngle;
     	
     	double minimumSweep = -Math.PI/100; // clockwise

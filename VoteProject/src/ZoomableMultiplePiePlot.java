@@ -71,9 +71,25 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
 	}
 	
 	void trimPies(double[] zoomPercentages) {
+		// TODO: this should update the tooltips on the pie charts also
 		DefaultCategoryDataset zoomedDataset = new DefaultCategoryDataset();
 		CategoryDataset dataset = this.getDataset();
 		System.out.println(dataset.getRowCount()+","+dataset.getColumnCount());
+		List regions = dataset.getColumnKeys();
+		List parties = dataset.getRowKeys();
+		for (int region=0; region<regions.size(); region++) {
+			for (int party=0; party<parties.size(); party++) {
+				Comparable partyName = dataset.getRowKey(party);
+				Comparable regionName = dataset.getColumnKey(region);
+				double zoom = zoomPercentages[party];
+				double voteCount = dataset.getValue(party, region).doubleValue();
+				System.out.println(String.format("%s, %s: %.0f*%.2f=%.0f", partyName.toString(), regionName.toString(), voteCount, zoom,
+						zoom*voteCount));
+				zoomedDataset.addValue(zoom*voteCount, partyName, regionName);
+			}
+		}
+
+		super.setDataset(zoomedDataset);
 	}
 	
     public void zoomSelection(double startAngle, double arcAngle) {
