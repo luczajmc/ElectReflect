@@ -114,7 +114,7 @@ public class DataHandler {
 		System.out.println("Done.");
 	}
 
-	public static State makeState() {
+	public static State makeState(String directory) {
 		System.out.println("Preparing printwriter");
 		try {
 			out = new PrintWriter(errorLog);
@@ -124,7 +124,9 @@ public class DataHandler {
 		out.print("-- Begin Logging. --\r\n\r\n");
 
 		out.print("Prompting for directory...");
-		getFiles();
+		extractData(directory, VOTER_DATA);
+		extractData(directory, REGISTERED_DATA);			
+
 		out.print("done.\r\n\r\n");
 
 		out.print("Sorting voter data...");
@@ -151,6 +153,10 @@ public class DataHandler {
 		out.println("Creating State object.");
 		out.close();
 		return new State(dataArray);
+	}
+	
+	public static State makeState() {
+		return makeState(getFiles());
 	}
 
 	// ==================================================================================
@@ -267,7 +273,7 @@ public class DataHandler {
 	/**
 	 * @param dataType
 	 */
-	private static void getFiles() {
+	private static String getFiles() {
 
 		String message = "Select the folder containing your data.";
 
@@ -292,14 +298,20 @@ public class DataHandler {
 																				// of
 																				// the
 																				// directory
-			extractData(path, VOTER_DATA);
-			extractData(path, REGISTERED_DATA);
+			return path;
+		}
+		else {
+			return "";
 		}
 	}
 
 	// extracts data to the appropriate array
 	private static void extractData(String path, int dataType) {
 		File folder = new File(path);
+		if (!folder.exists()) {
+			return;
+		}
+		
 		File[] files = folder.listFiles();
 
 		// extracts voter data to the array

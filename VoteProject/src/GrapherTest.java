@@ -27,7 +27,7 @@ public class GrapherTest {
 	}
 	public static void main(String[] args) {
 		
-		State ohio = DataHandler.makeState();
+		State ohio = DataHandler.makeState("../Data");
 		Grapher.barGraphState(ohio);
 		Grapher.textState(ohio);
 		Grapher.pieChartState(ohio);
