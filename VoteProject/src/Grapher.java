@@ -294,6 +294,7 @@ public class Grapher {
 		chartPanel.setMaximumDrawHeight(scrollableHeight+ChartPanel.DEFAULT_HEIGHT);
 
 		// hopefully this is faster (no, it's slower)
+		// TODO: figure out how the bar chart is able to do this reasonably
 		JViewport port = new JViewport();
 		port.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 

@@ -9,6 +9,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -24,7 +25,7 @@ import org.jfree.chart.plot.PlotRenderingInfo;
  * component of the chart.  The chart is redrawn automatically whenever this
  * notification is received.
  */
-public class ZoomablePieChartPanel extends ChartPanel {
+public class ZoomablePieChartPanel extends ChartPanel implements Scrollable {
 
 	double startAngle = 0.0f;
 	double endAngle = 0.0f;
@@ -246,6 +247,56 @@ public class ZoomablePieChartPanel extends ChartPanel {
 			arcAngle -= 2*Math.PI;
 		}
 		return arcAngle;
+	}
+
+	@Override
+	public Dimension getPreferredScrollableViewportSize() {
+		// TODO Auto-generated method stub
+		return new Dimension(ChartPanel.DEFAULT_WIDTH, ChartPanel.DEFAULT_HEIGHT);
+	}
+
+	
+	@Override
+	public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+		// TODO Auto-generated method stub
+		Rectangle2D currentDataArea = this.getCurrentDataArea();
+		int yOffset = (int) (currentDataArea.getY()-visibleRect.getY());
+		int xOffset = (int) (currentDataArea.getX()-visibleRect.getX());
+		
+		// don't scroll horizontally
+		if (orientation==SwingConstants.HORIZONTAL) {
+			return 0;
+		}
+		
+		if (direction<0) {
+			// scroll back if you already see the beginning of one pie plot
+			// otherwise, just jump to the beginning of the current one
+			// return toPreviousDataArea();
+			return -ChartPanel.DEFAULT_HEIGHT;
+		}
+		else {
+			// ditto, but forward
+			// return toNextDataArea();
+			return ChartPanel.DEFAULT_HEIGHT;
+		}
+	}
+
+	@Override
+	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+		// TODO Auto-generated method stub
+		return getScrollableUnitIncrement(visibleRect, orientation, direction);
+	}
+
+	@Override
+	public boolean getScrollableTracksViewportWidth() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean getScrollableTracksViewportHeight() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }
