@@ -177,6 +177,7 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
     }
 
     void drawPie(int pieIndex, Graphics2D g2, Rectangle2D rect, PlotRenderingInfo info) {
+    	// TODO: make the title truncate instead of rewrapping
         String title;
         if (this.getDataExtractOrder() == TableOrder.BY_ROW) {
             title = this.getDataset().getRowKey(pieIndex).toString();
@@ -184,8 +185,59 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
         else {
             title = this.getDataset().getColumnKey(pieIndex).toString();
         }
-        this.getPieChart().setTitle(title);
 
+        TextTitle textTitle = new TextTitle(title) {
+        	int getStringWidth(String s, Graphics2D g2) {
+        		return g2.getFontMetrics(this.getFont()).stringWidth(s);
+        	}
+        	String trim(String s, int length) {
+        		if (length<0 || s.length()<length) {
+        			return "";
+        		}
+        		else {
+        			return s.substring(0, length);
+        		}
+        	}
+        	String trimToFit(String s, Graphics2D g2, Rectangle2D area) {
+        		int spaceAvailable = (int) area.getWidth();
+        		int spaceNeeded = this.getStringWidth(s, g2);
+        		while (s != "" && spaceNeeded>spaceAvailable) {
+        			s = trim(s, s.length()-1);
+        			spaceNeeded = this.getStringWidth(s, g2);
+        		}
+        		return s;
+        	}
+    		@Override
+    		public Object draw(Graphics2D g2, Rectangle2D area, Object params) {
+    			int spaceNeeded = this.getStringWidth(this.getText(), g2);
+    			int spaceAvailable = (int) area.getWidth();
+    			if (spaceNeeded>spaceAvailable) {
+        			System.out.println(String.format("%s: %d needed out of %d available",
+        					this.getText(),
+        					spaceNeeded,
+        					spaceAvailable
+        					));
+    				
+    			}
+    			String title = trimToFit(this.getText(), g2, area);
+    			if (title.length()<this.getText().length()) {
+    				System.out.println(String.format("%s trimmed to %s",
+    						this.getText(), title));
+    			}
+    			
+    			this.setText(title);
+    			this.setNotify(true);
+    			
+    			System.out.println("title was " + this.getText());
+    			Object result = super.draw(g2, area, params);
+    			System.out.println("title is now " + this.getText());
+    			return result;
+    		}
+    	};
+    	textTitle.setToolTipText(textTitle.getText());
+    	
+    	this.getPieChart().setTitle(textTitle);
+    	
         PieDataset piedataset;
         PieDataset dd = new CategoryToPieDataset(this.unzoomedDataset,
                 this.getDataExtractOrder(), pieIndex);
