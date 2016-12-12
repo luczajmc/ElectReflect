@@ -282,7 +282,7 @@ public class Grapher {
 		int pieCount = plot.getPieCount();
 		int scrollableHeight = ChartPanel.DEFAULT_HEIGHT*pieCount;
 		chartPanel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH,
-				scrollableHeight));
+				ChartPanel.DEFAULT_HEIGHT));
 
 		// the chart should also tend to keep its original size when you resize
 		// the window
@@ -293,25 +293,56 @@ public class Grapher {
 		// where there are no subplots
 		chartPanel.setMaximumDrawHeight(scrollableHeight+ChartPanel.DEFAULT_HEIGHT);
 
-		// hopefully this is faster (no, it's slower)
-		// TODO: figure out how the bar chart is able to do this reasonably
-		JViewport port = new JViewport();
-		port.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+		// FIXME: this scroll pane scrolls abysmally slowly
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setViewportView(chartPanel);
 
-		port.add(chartPanel);
-		
 		// FIXME: this should make the viewport the same size as a regular chart
 		JPanel panel = new JPanel();
-		panel.add(port);
+		panel.add(scrollPane);
 		panel.setPreferredSize(new Dimension(ChartPanel.DEFAULT_WIDTH,
 				ChartPanel.DEFAULT_HEIGHT));
 		panel.setMinimumSize(panel.getPreferredSize());
 		panel.setMaximumSize(panel.getPreferredSize());
 		
-		// FIXME: this scroll pane scrolls abysmally slowly
-		JScrollPane scrollPane = new JScrollPane(port);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		// lets you change how much height the chart has to draw in
+		JSlider heightSlider = new JSlider(1, scrollableHeight, ChartPanel.DEFAULT_HEIGHT);
+		heightSlider.addChangeListener(new ChangeListener() {
 
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				JSlider source = (JSlider) e.getSource();
+				Dimension currentSize = chartPanel.getPreferredSize();
+				chartPanel.setPreferredSize(new Dimension(currentSize.width,
+						source.getValue()));
+				scrollPane.setViewportView(chartPanel);
+				plot.setNotify(true);
+				chartPanel.repaint();
+				scrollPane.repaint();
+			}
+			
+		});
+		
+		// lets you change how many pies the chart has per row
+		JSlider displayColsSlider = new JSlider(1, plot.getPieCount(),
+				plot.getDisplayCols());
+		displayColsSlider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				JSlider source = (JSlider) e.getSource();
+				plot.setDisplayCols(source.getValue());
+				plot.setNotify(true);
+				chartPanel.repaint();
+			}
+			
+		});
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+		panel.add(displayColsSlider);
+		panel.add(heightSlider);
 		
 		// just split the window into left and right halves; don't let the user adjust
 		// the size of those halves
@@ -321,7 +352,7 @@ public class Grapher {
 
 		
 		// the chart goes on the left
-		splitPane.setLeftComponent(scrollPane);
+		splitPane.setLeftComponent(panel);
 		
 		JTextArea list = new JTextArea(regionList(region));
 		list.setEditable(false);

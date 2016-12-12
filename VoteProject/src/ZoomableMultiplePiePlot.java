@@ -34,6 +34,7 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
 
 	private CategoryDataset unzoomedDataset;
 	double[] zoomPercentages;
+	private int displayCols;
 	
     /**
      * Creates a new plot with no data.
@@ -66,6 +67,8 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
 
     	this.unzoomedDataset = dataset;
     	resetZoomPercentages(); // make sure the plot starts out zoomed correctly
+    	
+    	this.displayCols = (int) Math.ceil(Math.sqrt(this.getPieCount()));
     }
 	
     void resetZoomPercentages() {
@@ -133,7 +136,7 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
 
         int pieCount = this.getPieCount();
 
-        int displayCols = 1;
+        int displayCols = this.displayCols;
         int displayRows
             = (int) Math.ceil((double) pieCount / (double) displayCols);
 
@@ -221,5 +224,13 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
             return this.getDataset().getColumnCount();
         }
 
+    }
+    
+    public void setDisplayCols(int displayCols) {
+    	this.displayCols = displayCols;
+    }
+    
+    public int getDisplayCols() {
+    	return this.displayCols;
     }
 }
