@@ -84,8 +84,9 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
 	}
 	
 	void trimPies(double[] zoomPercentages) {
-		this.zoomPercentages = zoomPercentages;
+		assert(this.zoomPercentages.length == zoomPercentages.length);
         for (int i=0; i<this.zoomPercentages.length; i++) {
+        	this.zoomPercentages[i] *= zoomPercentages[i];
         	System.out.print(this.zoomPercentages[i]+",");
         }
         System.out.println("===");
