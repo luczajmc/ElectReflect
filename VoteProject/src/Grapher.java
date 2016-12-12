@@ -1,8 +1,14 @@
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -64,7 +70,8 @@ public class Grapher {
 	static JFreeChart chart(Region region) {
 		// TODO: label the axes
 		
-		SyncedCategoryPlot plot = createPlot("", "", categoryDataset(region));
+		SyncedCategoryPlot plot = createPlot("", "", categoryDataset(region, 
+				RegionSorter.reverse(RegionSorter.byPopulation())));
 		
         JFreeChart chart = new JFreeChart("Election Results", plot);
         
@@ -230,11 +237,11 @@ public class Grapher {
 		
 	}
 	
-	static CategoryDataset categoryDataset(Region region) {
+	static CategoryDataset categoryDataset(Region region, Comparator<Region> ordering) {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		ArrayList<Region> subregions = region.getSubregions();
 		
-		subregions.sort(RegionSorter.reverse(RegionSorter.byPopulation()));
+		subregions.sort(ordering);
 		for (Region r : subregions) {
 			data.setValue(r.getRepVotes(), "Republican", r.getName());
 			data.setValue(r.getDemVotes(), "Democrat", r.getName());
@@ -250,7 +257,7 @@ public class Grapher {
 
 		// if it's a multiple-pie plot, it has one plot for each subregion
 		ZoomableMultiplePiePlot plot = new ZoomableMultiplePiePlot(
-				categoryDataset(region));
+				categoryDataset(region, RegionSorter.byRepVotes()));
 		
 		// do some setup the Factory would normally do
         plot.setInsets(new RectangleInsets(0.0, 5.0, 5.0, 5.0));
@@ -340,9 +347,26 @@ public class Grapher {
 			
 		});
 		
+		JComboBox sortMenu = new JComboBox(RegionSorter.getOrderings().toArray());
+		sortMenu.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JComboBox source = (JComboBox) e.getSource();
+				
+				plot.setDataset(categoryDataset(region,
+						(Comparator<Region>) source.getSelectedItem()));
+				plot.setNotify(true);
+				chartPanel.repaint();
+			}
+			
+		});
+		
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		panel.add(displayColsSlider);
 		panel.add(heightSlider);
+		panel.add(sortMenu);
 		
 		// just split the window into left and right halves; don't let the user adjust
 		// the size of those halves
