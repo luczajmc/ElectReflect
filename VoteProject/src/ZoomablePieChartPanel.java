@@ -56,8 +56,8 @@ public class ZoomablePieChartPanel extends ChartPanel {
     	PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
 
     	MultiplePiePlot plot = (MultiplePiePlot) this.getChart().getPlot();
-    	System.out.println(String.format("%d: %s", this.plotIndex, 
-    	    	plot.getPieChart().getTitle().getText()));
+//    	System.out.println(String.format("%d: %s", this.plotIndex, 
+//    	    	plot.getPieChart().getTitle().getText()));
     	if (this.plotIndex==-1) {
     		return info.getDataArea();
     	}
@@ -284,4 +284,12 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		return arcAngle;
 	}
 
+	public int getPlotIndex() {
+		return this.plotIndex;
+	}
+	
+	public void setPlotIndex(int plotIndex) {
+		this.plotIndex = plotIndex;
+		this.repaint();
+	}
 }

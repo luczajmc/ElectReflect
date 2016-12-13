@@ -1,17 +1,21 @@
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -283,7 +287,12 @@ public class Grapher {
 
 		JFreeChart chart = new JFreeChart("Election Results", plot);
 	
-		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart);
+		ZoomablePieChartPanel chartPanel = new ZoomablePieChartPanel(chart) {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.out.println(e.getPoint());
+			}
+		};
 
 		// leave enough room in the chart panel for you to see the _whole_ chart
 		int pieCount = plot.getPieCount();
@@ -378,16 +387,44 @@ public class Grapher {
 		// the chart goes on the left
 		splitPane.setLeftComponent(panel);
 		
-		JTextArea list = new JTextArea(regionList(region));
-		list.setEditable(false);
+		JList jumpList = new JList(region.getSubregions().toArray());
+		jumpList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+				JList source = (JList) e.getSource();
+				
+				chartPanel.setPlotIndex(source.getSelectedIndex());
+				Rectangle2D plotRectangle2D = chartPanel.getCurrentDataArea();
+				Rectangle plotRectangle = plotRectangle2D.getBounds();
+				Point corner = plotRectangle.getLocation();
+				System.out.println(plotRectangle);
+				System.out.println(scrollPane.getViewport().getViewRect());
+				// scrollPane.scrollRectToVisible(plotRectangle);
+				scrollPane.getViewport().setViewPosition(corner);
+			}
+			
+		});
+		sortMenu.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JComboBox source = (JComboBox) e.getSource();
+				
+				ArrayList<Region> regions = region.getSubregions();
+				regions.sort((Comparator<Region>) source.getSelectedItem());
+				jumpList.setListData(regions.toArray());
+			}
+			
+		});
+
+		// start out and make sure everything's sorted the same
+		sortMenu.setSelectedIndex(0);
 		
-		// when you resize the window, both these panes should tend to want to
-		// keep their original height
-		list.setMinimumSize(list.getPreferredSize());
-		list.setMaximumSize(list.getPreferredSize());
 		
 		JViewport listPort = new JViewport();
-		listPort.add(list);
+		listPort.add(jumpList);
 
 		JScrollPane scrollableList = new JScrollPane(listPort);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
