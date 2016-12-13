@@ -49,9 +49,11 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
      * @param dataset  the dataset ({@code null} permitted).
      */
     public ZoomableMultiplePiePlot(CategoryDataset dataset) {
+    	// TODO: try to make a ZoomablePiePlot that scales the radius of the plot
+    	//		 according to the total size of the data
         super(dataset);
         setDataset(dataset);
-        ZoomablePiePlot piePlot = new ZoomablePiePlot(new DefaultPieDataset());
+        ZoomableScalingPiePlot piePlot = new ZoomableScalingPiePlot(new DefaultPieDataset());
         piePlot.setIgnoreNullValues(true);
         JFreeChart pieChart = new JFreeChart(piePlot);
  

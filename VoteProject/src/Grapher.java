@@ -250,7 +250,7 @@ public class Grapher {
 			data.setValue(r.getRepVotes(), "Republican", r.getName());
 			data.setValue(r.getDemVotes(), "Democrat", r.getName());
 			data.setValue(r.getIndVotes(), "Independent", r.getName());
-			
+			data.setValue(r.getTotalVotes(), "Total", r.getName());
 		}
 
 		return data;
@@ -372,10 +372,37 @@ public class Grapher {
 			
 		});
 		
+		JSlider pieScaleSlider = new JSlider(1, 20, 1);
+		pieScaleSlider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				
+				JSlider source = (JSlider) e.getSource();
+				// TODO Auto-generated method stub
+				
+				ZoomableScalingPiePlot plot = (ZoomableScalingPiePlot) 
+						chartPanel.getZoomablePiePlot();
+				System.out.println(String.format("%d @ %s", source.getValue(), source));
+				
+				double scale = (double) source.getValue();
+				double total = (double) (source.getMaximum()-source.getMinimum());
+				double scaleFactor = scale/total;
+				System.out.println(String.format("%.2f/%.2f=%.2f", scale, total, scaleFactor));
+				plot.setPieScaleFactor(scaleFactor);
+				
+				// notify the multiple-pie plot
+				chartPanel.getChart().getPlot().setNotify(true);
+				chartPanel.repaint();
+			}
+			
+		});
+		
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		panel.add(displayColsSlider);
 		panel.add(heightSlider);
 		panel.add(sortMenu);
+		panel.add(pieScaleSlider);
 		
 		// just split the window into left and right halves; don't let the user adjust
 		// the size of those halves

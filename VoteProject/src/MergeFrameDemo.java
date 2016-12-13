@@ -6,7 +6,7 @@ import javax.swing.event.ListSelectionListener;
 
 public class MergeFrameDemo {
 	public static void main(String[] args) {
-		State panOhio = DataHandler.makeState();
+		State panOhio = DataHandler.makeState("../Data/");
 
 		JFrame mergeFrame = new JFrame("Merge");
 		mergeFrame.getContentPane().setLayout(new BoxLayout(mergeFrame.getContentPane(), BoxLayout.LINE_AXIS));
@@ -20,6 +20,8 @@ public class MergeFrameDemo {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				// TODO Auto-generated method stub
+				// Oh, OK, this particular NullPointerException is OK
+				// TODO: find out if the other list gets these
 				Region r = (Region) ((JList) e.getSource()).getSelectedValue();
 				System.out.println(r.getSubregions());
 			}
