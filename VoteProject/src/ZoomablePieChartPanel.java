@@ -50,8 +50,14 @@ public class ZoomablePieChartPanel extends ChartPanel {
     }
     
     Rectangle2D getCurrentDataArea() {
+    	// TODO: this should also use instanceof, because -1 should be invalid
+    	// 		 for a MultiplePiePlot: it means you don't know which subplot you're
+    	//		 talking about
     	PlotRenderingInfo info = this.getChartRenderingInfo().getPlotInfo();
 
+    	MultiplePiePlot plot = (MultiplePiePlot) this.getChart().getPlot();
+    	System.out.println(String.format("%d: %s", this.plotIndex, 
+    	    	plot.getPieChart().getTitle().getText()));
     	if (this.plotIndex==-1) {
     		return info.getDataArea();
     	}
@@ -60,10 +66,18 @@ public class ZoomablePieChartPanel extends ChartPanel {
     	}
     }
     
+    // can be null
     ZoomablePiePlot getZoomablePiePlot() {
     	Plot plot = this.getChart().getPlot();
-    	if (plot instanceof MultiplePiePlot) {
-    		return (ZoomablePiePlot) (((MultiplePiePlot) plot).getPieChart().getPlot());
+    	if (plot instanceof ZoomableMultiplePiePlot) {
+    		// this already wouldn't work for regular MultiplePiePlots, so it's fine
+    		// to be more restrictive
+    		if (this.plotIndex==-1) {
+    			return null;
+    		}
+    		ZoomableMultiplePiePlot multiplePlot = (ZoomableMultiplePiePlot) plot;
+    		JFreeChart chart = multiplePlot.getPieChart(this.plotIndex);
+    		return (ZoomablePiePlot) chart.getPlot();
     	}
     	else {
     		return (ZoomablePiePlot) plot;
@@ -81,23 +95,41 @@ public class ZoomablePieChartPanel extends ChartPanel {
         
         ZoomablePiePlot plot = this.getZoomablePiePlot();
         
+        if (plot==null) {
+        	return;
+        }
+        
         double[] sector = plot.getSlice(key);
         if (plot.wrapsAround(sector[0], sector[1], this.startAngle, arcAngle)) {
                 double[] headOverlap = plot.headOverlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
                 fillArc(g, headOverlap[0], headOverlap[1]);
                 double[] tailOverlap = plot.tailOverlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
                 fillArc(g, tailOverlap[0], tailOverlap[1]);
-                System.out.println(key+": "+(headOverlap[1]/sector[1]+tailOverlap[1]/sector[1]));
+                double percentage = (headOverlap[1]/sector[1]+tailOverlap[1]/sector[1]);
+                System.out.println(String.format("%s: %.2f ((%.2f+%.2f)/%.2f)", key, percentage,
+                		headOverlap[1], tailOverlap[1], sector[1]));
         }
         else {
                 double[] overlap = plot.overlapOnto(sector[0], sector[1], this.startAngle, arcAngle);
                 fillArc(g, overlap[0], overlap[1]);
-                System.out.println(key+": "+(overlap[1]/sector[1]));
+                double percentage = overlap[1]/sector[1];
+                System.out.println(String.format("%s: %.2f (%.2f/%.2f)", key, percentage,
+                		overlap[1], sector[1]));
                 
         }
 
     }
 
+    public void highlightCurrentDataArea(Graphics g) {
+    	Rectangle2D dataArea = this.getCurrentDataArea();
+    	
+    	g.setXORMode(this.highlightColor);
+    	g.drawRect((int) dataArea.getX(), (int) dataArea.getY(), 
+    			(int) dataArea.getWidth(), (int) dataArea.getHeight());
+		g.setPaintMode();
+		
+
+    }
     @Override
     public void paintComponent(Graphics g) {
     	super.paintComponent(g);
@@ -110,7 +142,10 @@ public class ZoomablePieChartPanel extends ChartPanel {
 
         this.highlightColor = Color.green;
         paintOverlap(g, "Independent");
+        
+        this.highlightCurrentDataArea(g);
    }
+    
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -124,10 +159,9 @@ public class ZoomablePieChartPanel extends ChartPanel {
     }
     @Override
     public void mouseDragged(MouseEvent e) {
-    	// TODO: get this zoom working; worry about doing lots of charts later
-    	// FIXME: zooming in isn't cumulative
-    	// FIXME: OK, so these angles aren't quite right for the multiple-pie plot
-    	//		  (maybe?)
+    	// FIXME: when you zoom in on a plot that doesn't have any independent votes,
+    	//		  none of the other plots will show independent votes anymore;
+    	//		  probably they should?
     	// TODO: this should probably not do anything if you're dragging from off of
     	//		 another component
     	double endAngle = getAngle(e.getPoint());

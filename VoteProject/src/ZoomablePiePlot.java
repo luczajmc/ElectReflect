@@ -560,6 +560,9 @@ public class ZoomablePiePlot extends PiePlot implements Cloneable, Serializable,
 		// unzoomedDataset shouldn't ever be modified except when you're completely
 		// replacing the data, as in this function: so it gets its own dataset
 		this.unzoomedDataset = new DefaultPieDataset(dataset);
+		
+		// TODO: this shows NaN% when Independent has 0 voters, which is maybe not
+		// 		 the best?
 		this.setLabelGenerator(new StandardPieSectionLabelGenerator() {
 			final PieDataset unzoomedData = unzoomedDataset;
         	

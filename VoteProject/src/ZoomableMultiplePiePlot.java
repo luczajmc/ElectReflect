@@ -177,7 +177,7 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
 
     }
 
-    void drawPie(int pieIndex, Graphics2D g2, Rectangle2D rect, PlotRenderingInfo info) {
+    JFreeChart getPieChart(int pieIndex) {
     	// TODO: make the title truncate instead of rewrapping
         String title;
         if (this.getDataExtractOrder() == TableOrder.BY_ROW) {
@@ -222,16 +222,16 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
     			}
     			String title = trimToFit(this.getText(), g2, area);
     			if (title.length()<this.getText().length()) {
-    				System.out.println(String.format("%s trimmed to %s",
-    						this.getText(), title));
+//    				System.out.println(String.format("%s trimmed to %s",
+//    						this.getText(), title));
     			}
     			
     			this.setText(title);
     			this.setNotify(true);
     			
-    			System.out.println("title was " + this.getText());
+//    			System.out.println("title was " + this.getText());
     			Object result = super.draw(g2, area, params);
-    			System.out.println("title is now " + this.getText());
+//    			System.out.println("title is now " + this.getText());
     			return result;
     		}
     	};
@@ -254,12 +254,17 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
         piePlot.setPieIndex(pieIndex);
         piePlot.trimSlices(this.zoomPercentages);
 
+        
+        return this.getPieChart();
+    }
+    void drawPie(int pieIndex, Graphics2D g2, Rectangle2D rect, PlotRenderingInfo info) {
+
 
         ChartRenderingInfo subinfo = null;
         if (info != null) {
             subinfo = new ChartRenderingInfo();
         }
-        this.getPieChart().draw(g2, rect, subinfo);
+        this.getPieChart(pieIndex).draw(g2, rect, subinfo);
         if (info != null) {
             assert subinfo != null;
             info.getOwner().getEntityCollection().addAll(
