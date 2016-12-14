@@ -299,6 +299,9 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		return DatasetUtilities.calculatePieDatasetTotal(subPlot.getDataset());
 	}
 	public void setPlotIndex(int plotIndex) {
+		if (plotIndex == -1) {
+			return; // if you don't select a valid plot, leave it how it was
+		}
 		this.plotIndex = plotIndex;
 		Plot plot = this.getChart().getPlot();
 		ScalingPie scalingPlot = (ScalingPie) plot;
