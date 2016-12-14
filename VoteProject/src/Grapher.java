@@ -421,6 +421,9 @@ public class Grapher {
 				// TODO Auto-generated method stub
 				JList source = (JList) e.getSource();
 				
+				// FIXME: scrolling through this way isn't as smooth as it should be,
+				//		  I think because there's integer rounding involved
+				System.out.println("List selected: "+source.getSelectedIndex());
 				chartPanel.setPlotIndex(source.getSelectedIndex());
 				Rectangle2D plotRectangle2D = chartPanel.getCurrentDataArea();
 				Rectangle plotRectangle = plotRectangle2D.getBounds();

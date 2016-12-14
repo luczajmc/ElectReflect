@@ -17,6 +17,7 @@ import org.jfree.chart.plot.MultiplePiePlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotRenderingInfo;
+import org.jfree.data.general.DatasetUtilities;
 
 /**
  * A Swing GUI component for displaying a {@link JFreeChart} object.
@@ -151,7 +152,9 @@ public class ZoomablePieChartPanel extends ChartPanel {
     @Override
     public void mousePressed(MouseEvent e) {
     	super.mousePressed(e);
-    	this.plotIndex = getSubplotIndex(e.getPoint());
+    	int plotIndex = getSubplotIndex(e.getPoint());
+    	System.out.println("Mouse selected: "+plotIndex);
+    	this.setPlotIndex(plotIndex);
 
     	this.startAngle = getAngle(e.getPoint());
     	this.endAngle = this.startAngle;
@@ -289,8 +292,19 @@ public class ZoomablePieChartPanel extends ChartPanel {
 		return this.plotIndex;
 	}
 	
+	public double getWindow(int plotIndex) {
+		ZoomableMultiplePiePlot plot = (ZoomableMultiplePiePlot) this.getChart().getPlot();
+		JFreeChart subChart = plot.getPieChart(plotIndex);
+		PiePlot subPlot = (PiePlot) subChart.getPlot();
+		return DatasetUtilities.calculatePieDatasetTotal(subPlot.getDataset());
+	}
 	public void setPlotIndex(int plotIndex) {
 		this.plotIndex = plotIndex;
+		Plot plot = this.getChart().getPlot();
+		ScalingPie scalingPlot = (ScalingPie) plot;
+		scalingPlot.setWindow(this.getWindow(plotIndex));
+		
+		plot.setNotify(true);
 		this.repaint();
 	}
 }

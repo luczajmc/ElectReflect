@@ -31,7 +31,7 @@ public class ZoomableScalingPiePlot extends ZoomablePiePlot implements ScalingPi
 	
 	private double getScaleFactor() {
 		double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
-		return this.maxWindow/total;
+		return total/this.maxWindow;
 	}
 	@Override
 	protected void drawPie(Graphics2D g2, Rectangle2D plotArea,
