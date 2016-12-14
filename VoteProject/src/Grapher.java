@@ -372,7 +372,7 @@ public class Grapher {
 			
 		});
 		
-		JSlider pieScaleSlider = new JSlider(1, 20, 1);
+		JSlider pieScaleSlider = new JSlider(1, 40, 20);
 		pieScaleSlider.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -386,7 +386,7 @@ public class Grapher {
 				System.out.println(String.format("%d @ %s", source.getValue(), source));
 				
 				double scale = (double) source.getValue();
-				double total = (double) (source.getMaximum()-source.getMinimum());
+				double total = (double) (source.getMaximum()-source.getMinimum())/2;
 				double scaleFactor = scale/total;
 				System.out.println(String.format("%.2f/%.2f=%.2f", scale, total, scaleFactor));
 				plot.setPieScaleFactor(scaleFactor);
