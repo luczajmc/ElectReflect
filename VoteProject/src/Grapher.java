@@ -37,6 +37,7 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import org.jfree.ui.RectangleInsets;
@@ -372,7 +373,9 @@ public class Grapher {
 			
 		});
 		
-		JSlider pieScaleSlider = new JSlider(1, 40, 20);
+		double total = region.getTotalVotes();
+		System.out.println(total + " " + total/2);
+		JSlider pieScaleSlider = new JSlider(1, (int) total, (int) total/2);
 		pieScaleSlider.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -385,11 +388,8 @@ public class Grapher {
 						chartPanel.getZoomablePiePlot();
 				System.out.println(String.format("%d @ %s", source.getValue(), source));
 				
-				double scale = (double) source.getValue();
-				double total = (double) (source.getMaximum()-source.getMinimum())/2;
-				double scaleFactor = scale/total;
-				System.out.println(String.format("%.2f/%.2f=%.2f", scale, total, scaleFactor));
-				plot.setPieScaleFactor(scaleFactor);
+				double maxWindow = (double) source.getValue();
+				plot.setWindow(maxWindow);
 				
 				// notify the multiple-pie plot
 				chartPanel.getChart().getPlot().setNotify(true);

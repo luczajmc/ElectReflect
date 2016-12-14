@@ -9,11 +9,12 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.general.PieDataset;
 
-public class ZoomableScalingPiePlot extends ZoomablePiePlot {
+public class ZoomableScalingPiePlot extends ZoomablePiePlot implements ScalingPie {
 	
 	public ZoomableScalingPiePlot(PieDataset dataset) {
 		super(dataset);
-		this.pieScaleFactor = 1.0;
+		double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
+		this.maxWindow = total;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -21,21 +22,17 @@ public class ZoomableScalingPiePlot extends ZoomablePiePlot {
 	private final boolean DEBUG_DRAW_INTERIOR = true;
 	private final boolean DEBUG_DRAW_LINK_AREA = true;
 	private final boolean DEBUG_DRAW_PIE_AREA = true;
-	private double pieScaleFactor;
+	private double maxWindow;
 	private PiePlotState state;
-
-	public void setPieScaleFactor(double pieScaleFactor) {
-		this.pieScaleFactor = pieScaleFactor;
-	}
-	
-	public double getPieScaleFactor() {
-		return this.pieScaleFactor;
-	}
 	
 	public PiePlotState getState() {
 		return this.state;
 	}
 	
+	private double getScaleFactor() {
+		double total = DatasetUtilities.calculatePieDatasetTotal(this.getDataset());
+		return this.maxWindow/total;
+	}
 	@Override
 	protected void drawPie(Graphics2D g2, Rectangle2D plotArea,
 			PlotRenderingInfo info) {
@@ -80,7 +77,7 @@ public class ZoomableScalingPiePlot extends ZoomablePiePlot {
 		// TODO: only do this when the pie is supposed to be circular
 		double diameterMax = Math.min(hDiameterMax, vDiameterMax);
 		double radiusMax = diameterMax/2;
-		double radiusDesired = radiusMax*Math.sqrt(this.pieScaleFactor);
+		double radiusDesired = radiusMax*Math.sqrt(this.getScaleFactor());
 		double hRadiusDesired = radiusDesired;
 		double vRadiusDesired = radiusDesired;
 		/*
@@ -100,7 +97,7 @@ public class ZoomableScalingPiePlot extends ZoomablePiePlot {
 		System.out.println(String.format("v: Wanted %.2f, so gap is %.2f+%.2f-%.2f=%.2f", vRadiusDesired, defaultGapVertical, vDiameterMax, vDiameterDesired, gapVertical));
 		
 		
-		System.out.println(String.format("%.2f: >%.2f<, v%.2f^", this.pieScaleFactor, gapHorizontal, gapVertical));
+		System.out.println(String.format("%.2f: >%.2f<, v%.2f^", this.getScaleFactor(), gapHorizontal, gapVertical));
 
 
 		if (DEBUG_DRAW_INTERIOR ) {
@@ -217,6 +214,18 @@ public class ZoomableScalingPiePlot extends ZoomablePiePlot {
 		else {
 			drawNoDataMessage(g2, plotArea);
 		}
+	}
+
+	@Override
+	public void setWindow(double maxWindow) {
+		// TODO Auto-generated method stub
+		this.maxWindow = maxWindow;
+	}
+
+	@Override
+	public double getWindow() {
+		// TODO Auto-generated method stub
+		return this.maxWindow;
 	}
 
 }

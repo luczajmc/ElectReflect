@@ -31,6 +31,7 @@ public class ZoomablePieChartPanel extends ChartPanel {
 	double endAngle = 0.0f;
 	double arcAngle = 0.0f;
 	Color highlightColor = Color.gray;
+	// TODO: this should start out with one of the plots selected
 	int plotIndex = -1;
 	
     public ZoomablePieChartPanel(JFreeChart chart) {

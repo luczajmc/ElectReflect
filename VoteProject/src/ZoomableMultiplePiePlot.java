@@ -30,7 +30,7 @@ import org.jfree.ui.RectangleInsets;
 import org.jfree.util.Rotation;
 import org.jfree.util.TableOrder;
 
-public class ZoomableMultiplePiePlot extends MultiplePiePlot implements ZoomablePie {
+public class ZoomableMultiplePiePlot extends MultiplePiePlot implements ZoomablePie, ScalingPie {
 
 	private CategoryDataset unzoomedDataset;
 	double[] zoomPercentages;
@@ -247,4 +247,18 @@ public class ZoomableMultiplePiePlot extends MultiplePiePlot implements Zoomable
     public int getDisplayCols() {
     	return this.displayCols;
     }
+
+	@Override
+	public void setWindow(double maxWindow) {
+		// TODO Auto-generated method stub
+		ZoomableScalingPiePlot plot = (ZoomableScalingPiePlot) this.getPieChart().getPlot();
+		plot.setWindow(maxWindow);
+	}
+
+	@Override
+	public double getWindow() {
+		// TODO Auto-generated method stub
+		ZoomableScalingPiePlot plot = (ZoomableScalingPiePlot) this.getPieChart().getPlot();
+		return plot.getWindow();
+	}
 }

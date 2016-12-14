@@ -57,6 +57,8 @@ public class State extends Region {
 			System.out.println(newDistrict.getName() + " " + newDistrict.getTotalVotes());
 			System.out.println(newCounty.getName() + " " + newCounty.getTotalVotes());
 		}
+		
+		getData(); // calculates the totals
 	}
 	
 	/**
