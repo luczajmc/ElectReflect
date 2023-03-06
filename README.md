@@ -1,25 +1,11 @@
-Please download git if you haven't already:
-https://git-scm.com/downloads
+# ElectReflect
 
-Launch git
+This software is intended to help you visualize presidential election results.
 
-Set default git user and email:
-$git config --global user.email "something@miamioh.edu"
-$git config --global user.name "miami username here"
+It’s made to coincide with the votes casted in Ohio for the 2016 presidential race, but you’re not limited to that, and we hope you’ll find it scales well to larger amounts of data. You can load the data from a directory of CSV files, and the program will automatically import all the data for you and detect any errors that may be present.
 
-Navigate to the folder you want to clone the project into:
-$cd Desktop
+It lets you select a variety of different views of the data and show them as either a pie chart, a bar chart, a textual summary, or any combination of these. We hope you’ll find this program to be a friendly but powerful way of looking through election results.
 
-Clone the project folder from git: 
-$git clone https://gitlab.csi.miamioh.edu/wellsdr/CSE-201.git
+Good luck, and we hope you have as much fun using this program as we did making it!
 
-Navigate to CSE-201:
-$cd CSE-201
-
-Pull the most recent files:
-$git pull
-
-Add what you want to the folder, then upload:
-$git add new_file.ext
-$git commit
-$git push
+(see User_Guide.pdf for more details!)
